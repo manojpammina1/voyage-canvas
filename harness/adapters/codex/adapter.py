@@ -63,7 +63,7 @@ def gen_advisory_controls(gov: core.Core) -> str:
 
 
 CODEX_BLOCK_GENERATORS = {
-    "mode-picker": core.gen_mode_picker,
+    "mode-picker": core.gen_mode_picker_codex,
     "hard-stops": core.gen_hard_stops,
     "protected-paths-summary": gen_protected_paths_summary,
     "data-policy": core.gen_data_policy,
@@ -104,7 +104,7 @@ class CodexAdapter:
         tmpl = render_codex_blocks(tmpl, config)
         tmpl = core.substitute_scalars(tmpl, config)
         agents_path = out_dir / "AGENTS.md"
-        agents_path.write_text(tmpl, encoding="utf-8")
+        core.write_text(agents_path, tmpl)
         written.append(agents_path)
 
         codex_out = out_dir / ".codex"
@@ -125,7 +125,7 @@ class CodexAdapter:
         if ci_src.is_file():
             ci_text = core.substitute_scalars(ci_src.read_text(encoding="utf-8"), config)
             ci_path = ci_dir / "agent-governance.yml"
-            ci_path.write_text(ci_text, encoding="utf-8")
+            core.write_text(ci_path, ci_text)
             written.append(ci_path)
 
         gov_link = out_dir / "governance"

@@ -1,13 +1,50 @@
 #!/usr/bin/env bash
 # poc-deploy-rcg.sh — deploy rendered Titan payloads to RCG POC root (T12.6).
+#
+# Layout expected (preferred):
+#   $RCG_ROOT/
+#     titan/harness/scripts/poc-deploy-rcg.sh   ← this file
+#     titan.config.json                        ← optional config override
+#
+# Always resolve the harness from this script's location (not from a guessed
+# parent), so double-nested checkouts like codebase/titan/titan cannot silently
+# deploy into the wrong tree. Override the deploy root with RCG_ROOT=.
 set -euo pipefail
 
-RCG_ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
-HARNESS="$RCG_ROOT/titan/harness"
-CONFIG="${1:-$RCG_ROOT/titan.config.json}"
+HARNESS="$(cd "$(dirname "$0")/.." && pwd)"
+TITAN_REPO="$(cd "$HARNESS/.." && pwd)"
+
+if [ -n "${RCG_ROOT:-}" ]; then
+  RCG_ROOT="$(cd "$RCG_ROOT" && pwd)"
+else
+  PARENT="$(cd "$TITAN_REPO/.." && pwd)"
+  # Prefer parent-of-repo when it actually contains this titan checkout.
+  if [ -e "$PARENT/titan/harness/scripts/titan-render.py" ] || \
+     [ "$PARENT/titan" -ef "$TITAN_REPO" ] 2>/dev/null; then
+    RCG_ROOT="$PARENT"
+  else
+    # Standalone titan clone — deploy into the repo root itself.
+    RCG_ROOT="$TITAN_REPO"
+  fi
+fi
+
+CONFIG="${1:-}"
+if [ -z "$CONFIG" ]; then
+  if [ -f "$RCG_ROOT/titan.config.json" ]; then
+    CONFIG="$RCG_ROOT/titan.config.json"
+  elif [ -f "$TITAN_REPO/titan.config.json" ]; then
+    CONFIG="$TITAN_REPO/titan.config.json"
+  else
+    CONFIG="$HARNESS/titan.config.example.json"
+  fi
+fi
 OUT="$RCG_ROOT/.titan-out"
 
-echo "== POC deploy to $RCG_ROOT =="
+echo "== POC deploy =="
+echo "  RCG_ROOT=$RCG_ROOT"
+echo "  HARNESS=$HARNESS"
+echo "  CONFIG=$CONFIG"
+
 python3 "$HARNESS/scripts/titan-render.py" --config "$CONFIG" --target all --out "$OUT"
 
 mkdir -p "$RCG_ROOT/.claude"/{hooks,scripts,data,commands,subagents}

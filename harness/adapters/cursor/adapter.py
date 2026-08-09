@@ -52,21 +52,21 @@ class CursorAdapter:
         tmpl = render_cursor_blocks(tmpl, config)
         tmpl = core.substitute_scalars(tmpl, config)
         rule_path = rules_dir / "governance.mdc"
-        rule_path.write_text(tmpl, encoding="utf-8")
+        core.write_text(rule_path, tmpl)
         written.append(rule_path)
 
         review_tmpl = (CURSOR_DIR / "rules" / "review-standards.mdc.tmpl")
         if review_tmpl.is_file():
             rt = _inject_policies(review_tmpl.read_text(encoding="utf-8"), gov, config)
             rp = rules_dir / "review-standards.mdc"
-            rp.write_text(rt, encoding="utf-8")
+            core.write_text(rp, rt)
             written.append(rp)
         else:
             rp = rules_dir / "review-standards.mdc"
-            rp.write_text(
+            core.write_text(
+                rp,
                 "---\ndescription: Review standards\nalwaysApply: false\n---\n\n"
                 + gov.policy_text("review-standards"),
-                encoding="utf-8",
             )
             written.append(rp)
 
@@ -80,7 +80,7 @@ class CursorAdapter:
             (CURSOR_DIR / "hooks.json.tmpl").read_text(encoding="utf-8"), config
         )
         hooks_path = pack / "hooks.json"
-        hooks_path.write_text(hooks_json, encoding="utf-8")
+        core.write_text(hooks_path, hooks_json)
         written.append(hooks_path)
         written.append(pack)
 

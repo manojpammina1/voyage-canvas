@@ -4,14 +4,16 @@
 
 ## Model Routing (Token Cost Control)
 
-Use the right model for the right task. **General chat and non-code questions → internal chat (no enterprise Copilot license) (free tier) — do not burn Claude tokens on Q&A.**
+Use the right model for the right task. **General chat and non-code questions → internal chat (no enterprise Copilot license) (free tier) — do not burn Claude tokens on Q&A.** Tiers come from `governance/model-tiers.yaml` (single source of truth — no pinned vendor patch IDs here).
 
-| Task | Model | How to activate |
-|------|-------|-----------------|
-| Architecture decisions, cross-repo planning, governance synthesis | **Opus** | Start session: `claude --model claude-opus-4-7` |
-| Code generation, PR review, test writing, correctness analysis | **Sonnet** | Default — no flag needed |
-| Convention checks, naming pattern matching, file existence, simple lookups | **Haiku** | Set automatically by skill sub-agents |
-| General questions, chat, explanations, documentation lookups | **internal chat (no enterprise Copilot license)** | Use it directly |
+<!-- titan:block model-routing -->
+| Task | Tier | Claude binding |
+|------|------|----------------|
+| Architecture decisions, cross-repo planning, governance synthesis | **deep** | Claude deep / thinking tier (architecture) |
+| Code generation, PR review, test writing, correctness analysis | **standard** | Claude standard tier (default coding) |
+| Convention checks, naming patterns, simple lookups | **fast** | Claude fast tier (lookups / sub-agents) |
+| General questions, chat, explanations, documentation lookups | **general-chat** | **internal chat (no enterprise Copilot license)** — use it directly |
+<!-- /titan:block model-routing -->
 
 Sub-agent model params are applied automatically by `/parallel-review` and `/worktree-agent` skills — no manual selection needed during those flows.
 

@@ -1,25 +1,26 @@
 # Provider-neutral model tiers — rendered per adapter with provider bindings.
+# Bindings name capability tiers, not pinned vendor patch IDs (those go stale).
 
 version: "1.0"
 
 tiers:
   - id: deep
     summary: "Architecture decisions, cross-repo planning, governance synthesis"
-    claude: "claude-opus-4-7"
-    codex: "Use provider deep-reasoning tier when available"
-    cursor: "Use Cursor max / thinking model for architecture work"
+    claude: "Claude deep / thinking tier (architecture)"
+    codex: "Provider deep-reasoning tier when available"
+    cursor: "Cursor max / thinking model for architecture work"
 
   - id: standard
     summary: "Code generation, PR review, test writing, correctness analysis"
-    claude: "claude-sonnet (default)"
+    claude: "Claude standard tier (default coding)"
     codex: "Default Codex model"
     cursor: "Default Cursor agent model"
 
   - id: fast
     summary: "Convention checks, naming patterns, simple lookups"
-    claude: "claude-haiku (sub-agents)"
-    codex: "Use fast tier for trivial lookups"
-    cursor: "Use fast model for trivial lookups"
+    claude: "Claude fast tier (lookups / sub-agents)"
+    codex: "Provider fast tier for trivial lookups"
+    cursor: "Cursor fast model for trivial lookups"
 
 general_chat:
   note: "General chat and non-code Q&A → {{config.platforms.general_chat_alternative}} — do not burn agent tokens."

@@ -49,3 +49,13 @@ jobs:
         run: |
           echo "AI first-pass review required — run: node .codex/review.mjs"
           test -f .codex/review.mjs || test -f governance/reviewers/orchestration.yaml
+
+      # When this workflow runs inside the Titan harness repo itself, also
+      # enforce render-correctness gates (snapshot + verify + lint-generic).
+      - name: Harness render gates (titan source repo only)
+        if: hashFiles('harness/scripts/verify-claude-snapshot.sh') != ''
+        run: |
+          set -euo pipefail
+          bash scripts/lint-generic.sh
+          (cd harness && bash scripts/verify-claude-snapshot.sh)
+          (cd harness && python3 -m unittest discover -s tests -p 'test_*.py' -v)

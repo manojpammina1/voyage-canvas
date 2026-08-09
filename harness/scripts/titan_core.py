@@ -481,19 +481,33 @@ def gen_environments(config: dict) -> str:
     return "\n".join(lines) if lines else "_No environments configured._"
 
 
-def gen_mode_picker(config: dict) -> str:
+def gen_mode_picker(config: dict, *, binding: str = "slash") -> str:
+    """Render the mode-selection table.
+
+    binding="slash" (Claude): show `/dev-mode` style commands.
+    binding="declare" (Codex/Cursor): show mode ids only — no slash-command runtime.
+    """
     modes = config.get("modes", {})
     active = modes.get("active", [])
     hidden = modes.get("hidden", [])
+    use_slash = binding == "slash"
 
+    col = "Command" if use_slash else "Mode"
     lines = ["Before any work this session, confirm a mode is active. If not, ask:", ""]
-    rows = ["| Command | Who | When |", "|---------|-----|------|"]
+    rows = [f"| {col} | Who | When |", "|---------|-----|------|"]
     for mode in active:
         cmd, who, when = MODE_CATALOG.get(mode, (f"/{mode}", "—", "—"))
-        rows.append(f"| `{cmd}` | {who} | {when} |")
+        cell = cmd if use_slash else mode
+        rows.append(f"| `{cell}` | {who} | {when} |")
     lines.extend(rows)
     lines.append("")
-    lines.append("No files, code, or commands until mode is selected.")
+    if use_slash:
+        lines.append("No files, code, or commands until mode is selected.")
+    else:
+        lines.append(
+            "No files, code, or commands until a mode is selected. "
+            "Declare the active mode in your reply (e.g. `dev-mode`) — do not invent Claude slash-command invocations."
+        )
 
     if hidden:
         lines.append("")
@@ -503,11 +517,36 @@ def gen_mode_picker(config: dict) -> str:
             "UserPromptSubmit reminder."
         )
         lines.append("")
-        hrows = ["| Command | Who | When |", "|---------|-----|------|"]
+        hrows = [f"| {col} | Who | When |", "|---------|-----|------|"]
         for mode in hidden:
             cmd, who, when = MODE_CATALOG.get(mode, (f"/{mode}", "—", "—"))
-            hrows.append(f"| `{cmd}` | {who} | {when} |")
+            cell = cmd if use_slash else mode
+            hrows.append(f"| `{cell}` | {who} | {when} |")
         lines.extend(hrows)
+    return "\n".join(lines)
+
+
+def gen_mode_picker_codex(config: dict) -> str:
+    return gen_mode_picker(config, binding="declare")
+
+
+def gen_model_routing_table(config: dict) -> str:
+    """Claude model-routing table derived from governance/model-tiers.yaml (D4)."""
+    tiers = Core().model_tiers.get("tiers") or []
+    lines = [
+        "| Task | Tier | Claude binding |",
+        "|------|------|----------------|",
+    ]
+    for t in tiers:
+        if not isinstance(t, dict):
+            continue
+        lines.append(
+            f"| {t.get('summary', '')} | **{t.get('id', '')}** | {t.get('claude', '')} |"
+        )
+    alt = (config.get("platforms") or {}).get("general_chat_alternative") or "your org's general-chat assistant"
+    lines.append(
+        f"| General questions, chat, explanations, documentation lookups | **general-chat** | **{alt}** — use it directly |"
+    )
     return "\n".join(lines)
 
 
@@ -578,6 +617,7 @@ BLOCK_GENERATORS = {
     "escalation-alert": gen_escalation_alert,
     "environments": gen_environments,
     "mode-picker": gen_mode_picker,
+    "model-routing": gen_model_routing_table,
     "plugin-policy-summary": gen_plugin_policy_summary,
     "data-policy": gen_data_policy,
     "stack-skills": gen_stack_skills,
@@ -777,11 +817,21 @@ def sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def normalize_lf(text: str) -> str:
+    """Force LF newlines so render output is byte-stable across OSes (D1)."""
+    return text.replace("\r\n", "\n").replace("\r", "\n")
+
+
+def write_text(path: Path, content: str) -> None:
+    """Write UTF-8 text with LF line endings only (no platform newline translation)."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(normalize_lf(content).encode("utf-8"))
+
+
 def write_file(out_dir: Path, rel_path: str, content: str, manifest: list) -> None:
     dest = out_dir / rel_path
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    data = content.encode("utf-8")
-    dest.write_bytes(data)
+    data = normalize_lf(content).encode("utf-8")
+    write_text(dest, content)
     manifest.append({"path": rel_path.replace("\\", "/"), "sha256": sha256(data), "bytes": len(data)})
 
 

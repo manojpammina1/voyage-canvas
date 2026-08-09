@@ -103,12 +103,53 @@ def print_role_suggestion(config: dict) -> None:
         p(f"  Suggested mode for role '{role}': /{entry['default_mode']}\n")
 
 
-def print_model_routing(config: dict) -> None:
+def _model_tiers_candidates(workspace: Path) -> list[Path]:
+    # Deployed layout: <workspace>/governance/model-tiers.yaml
+    # Source layout:   harness/hooks/session-start.py → harness/governance/
+    hook_dir = Path(__file__).resolve().parent
+    return [
+        workspace / "governance" / "model-tiers.yaml",
+        hook_dir.parent / "governance" / "model-tiers.yaml",
+    ]
+
+
+def _load_model_tier_rows(workspace: Path) -> list[tuple[str, str]]:
+    """Read tier id + summary from model-tiers.yaml (single source of truth)."""
+    path = next((c for c in _model_tiers_candidates(workspace) if c.is_file()), None)
+    fallback = [
+        ("deep", "Architecture decisions, cross-repo planning, governance synthesis"),
+        ("standard", "Code generation, PR review, test writing, correctness analysis"),
+        ("fast", "Convention checks, naming patterns, simple lookups"),
+    ]
+    if path is None:
+        return fallback
+    rows: list[tuple[str, str]] = []
+    tid: str | None = None
+    summary = ""
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError:
+        return fallback
+    for raw in text.splitlines():
+        line = raw.rstrip()
+        stripped = line.strip()
+        if stripped.startswith("- id:"):
+            if tid:
+                rows.append((tid, summary or tid))
+            tid = stripped.split(":", 1)[1].strip().strip('"').strip("'")
+            summary = ""
+        elif tid and stripped.startswith("summary:"):
+            summary = stripped.split(":", 1)[1].strip().strip('"').strip("'")
+    if tid:
+        rows.append((tid, summary or tid))
+    return rows or fallback
+
+
+def print_model_routing(workspace: Path, config: dict) -> None:
     alt = (config.get("platforms") or {}).get("general_chat_alternative") or "your org's general-chat assistant"
-    p("  Model routing:")
-    p("    Architecture planning  -> Opus")
-    p("    Code generation        -> Sonnet (default, no flag needed)")
-    p("    Convention checks      -> Haiku (auto via skill sub-agents)")
+    p("  Model routing (tiers from governance/model-tiers.yaml):")
+    for tid, summary in _load_model_tier_rows(workspace):
+        p(f"    {summary}  -> {tid}")
     p(f"    General chat / Q&A     -> {alt}")
     p()
 
@@ -261,7 +302,7 @@ def main() -> int:
 
     print_header(workspace, config)
     print_role_suggestion(config)
-    print_model_routing(config)
+    print_model_routing(workspace, config)
     check_credentials(workspace)
     print_recent_activity(workspace, config)
     emit_session_ticket_events(workspace, config)

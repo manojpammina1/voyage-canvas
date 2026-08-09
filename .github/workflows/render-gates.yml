@@ -1,0 +1,45 @@
+# Harness maintainer gates — snapshot fidelity, adapter verify, de-brand lint.
+name: render-gates
+
+on:
+  pull_request:
+  push:
+    branches: [main, master, develop]
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: De-brand lint (lint-generic.sh)
+        run: bash scripts/lint-generic.sh
+
+      - name: Claude snapshot gate (byte-identical LF)
+        working-directory: harness
+        run: bash scripts/verify-claude-snapshot.sh
+
+      - name: Adapter verify + LF regression tests
+        working-directory: harness
+        run: python3 -m unittest discover -s tests -p 'test_*.py' -v
+
+      - name: Render github-generic + commerce-shaped (verify must pass)
+        working-directory: harness
+        run: |
+          set -euo pipefail
+          python3 scripts/titan-render.py \
+            --config ../fixtures/titan.config.github-generic.json \
+            --target all \
+            --out .render/ci-github-generic
+          python3 scripts/titan-render.py \
+            --config ../fixtures/titan.config.commerce-shaped.json \
+            --target all \
+            --out .render/ci-commerce-shaped

@@ -17,7 +17,7 @@ HARNESS_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(HARNESS_DIR))
 sys.path.insert(0, str(HARNESS_DIR / "scripts"))
 
-from titan_core import Core, sha256  # noqa: E402
+from titan_core import Core, sha256, write_text  # noqa: E402
 from adapters.claude.adapter import ClaudeAdapter  # noqa: E402
 from adapters.codex.adapter import CodexAdapter  # noqa: E402
 from adapters.cursor.adapter import CursorAdapter  # noqa: E402
@@ -37,7 +37,7 @@ def write_governance_manifest(out_dir: Path, gov: Core, config_path: Path, targe
         "targets_rendered": targets,
         "controls": gov.enforcement_manifest(),
     }
-    (out_dir / "governance-manifest.json").write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
+    write_text(out_dir / "governance-manifest.json", json.dumps(doc, indent=2) + "\n")
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
@@ -88,18 +88,26 @@ def main(argv: list[str]) -> int:
     gov = Core(HARNESS_DIR)
     targets = ["claude", "codex", "cursor"] if target == "all" else [target]
     total_files = 0
+    verify_failures: list[str] = []
 
     for name in targets:
         adapter = ADAPTERS[name]
         written = adapter.render(config, gov, out_dir)
         total_files += len(written)
         if not adapter.verify(out_dir):
-            print(f"WARNING: {name} adapter verify() failed for {out_dir}", file=sys.stderr)
+            verify_failures.append(name)
+            print(f"FAIL: {name} adapter verify() failed for {out_dir}", file=sys.stderr)
 
     if target == "all" or len(targets) > 1:
         write_governance_manifest(out_dir, gov, config_path, targets)
 
     print(f"Rendered {total_files} file(s) -> {out_dir} (target={target})")
+    if verify_failures:
+        print(
+            "RESULT: FAIL — adapter verify failed: " + ", ".join(verify_failures),
+            file=sys.stderr,
+        )
+        return 1
     return 0
 
 

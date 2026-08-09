@@ -1,10 +1,10 @@
 # Titan
 
-Titan is a company-neutral Claude Code governance harness: slash commands,
-hooks, subagents, and runbooks for a team building on AEM, a commerce
-platform (OCC-style), a GraphQL integration layer, and a search/discovery
-provider — extracted from a real production deployment so the engineering
-patterns are proven, not theoretical.
+Titan is a company-neutral multi-agent (Claude / Codex / Cursor) governance
+harness: slash commands, hooks, subagents, and runbooks for a team building
+on AEM, a commerce platform (OCC-style), a GraphQL integration layer, and a
+search/discovery provider — extracted from a real production deployment so
+the engineering patterns are proven, not theoretical.
 
 **What makes it "company-neutral":** every company-specific fact — org
 name, people's names and emails, repo names, SCM/issue-tracker URLs,
@@ -20,12 +20,12 @@ removed. See `docs/CONFIG-REFERENCE.md` for the full schema and
 
 | Path | What |
 |---|---|
-| `harness/` | The deployable harness: 68 slash commands, hooks, subagents, runbooks, and the render pipeline (`titan-render.py`, `titan-config.py`) that turns `titan.config.json` into a deployed `.claude/`. |
+| `harness/` | The deployable harness: 66 slash commands, hooks, subagents, runbooks, and the render pipeline (`titan-render.py`, `titan-config.py`) that turns `titan.config.json` into Claude / Codex / Cursor overlays. |
 | `installer/` | `titan-configure.py` (CLI installer) and `titan-doctor.py` (post-install verification). |
 | `electron/`, `src/` | The guided GUI installer (wizard) — config-driven screens, provider abstraction for SCM/issue-tracker/telemetry-sink. |
 | `dashboard/` | A local, JSONL-driven usage analytics dashboard for the toolkit maintainer. |
 | `tools/ota/` | Signed-manifest tooling for a future auto-update channel (dev/test keys only today — see `docs/HARNESS-UPDATE.md`). |
-| `fixtures/` | Config fixtures used to prove the schema is expressive enough for more than one adopter shape. `titan.config.ds.json` (gitignored, real reference data) and `titan.config.github-generic.json` (a smaller, commerce-disabled, GitHub-based shape) — neither ships. |
+| `fixtures/` | Config fixtures for the §G fidelity matrix. `titan.config.github-generic.json` (commerce/CIF off, GitHub) and `titan.config.commerce-shaped.json` (synthetic full AEM+commerce shape — fictional data only). A real reference `titan.config.ds.json` may exist locally but is gitignored and must never ship. |
 | `docs/` | This documentation set. |
 | `scripts/lint-generic.sh` | The de-branding completion gate — fails if any company-identity residue from the reference implementation this harness was extracted from is found anywhere outside `fixtures/**`. |
 

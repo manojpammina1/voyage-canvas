@@ -1,17 +1,19 @@
 # CLAUDE.md
 
-> Acme Digital Platform — Acme ecommerce workspace: storefront, commerce integration layer, migration.
+> Riverstone Outfitters Engineering — Riverstone engineering workspace: marketing site + content platform, no commerce integration.
 
 ## Model Routing (Token Cost Control)
 
-Use the right model for the right task. **General chat and non-code questions → Microsoft Copilot Enterprise (free tier) — do not burn Claude tokens on Q&A.**
+Use the right model for the right task. **General chat and non-code questions → internal chat (no enterprise Copilot license) (free tier) — do not burn Claude tokens on Q&A.** Tiers come from `governance/model-tiers.yaml` (single source of truth — no pinned vendor patch IDs here).
 
-| Task | Model | How to activate |
-|------|-------|-----------------|
-| Architecture decisions, cross-repo planning, governance synthesis | **Opus** | Start session: `claude --model claude-opus-4-7` |
-| Code generation, PR review, test writing, correctness analysis | **Sonnet** | Default — no flag needed |
-| Convention checks, naming pattern matching, file existence, simple lookups | **Haiku** | Set automatically by skill sub-agents |
-| General questions, chat, explanations, documentation lookups | **Microsoft Copilot Enterprise** | Use it directly |
+<!-- titan:block model-routing -->
+| Task | Tier | Claude binding |
+|------|------|----------------|
+| Architecture decisions, cross-repo planning, governance synthesis | **deep** | Claude deep / thinking tier (architecture) |
+| Code generation, PR review, test writing, correctness analysis | **standard** | Claude standard tier (default coding) |
+| Convention checks, naming patterns, simple lookups | **fast** | Claude fast tier (lookups / sub-agents) |
+| General questions, chat, explanations, documentation lookups | **general-chat** | **internal chat (no enterprise Copilot license)** — use it directly |
+<!-- /titan:block model-routing -->
 
 Sub-agent model params are applied automatically by `/parallel-review` and `/worktree-agent` skills — no manual selection needed during those flows.
 
@@ -33,10 +35,8 @@ Before any work this session, confirm a mode is active. If not, ask:
 | `/arch-mode` | Lead Architect | Architecture, deployments |
 | `/grill-me` | Any developer | Stress-test a plan before coding starts — one question at a time |
 | `/qa-mode` | QA Tester | Pull a Jira story, write functional test cases, export a CSV for manual import into Zephyr/Xray |
-| `/qa-automation` | QA Automation Engineer | Jest/JUnit/Mocha test code, code coverage audits, regression matrices, fixtures |
 | `/security-mode` | Security reviewer (any senior) | AppSec / OWASP / secret scan / MCP audit |
 | `/sre-mode` | SRE / Cloud Manager / Lead Architect | .cloudmanager/, Adobe I/O Runtime, deploy / rollback, perf triage |
-| `/prodsupport-mode` | Production support / L2-L3 / on-call | Customer ticket triage, runbook-driven, ADO ticket drafting (READ-ONLY) |
 
 No files, code, or commands until mode is selected.
 
@@ -75,7 +75,6 @@ Stack-specific log-triage skills (self-suppress if that part of `stack` is disab
 
 <!-- titan:block stack-skills -->
 | `/common/aem-logs` | Triage an AEM (author/publish/CIF/local SDK) log symptom — same redaction contract, branches by AEMaaCS/local/legacy CQ |
-| `/common/hybris-logs` | Triage a Generic-Commerce-Platform/OCC log symptom — locates the log source per environment, redacts via `redact_lib.py`, classifies to an owner. Never reads commerce-platform config paths |
 <!-- /titan:block stack-skills -->
 
 ## Approved Plugins, Skills & MCP Servers
@@ -83,7 +82,7 @@ Stack-specific log-triage skills (self-suppress if that part of `stack` is disab
 Only pre-approved plugins, skills, and MCP servers may be installed. The authoritative registry (approved / pending / blocked lists + proposal process) is `/common/plugin-policy` — `/common/mcp-audit` audits against it. Installing anything not in that registry without `super`-role approval is a governance violation.
 
 <!-- titan:block plugin-policy-summary -->
-Approved: `dataviz`, `claude-api`. Pending: none. Blocked: `compound-engineering-plugin`, `ruflo`. Full registry + proposal process: `/common/plugin-policy`.
+Approved: none. Pending: none. Blocked: none. Full registry + proposal process: `/common/plugin-policy`.
 <!-- /titan:block plugin-policy-summary -->
 
 ## Cost Estimation (Pre-flight)
@@ -98,12 +97,12 @@ Every prompt is auto-estimated for token + USD cost by `cost-estimate.py` (UserP
 
 ## Usage Telemetry
 
-Titan captures **metadata-only** telemetry (tool/skill names, role, timestamp, hashed user ID, token counts — never prompts, responses, file contents, or full paths). Internal Acme use only. Local: `<workspace>/.claude/telemetry/events-YYYY-MM-DD.jsonl`. View your own: `/common/usage-report`. Disable: `.no-telemetry` marker file or `TITAN_TELEMETRY=off`. Full schema + privacy contract: `<workspace>/.claude/telemetry/README.md`.
+Titan captures **metadata-only** telemetry (tool/skill names, role, timestamp, hashed user ID, token counts — never prompts, responses, file contents, or full paths). Internal Riverstone use only. Local: `<workspace>/.claude/telemetry/events-YYYY-MM-DD.jsonl`. View your own: `/common/usage-report`. Disable: `.no-telemetry` marker file or `TITAN_TELEMETRY=off`. Full schema + privacy contract: `<workspace>/.claude/telemetry/README.md`.
 
 ## Governance File Lock
 
 <!-- titan:block governance-lock -->
-All files under `.claude/`, `CLAUDE.md` are **locked**. Only the `super` role (Jordan Blake — toolkit maintainer) may edit them. Leads and architects have deploy and review authority but **cannot modify governance files**.
+All files under `.claude/`, `CLAUDE.md` are **locked**. Only the `super` role (Priya Nataraj — toolkit maintainer) may edit them. Leads and architects have deploy and review authority but **cannot modify governance files**.
 
 | Role | Code | Deploy | PR Review | Edit governance |
 |------|------|--------|-----------|-----------------|
@@ -114,7 +113,7 @@ All files under `.claude/`, `CLAUDE.md` are **locked**. Only the `super` role (J
 | `po` | Read-only | No | No | **No** |
 | `super` | Yes | Yes | Yes | **Yes** |
 
-To request a change to the toolkit: raise it with Jordan Blake. Changes go through review before being applied. If user only wants to navigate code, activate `/dev-mode` and note it.
+To request a change to the toolkit: raise it with Priya Nataraj. Changes go through review before being applied. If user only wants to navigate code, activate `/dev-mode` and note it.
 <!-- /titan:block governance-lock -->
 
 ## Escalation Contacts
@@ -122,15 +121,11 @@ To request a change to the toolkit: raise it with Jordan Blake. Changes go throu
 <!-- titan:block contacts -->
 | Area | Contact |
 |------|---------|
-| React/Redux, LESS/SCSS | Jordan Blake |
-| AEM, OSGi, HTL, clientlib, pipelines | Sam Rivera |
-| Commerce platform, OCC-style endpoints | Riley Chen |
-| GraphQL schema, integration layer config | Riley Chen |
-| Search / discovery field mappings | Search Team (secondary: Jordan Blake) |
-| Product information contracts | PIM Team (secondary: Jordan Blake) |
-| Pipelines, cloud manager | Sam Rivera |
-| Credentials, secrets, PHI/PII | Jordan Blake |
-| Cross-repo architecture, migration sequencing | Sam Rivera + Riley Chen |
+| React frontend, styling | Priya Nataraj |
+| AEM authoring, clientlibs, pipelines | Owen Marsh |
+| Pipelines, deploy | Owen Marsh |
+| Credentials, secrets, PHI/PII | Security Team (secondary: Priya Nataraj) |
+| Cross-repo architecture | Priya Nataraj |
 <!-- /titan:block contacts -->
 
 ## Absolute Hard Rules (no exceptions, no modes)
@@ -151,7 +146,7 @@ Output when a hard-stop or governance violation is detected:
 ```
 ESCALATION REQUIRED -- STOP WORK
 Reason:  [trigger]  |  Area: [file/module]
-Contact: React/Redux, LESS/SCSS -> Jordan Blake | AEM, OSGi, HTL, clientlib, pipelines -> Sam Rivera | Commerce platform, OCC-style endpoints -> Riley Chen | GraphQL schema, integration layer config -> Riley Chen | Search / discovery field mappings -> Search Team | Product information contracts -> PIM Team | Pipelines, cloud manager -> Sam Rivera | Credentials, secrets, PHI/PII -> Jordan Blake | Cross-repo architecture, migration sequencing -> Sam Rivera + Riley Chen
+Contact: React frontend, styling -> Priya Nataraj | AEM authoring, clientlibs, pipelines -> Owen Marsh | Pipelines, deploy -> Owen Marsh | Credentials, secrets, PHI/PII -> Security Team | Cross-repo architecture -> Priya Nataraj
 Action:  Stop > Contact lead > Get approval > Record approval ref in PR description
 ```
 <!-- /titan:block escalation-alert -->
@@ -165,20 +160,16 @@ No `.git` at workspace level -- always `git -C <repo-path>`. Each repo has its o
 <!-- titan:block repo-map -->
 | Repo | Module naming | Risk |
 |------|---------------|------|
-| `Acme-Storefront-UI/` | `acme-storefront-<feature>-ui.*` | Cloud Manager pipelines |
-| `Acme-Commerce-Integration-Layer/` | `lerna workspaces` | GraphQL schema, app.config.yaml |
-| `Acme-Platform-Migration/` | `acme-webapp-*` | hybris-api/impl, pim |
+| `riverstone-site/` | `riverstone-site-<feature>-ui.*` | AEM local SDK only, no Cloud Manager |
+| `riverstone-content-tools/` | — | — |
 <!-- /titan:block repo-map -->
 
 ## Environments
 
 <!-- titan:block environments -->
-- **Staging**: https://staging.acme.example
-- **Production**: https://www.acme.example
-- **QA staging**: https://staging.acme.example
-- Login: Logged-in flows reuse the test suite's own auth fixtures -- no separate credential captured or stored by the installer.
-- PHI/PII: Staging may render real-looking data. Never lift an observed value into a test case -- fictional fixtures only, always.
-- QA env refreshes nightly at 02:00 UTC from production snapshot, PHI scrubbed.
+- **QA staging**: https://staging.riverstone.example/
+- Login: No login system in this stack yet.
+- PHI/PII: No PHI in this stack. Standard PII care still applies to any customer contact-form data.
 <!-- /titan:block environments -->
 
 ## Cross-Repo Contract Registry
@@ -186,11 +177,7 @@ No `.git` at workspace level -- always `git -C <repo-path>`. Each repo has its o
 Breaking changes to any contract require sign-off from all listed owners **before work starts**.
 
 <!-- titan:block contract-registry -->
-| Contract | Owner repo | Consumer repos | Contact |
-|----------|-----------|----------------|---------|
-| GraphQL schema fields | Acme Commerce Integration Layer | Acme Storefront UI | Riley Chen |
-| Commerce endpoint signature | Acme Commerce Integration Layer | Acme Storefront UI, Acme Platform Migration | Riley Chen + Sam Rivera |
-| PIM product fields | Acme Platform Migration | Acme Storefront UI | PIM Team + Sam Rivera |
+_No cross-repo contracts configured._
 <!-- /titan:block contract-registry -->
 
 ## Hard Stops
@@ -198,8 +185,7 @@ Breaking changes to any contract require sign-off from all listed owners **befor
 Output Escalation Alert and stop before writing any code:
 
 <!-- titan:block hard-stops -->
-- `commerce-platform-config` (CRITICAL) `**/config/*.properties`, `**/config/**/*.p12`, `**/config/**/*.jks` -> Riley Chen + Jordan Blake. Irrotatable platform secrets: DB passwords, OCC credentials, payment certs, SAML keystores. These credentials CANNOT be rotated. Open the file in your IDE, never via the assistant.
-- `cicd-pipelines` (CRITICAL) `**/.cloudmanager/**`, `**/pipeline/**`, `**/ci/**`, `**/cd/**` -> Sam Rivera. Deploy pipeline files — breaking changes affect all environments. Pipeline changes require Platform Lead approval before merge.
+- `app-secrets` (CRITICAL) `**/config/*.secrets.json`, `**/*.pem`, `**/*.key` -> Security Team. Rotatable app secrets and TLS keys — no payment/SSO systems in this stack. App secrets are rotatable but still never touched via the assistant — rotate and update the secret store directly.
 <!-- /titan:block hard-stops -->
 
 ## Multi-Project Context
@@ -219,9 +205,8 @@ Use `/pr-create` to generate. Every PR requires:
 <!-- titan:block pr-reviewers -->
 | Repo | Required reviewer(s) |
 |------|---------------------|
-| Acme Storefront UI | Jordan Blake |
-| Acme Commerce Integration Layer | Riley Chen |
-| Acme Platform Migration | Sam Rivera |
+| Riverstone Site (AEM) | Owen Marsh |
+| Content Tooling | Priya Nataraj |
 <!-- /titan:block pr-reviewers -->
 
 **Escalation approval ref:** Required in the PR description before raising a PR that touched any hard-stop module.
@@ -229,5 +214,5 @@ Use `/pr-create` to generate. Every PR requires:
 ## Data
 
 <!-- titan:block data-policy -->
-No PHI/PII or other regulated personal data in code, tests, logs, or comments. Mock data must be fictional. Never commit `**/cif/common/options.json`. Staging may render real-looking data. Never lift an observed value into a test case -- fictional fixtures only, always.
+No PHI/PII or other regulated personal data in code, tests, logs, or comments. Mock data must be fictional. No PHI in this stack. Standard PII care still applies to any customer contact-form data.
 <!-- /titan:block data-policy -->

@@ -7,6 +7,11 @@ from pathlib import Path
 from scripts import titan_core as core
 
 
+def _has_unresolved_placeholders(text: str) -> bool:
+    """True when render left template holes or adoption placeholders (D2)."""
+    return "{{" in text or "REPLACE_ME" in text or "UNRESOLVED" in text
+
+
 class ClaudeAdapter:
     name = "claude"
 
@@ -18,8 +23,9 @@ class ClaudeAdapter:
             "adapter": self.name,
             "files": manifest,
         }
-        (out_dir / ".render-manifest.json").write_text(
-            json.dumps(manifest_doc, indent=2) + "\n", encoding="utf-8"
+        core.write_text(
+            out_dir / ".render-manifest.json",
+            json.dumps(manifest_doc, indent=2) + "\n",
         )
         return [out_dir / f["path"] for f in manifest]
 
@@ -36,6 +42,6 @@ class ClaudeAdapter:
             if not (out_dir / rel).is_file():
                 return False
             text = (out_dir / rel).read_text(encoding="utf-8")
-            if "{{" in text and "UNRESOLVED" in text:
+            if _has_unresolved_placeholders(text):
                 return False
         return True

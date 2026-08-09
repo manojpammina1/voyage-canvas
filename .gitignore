@@ -1,0 +1,8 @@
+node_modules/
+dist/
+dist-electron/
+release/
+.render/
+__pycache__/
+*.pyc
+fixtures/titan.config.ds.json

@@ -1,0 +1,286 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "titan.config.schema.json",
+  "title": "Titan project config",
+  "description": "Single source of truth an adopter edits. Everything else (CLAUDE.md, data/*.json, settings.json deny list, hook pattern lists) is generated or read from this file. See docs/CONFIG-REFERENCE.md.",
+  "type": "object",
+  "required": ["configured", "org", "contacts", "roles", "modes", "protected_paths", "telemetry", "data_files"],
+  "properties": {
+    "configured": {
+      "type": "boolean",
+      "description": "false ships in the placeholder config; SessionStart warns loudly until an adopter flips this to true."
+    },
+    "org": {
+      "type": "object",
+      "required": ["name", "short_name", "display_name", "email_domain", "harness_brand"],
+      "properties": {
+        "name": { "type": "string" },
+        "short_name": { "type": "string" },
+        "display_name": { "type": "string" },
+        "email_domain": { "type": "string" },
+        "harness_brand": { "type": "string", "description": "e.g. \"Titan\" — used in banners/log prefixes" },
+        "workspace_note": { "type": "string" }
+      }
+    },
+    "contacts": {
+      "type": "object",
+      "required": ["people", "areas"],
+      "properties": {
+        "people": {
+          "type": "object",
+          "description": "id -> person/group. The only place a human name appears.",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": { "type": "string" },
+              "email": { "type": "string" },
+              "title": { "type": "string" },
+              "is_group": { "type": "boolean" }
+            }
+          }
+        },
+        "areas": {
+          "type": "object",
+          "description": "area key (ui, aem, commerce, cif, search, pim, cicd, security, architecture, ...) -> owners",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["label", "primary"],
+            "properties": {
+              "label": { "type": "string" },
+              "primary": { "type": "array", "items": { "type": "string" } },
+              "secondary": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "roles": {
+      "type": "object",
+      "required": ["governance_owner", "definitions"],
+      "properties": {
+        "governance_owner": { "type": "string", "description": "contacts.people id — only role allowed to edit .claude/ and CLAUDE.md" },
+        "definitions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "boolean" },
+              "deploy": { "type": "boolean" },
+              "pr_review": { "type": "boolean" },
+              "edit_governance": { "type": "boolean" },
+              "default_mode": { "type": "string" },
+              "hidden": { "type": "boolean" },
+              "holders": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "modes": {
+      "type": "object",
+      "required": ["active", "require_mode_before_work"],
+      "properties": {
+        "active": { "type": "array", "items": { "type": "string" } },
+        "hidden": { "type": "array", "items": { "type": "string" } },
+        "require_mode_before_work": { "type": "boolean" }
+      }
+    },
+    "stack": {
+      "type": "object",
+      "properties": {
+        "aem": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "flavour": { "type": "string", "enum": ["aemaacs", "local-sdk", "legacy-cq"] },
+            "cloud_manager": { "type": "boolean" },
+            "legacy_cq": { "type": "boolean" },
+            "local_sdk": { "type": "boolean" }
+          }
+        },
+        "commerce": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "platform": { "type": "string" },
+            "occ": { "type": "boolean" }
+          }
+        },
+        "cif": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "graphql": { "type": "boolean" },
+            "lerna": { "type": "boolean" }
+          }
+        },
+        "search": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "providers": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "frontend": {
+          "type": "object",
+          "properties": {
+            "react": { "type": "boolean" },
+            "redux_patterns": { "type": "array", "items": { "type": "string" } },
+            "stylesheets": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "i18n": { "type": "boolean" }
+      }
+    },
+    "repos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "dir", "display", "kind"],
+        "properties": {
+          "id": { "type": "string" },
+          "dir": { "type": "string" },
+          "display": { "type": "string" },
+          "kind": { "type": "string", "enum": ["aem-maven", "node-lerna", "hybris", "generic"] },
+          "role_in_stack": { "type": "array", "items": { "type": "string" } },
+          "module_naming": { "type": "array", "items": { "type": "string" } },
+          "risk_notes": { "type": "array", "items": { "type": "string" } },
+          "default_reviewers": { "type": "array", "items": { "type": "string" } },
+          "extra_reviewer_rules": { "type": "array", "items": { "type": "object" } },
+          "branches": {
+            "type": "object",
+            "properties": {
+              "base": { "type": "string" },
+              "release_pattern": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "protected_paths": {
+      "type": "array",
+      "description": "The reconciliation point. All secret/hard-stop path lists across the harness generate from this array.",
+      "items": {
+        "type": "object",
+        "required": ["id", "severity", "owners", "why", "enforcement"],
+        "properties": {
+          "id": { "type": "string" },
+          "globs": { "type": "array", "items": { "type": "string" } },
+          "command_patterns": { "type": "array", "items": { "type": "string" }, "description": "verbatim regex: entries for shapes not expressible as globs, e.g. \"regex:openssl\\\\s+pkcs12\"" },
+          "reader_guard_dirs": { "type": "array", "items": { "type": "string" } },
+          "severity": { "type": "string", "enum": ["CRITICAL", "HIGH", "MODERATE", "LOW-MODERATE", "LOW"] },
+          "rotatable": { "type": "boolean" },
+          "owners": { "type": "array", "items": { "type": "string" }, "description": "contacts.people ids" },
+          "why": { "type": "string" },
+          "enforcement": {
+            "type": "object",
+            "properties": {
+              "block_read": { "type": "boolean" },
+              "block_write": { "type": "boolean" },
+              "block_bash": { "type": "boolean" },
+              "block_grep": { "type": "boolean" },
+              "block_prompt": { "type": "boolean" },
+              "never_index": { "type": "boolean" },
+              "deny_in_settings": { "type": "boolean" },
+              "hard_stop": { "type": "boolean" },
+              "escalate_on_touch": { "type": "boolean" }
+            }
+          },
+          "message": { "type": "string" }
+        }
+      }
+    },
+    "contracts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "owner_repo", "consumer_repos", "owners"],
+        "properties": {
+          "name": { "type": "string" },
+          "owner_repo": { "type": "string" },
+          "consumer_repos": { "type": "array", "items": { "type": "string" } },
+          "owners": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "environments": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "platforms": {
+      "type": "object",
+      "properties": {
+        "scm": {
+          "type": "object",
+          "properties": {
+            "kind": { "type": "string", "enum": ["azure-devops", "github"] },
+            "base_url": { "type": "string" },
+            "collection": { "type": "string" },
+            "pat_url": { "type": "string" }
+          }
+        },
+        "issue_tracker": {
+          "type": "object",
+          "properties": {
+            "kind": { "type": "string", "enum": ["jira", "none"] },
+            "site": { "type": "string" },
+            "ticket_regex": { "type": "string" }
+          }
+        },
+        "general_chat_alternative": { "type": "string" }
+      }
+    },
+    "governance": {
+      "type": "object",
+      "properties": {
+        "locked_paths": { "type": "array", "items": { "type": "string" } },
+        "plugin_policy": {
+          "type": "object",
+          "properties": {
+            "approved": { "type": "array", "items": { "type": "string" } },
+            "pending": { "type": "array", "items": { "type": "string" } },
+            "blocked": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      }
+    },
+    "telemetry": {
+      "type": "object",
+      "required": ["salt", "enabled"],
+      "properties": {
+        "salt": { "type": "string" },
+        "enabled": { "type": "boolean" },
+        "upload": {
+          "type": "object",
+          "properties": {
+            "kind": { "type": "string", "enum": ["none", "azure-blob"] }
+          }
+        }
+      }
+    },
+    "data_files": {
+      "type": "object",
+      "required": ["build_map", "reviewer_map", "known_issues", "protected_paths"],
+      "properties": {
+        "build_map": { "type": "string" },
+        "reviewer_map": { "type": "string" },
+        "known_issues": { "type": "string" },
+        "protected_paths": { "type": "string" }
+      }
+    },
+    "docs": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "branding": {
+      "type": "object",
+      "description": "Adopter-supplied visual identity — additive, optional field, added in Phase 6 step 23 of the Titan extraction. Ships defaulted to the neutral Titan mark so an unconfigured install still renders something instead of a broken image reference. See docs/CONFIG-REFERENCE.md.",
+      "properties": {
+        "logo_path": { "type": "string", "description": "Path (relative to the app's assets dir) to an SVG/PNG logo. Default: assets/titan-mark.svg." },
+        "product_name": { "type": "string", "description": "Displayed in the wizard header, Dashboard header, and dashboard analytics header. Default: \"Titan\"." },
+        "accent": { "type": "string", "description": "Primary accent hex color, e.g. \"#2F6FED\". Intended to eventually drive the ds-blue-main Tailwind token at render/build time." }
+      }
+    }
+  }
+}

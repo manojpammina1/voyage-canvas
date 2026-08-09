@@ -1,0 +1,10 @@
+{
+  "_description": "Project-scoped MCP servers for this workspace. ONLY real MCP servers of type stdio | http | sse may appear under mcpServers — Claude Code validates this whole file against its config schema, and an entry with any other type (e.g. a documentation stub with \"type\":\"builtin\") fails validation and causes the ENTIRE file to be silently discarded, so NO server loads (RCA 2026-07-06). Built-in claude.ai connectors — Atlassian Rovo (Jira + Confluence) and Figma — are NOT configured here: they are enabled in claude.ai connector settings and authenticate via OAuth on first use. Do not add them to this file as pseudo-entries. JIRA_EMAIL/JIRA_API_TOKEN in settings.local.json are used only by the doctor's REST identity check and REST scripts, never by an MCP server. AUTH: azure-devops is launched via the mcp-ado-launch.cjs wrapper (NOT npx directly) because Claude Code expands ${VAR} in this file only from the OS launch environment, NOT from settings.local.json — so ${AZURE_DEVOPS_PAT} silently expanded to empty and the server authenticated as the null identity (TF400813). The wrapper reads the PAT straight from settings.local.json on every launch, so the connection is launch-context-independent and stays intact with no OS env var and no re-login. Needs Node >= 18 on PATH; the post-install doctor verifies registration via `claude mcp list`.",
+  "mcpServers": {
+    "azure-devops": {
+      "type": "stdio",
+      "command": "node",
+      "args": [".claude/scripts/mcp-ado-launch.cjs"]
+    }
+  }
+}

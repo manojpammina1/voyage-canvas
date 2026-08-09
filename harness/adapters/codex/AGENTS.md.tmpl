@@ -1,0 +1,97 @@
+# AGENTS.md — {{org.name}} · {{org.display_name}}
+Governance core v{{core.version}} · rendered by titan-render (target: codex)
+
+> {{org.display_name}} — {{org.workspace_note}}
+
+## Operating modes
+
+Select a mode before starting work (Claude parity: slash commands in `.claude/commands/roles/`).
+
+<!-- titan:block mode-picker -->
+<!-- /titan:block mode-picker -->
+
+## Hard stops (never do)
+
+{{policies.hard_stops}}
+
+<!-- titan:block hard-stops -->
+<!-- /titan:block hard-stops -->
+
+## Protected paths (read-only without escalation)
+
+Enforced in CI and git pre-commit (control: `protected-paths`).
+
+<!-- titan:block protected-paths-summary -->
+<!-- /titan:block protected-paths-summary -->
+
+## Security and data handling
+
+{{policies.security}}
+
+- **Secrets:** blocked at commit (control: `secret-block`, git pre-commit + CI).
+- **Customer/PII:** enforced in CI (control: `pii-redact`).
+
+<!-- titan:block data-policy -->
+<!-- /titan:block data-policy -->
+
+## Definition of Done
+
+{{policies.definition_of_done}}
+
+## Review standard (AI first-pass; human accountable)
+
+Run: `node .codex/review.mjs` (or the CI `agent-review` workflow).
+
+Reviewers orchestrated per `governance/reviewers/orchestration.yaml`:
+
+<!-- titan:block reviewer-list -->
+<!-- /titan:block reviewer-list -->
+
+{{policies.review_standards}}
+
+## Model tiers
+
+<!-- titan:block model-tiers -->
+<!-- /titan:block model-tiers -->
+
+General chat: **{{platforms.general_chat_alternative}}** — do not burn agent tokens on Q&A.
+
+## Approved tools / MCP
+
+<!-- titan:block plugin-policy-summary -->
+<!-- /titan:block plugin-policy-summary -->
+
+Audit: CI plugin-policy check (control: `plugin-policy`).
+
+## Escalation contacts
+
+<!-- titan:block contacts -->
+<!-- /titan:block contacts -->
+
+{{policies.escalation}}
+
+## Escalation alert
+
+<!-- titan:block escalation-alert -->
+<!-- /titan:block escalation-alert -->
+
+## Repo map
+
+<!-- titan:block repo-map -->
+<!-- /titan:block repo-map -->
+
+## Cross-repo contracts
+
+<!-- titan:block contract-registry -->
+<!-- /titan:block contract-registry -->
+
+## Enforcement note (honest boundary)
+
+Policies here are portable. Execution enforcement in Codex is via **git pre-commit hooks and CI** — NOT the Claude `.claude` hook runtime.
+
+<!-- titan:block advisory-controls -->
+<!-- /titan:block advisory-controls -->
+
+## Claude command parity (not ported)
+
+Codex does not ship all 66 Claude slash commands. Critical controls above are enforced; use repo scripts and CI for build, review, and security checks.

@@ -1,0 +1,27 @@
+{
+  "_description": "Deterministic build-command lookup for the ?build fast path (answer-cache.py). Generated from titan.config.json repos[] \u2014 generic per-kind defaults only. Per-module build commands are repo-specific detail beyond the shared config's scope; add them by hand under repos.<id>.modules if a repo needs finer-grained matching.",
+  "repos": {
+    "site": {
+      "dir": "riverstone-site",
+      "kind": "aem-maven",
+      "default": [
+        "cd riverstone-site",
+        "mvn clean install -DskipTests"
+      ],
+      "modules": [],
+      "notes": [
+        "AEM local SDK only, no Cloud Manager"
+      ]
+    },
+    "content-tools": {
+      "dir": "riverstone-content-tools",
+      "kind": "generic",
+      "default": [
+        "cd riverstone-content-tools",
+        "# no default build command configured for this repo kind"
+      ],
+      "modules": [],
+      "notes": []
+    }
+  }
+}

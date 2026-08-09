@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Montserrat @font-face block removed in the Titan de-branding pass — it
+   was the previous brand font (bundled as licensed .woff2 files under
+   /fonts/, deleted along with this rule). Titan ships no bundled font;
+   tailwind.config.ts's `sans` stack now points at the system UI font
+   (system-ui / -apple-system / Segoe UI / sans-serif) so an adopter who
+   wants a specific typeface supplies their own @font-face block instead of
+   inheriting a licensed one it can't redistribute. */

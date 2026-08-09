@@ -1,0 +1,82 @@
+{
+  "_schema_version": "1.2",
+  "_description": "Titan cost-estimator pricing table + telemetry endpoint. Versioned via harness sync. The toolkit maintainer (roles.governance_owner in titan.config.json) rotates models quarterly per Anthropic's published list. Telemetry SAS rotates quarterly — re-edit + rebuild .exe (or push via OTA in v1.1). v1.2 adds the 'correction' block (cost-of-hallucinations telemetry + spiral circuit-breaker) — all facts, no monetary assumption. Contact names live only in titan.config.json (contacts.people/areas) — never here.",
+  "_last_updated": "2026-07-07",
+  "_currency": "USD",
+
+  "telemetry": {
+    "_description": "Telemetry config. SAS URL is NEVER stored here — it lives in Windows Credential Manager (keytar) only. User pastes via wizard during install OR via Dashboard input. auto_upload_enabled controls whether upload is on-by-default after the user provides a SAS.",
+    "auto_upload_enabled": true,
+    "wizard_prompt_required": false
+  },
+
+  "models": {
+    "claude-opus-4-7":   { "input_per_1m": 15.00, "output_per_1m": 75.00, "label": "Opus 4.7"   },
+    "claude-opus-4-8":   { "input_per_1m": 15.00, "output_per_1m": 75.00, "label": "Opus 4.8"   },
+    "claude-sonnet-4-6": { "input_per_1m":  3.00, "output_per_1m": 15.00, "label": "Sonnet 4.6" },
+    "claude-sonnet-4-7": { "input_per_1m":  3.00, "output_per_1m": 15.00, "label": "Sonnet 4.7" },
+    "claude-haiku-4-5":  { "input_per_1m":  0.25, "output_per_1m":  1.25, "label": "Haiku 4.5"  },
+    "default":           { "input_per_1m":  3.00, "output_per_1m": 15.00, "label": "Sonnet (default)" }
+  },
+
+  "thresholds": {
+    "warn_cost_usd": 0.05,
+    "warn_tokens": 10000,
+    "loud_cost_usd": 1.00,
+    "carrier_token_overhead": 15000,
+    "_note": "carrier_token_overhead = conservative floor for an active session (system prompt + CLAUDE.md + role + history). Used by cost-estimate.py when the transcript cannot be tokenized. Real sessions are often 20K-80K+."
+  },
+
+  "caveman": {
+    "session_compression_factor": 0.39,
+    "active_roles": ["arch-mode", "dev-mode", "lead-review", "grill-me", "qa-mode", "sre-mode", "designer-mode", "unit-test", "pr-create", "offshore-brief"],
+    "_note": "Dashboard ESTIMATE basis for output-compression savings. 0.39 = measured multi-turn session saving (Better Stack caveman benchmark, Apr 2026; 10-prompt sample) — NOT the ~75% per-prompt claim; single isolated queries can be net-negative due to skill-load overhead. Replace with internal A/B measurement when available. Finance sign-off required before external use."
+  },
+
+  "correction": {
+    "_description": "Correction-cost (cost of AI hallucinations). ALL dashboard outputs are MEASURED FACTS: real cost_usd, measured minutes, counts, git/ADO records. There is NO monetary assumption in this feature — no hourly rate, no severity-minutes table.",
+    "idle_cap_seconds": 300,
+    "_idle_note": "Measurement bound: each human gap (assistant answer -> next user prompt) is capped at this many seconds so idle time (lunch, meetings) never inflates time-to-correct. One explicit bound, not a per-severity guess.",
+    "tool_error_classes_counted": ["edit_string_not_found", "file_not_found", "bash_nonzero"],
+    "_tool_error_note": "PostToolUse (telemetry-capture.py) classifies the tool_response TYPE only — never stores response text. edit_string_not_unique is deliberately NOT counted: that is ambiguity, not a hallucination.",
+    "threshold": {
+      "metric": "rework_token_ratio",
+      "rolling_window_days": 14,
+      "baseline_multiplier": 1.5,
+      "min_events_for_baseline": 5,
+      "per_dev_daily_alert": true,
+      "_note": "Dashboard alert fires on the MEASURED rework-token ratio vs its own rolling baseline (median of the prior window x multiplier). No assumption in the alert. Suppressed until min_events_for_baseline events exist."
+    },
+    "spiral": {
+      "warn_count": 3,
+      "break_count": 5,
+      "episode_cost_break_usd": 2.00,
+      "reset_on_clean_turn": true,
+      "_note": "Real-time circuit-breaker in correction-signal.py (UserPromptSubmit). consecutive corrections >= warn_count -> visible notice; >= break_count OR episode_cost_usd >= episode_cost_break_usd -> inject a behavior-changing directive Claude sees this turn. Any clean (non-correction) prompt or successful tool result resets the counter. NEVER hard-blocks the developer. Escalation contacts come from titan.config.json (contacts.areas) via titan_config.py — pricing.json holds no contact names."
+    }
+  },
+
+  "modes": {
+    "po-mode":         { "cost_band": "low",     "session_soft_cap_usd": 1.00,  "skip_warn": false },
+    "manager":         { "cost_band": "low",     "session_soft_cap_usd": 1.00,  "skip_warn": false },
+    "prodsupport-mode":{ "cost_band": "low",     "session_soft_cap_usd": 1.50,  "skip_warn": false },
+    "dev-mode":        { "cost_band": "medium",  "session_soft_cap_usd": 5.00,  "skip_warn": false },
+    "lead-review":     { "cost_band": "medium",  "session_soft_cap_usd": 5.00,  "skip_warn": false },
+    "qa-mode":         { "cost_band": "medium",  "session_soft_cap_usd": 3.00,  "skip_warn": false },
+    "security-mode":   { "cost_band": "medium",  "session_soft_cap_usd": 5.00,  "skip_warn": false },
+    "designer-mode":   { "cost_band": "medium",  "session_soft_cap_usd": 3.00,  "skip_warn": false },
+    "sre-mode":        { "cost_band": "high",    "session_soft_cap_usd": 10.00, "skip_warn": false },
+    "arch-mode":       { "cost_band": "high",    "session_soft_cap_usd": 20.00, "skip_warn": true  },
+    "grill-me":        { "cost_band": "low",     "session_soft_cap_usd": 0.50,  "skip_warn": false }
+  },
+
+  "prompt_class_heuristics": {
+    "code_generation": { "match_keywords": ["write", "implement", "build", "create function", "add", "scaffold", "generate"], "output_min": 500,  "output_max": 3000 },
+    "code_review":     { "match_keywords": ["review", "audit", "check this", "find bugs", "verify", "validate"],              "output_min": 1000, "output_max": 4000 },
+    "qa_short":        { "match_keywords": ["what is", "explain", "how does", "what does"],                                   "output_min": 200,  "output_max": 800  },
+    "architecture":    { "match_keywords": ["should we", "design", "plan", "recommend", "evaluate", "trade-off"],             "output_min": 800,  "output_max": 2500 },
+    "refactor":        { "match_keywords": ["refactor", "rename across", "convert all", "migrate", "extract"],                "output_min": 2000, "output_max": 8000 },
+    "yes_no":          { "match_keywords": [],                                                                                 "output_min": 50,   "output_max": 200  },
+    "default":         { "match_keywords": [],                                                                                 "output_min": 500,  "output_max": 1500 }
+  }
+}

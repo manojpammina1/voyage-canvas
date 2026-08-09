@@ -1,0 +1,5 @@
+{
+  "_schema_version": "1.0",
+  "_description": "Titan project registry — maps business initiatives to ticket clusters. Query via /ops/project-status.",
+  "projects": []
+}

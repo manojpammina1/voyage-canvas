@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# Codex git pre-commit — runs shared Titan governance scripts on staged files.
+set -euo pipefail
+
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT"
+
+HOOKS_DIR=""
+for candidate in ".claude/hooks" "titan/harness/hooks" "harness/hooks"; do
+  if [ -f "$ROOT/$candidate/credential-scan.py" ]; then
+    HOOKS_DIR="$ROOT/$candidate"
+    break
+  fi
+done
+
+SCRIPTS_DIR=""
+for candidate in ".claude/scripts" "titan/harness/scripts" "harness/scripts"; do
+  if [ -f "$ROOT/$candidate/path-guard.py" ]; then
+    SCRIPTS_DIR="$ROOT/$candidate"
+    break
+  fi
+done
+
+FAIL=0
+
+if [ -n "$HOOKS_DIR" ]; then
+  while IFS= read -r file; do
+    [ -n "$file" ] || continue
+    [ -f "$file" ] || continue
+    if ! python "$HOOKS_DIR/credential-scan.py" --scan-file "$file"; then
+      echo "[pre-commit] secret-block: $file" >&2
+      FAIL=1
+    fi
+  done <<EOF
+$(git diff --cached --name-only --diff-filter=ACM)
+EOF
+fi
+
+if [ -n "$SCRIPTS_DIR" ]; then
+  if ! python "$SCRIPTS_DIR/path-guard.py" --staged --root "$ROOT"; then
+    echo "[pre-commit] protected-paths block" >&2
+    FAIL=1
+  fi
+fi
+
+if [ "$FAIL" -ne 0 ]; then
+  echo "[Titan governance] Commit blocked — fix findings above." >&2
+  exit 1
+fi
+exit 0

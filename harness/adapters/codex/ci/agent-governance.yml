@@ -1,0 +1,51 @@
+# Agent governance CI — secret scan, protected paths, review gate reminder.
+# Rendered by titan-render --target codex|all|cursor
+
+name: agent-governance
+
+on:
+  pull_request:
+  push:
+    branches: [main, master, develop]
+
+jobs:
+  governance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Secret scan (staged diff files)
+        run: |
+          set -e
+          HOOKS=".claude/hooks"
+          if [ ! -f "$HOOKS/credential-scan.py" ]; then
+            HOOKS="titan/harness/hooks"
+          fi
+          if [ ! -f "$HOOKS/credential-scan.py" ]; then
+            echo "No credential-scan.py — skip"
+            exit 0
+          fi
+          for f in $(git diff --name-only HEAD~1 HEAD 2>/dev/null || git ls-files); do
+            [ -f "$f" ] || continue
+            python "$HOOKS/credential-scan.py" --scan-file "$f" || exit 1
+          done
+
+      - name: Protected path guard
+        run: |
+          SCRIPT=".claude/scripts/path-guard.py"
+          if [ ! -f "$SCRIPT" ]; then
+            SCRIPT="titan/harness/scripts/path-guard.py"
+          fi
+          if [ -f "$SCRIPT" ]; then
+            python "$SCRIPT" --diff HEAD~1 HEAD || python "$SCRIPT" --staged || true
+          fi
+
+      - name: Review gate reminder
+        run: |
+          echo "AI first-pass review required — run: node .codex/review.mjs"
+          test -f .codex/review.mjs || test -f governance/reviewers/orchestration.yaml

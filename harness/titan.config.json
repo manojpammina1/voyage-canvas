@@ -1,0 +1,100 @@
+{
+  "_description": "Placeholder config. configured:false until an adopter fills this in — SessionStart warns loudly until then. See titan.config.example.json for a fully-filled reference and docs/ADOPTION.md for the 9 keys to fill first.",
+  "configured": false,
+
+  "org": {
+    "name": "REPLACE_ME",
+    "short_name": "REPLACE_ME",
+    "display_name": "REPLACE_ME",
+    "email_domain": "example.invalid",
+    "harness_brand": "Titan",
+    "workspace_note": ""
+  },
+
+  "contacts": {
+    "people": {},
+    "areas": {}
+  },
+
+  "roles": {
+    "governance_owner": "REPLACE_ME",
+    "definitions": {
+      "developer": { "code": true,  "deploy": false, "pr_review": false, "edit_governance": false, "default_mode": "dev-mode" },
+      "lead":      { "code": true,  "deploy": false, "pr_review": true,  "edit_governance": false, "default_mode": "lead-review" },
+      "architect": { "code": true,  "deploy": true,  "pr_review": true,  "edit_governance": false, "default_mode": "arch-mode" },
+      "qa":        { "code": false, "deploy": false, "pr_review": false, "edit_governance": false, "default_mode": "qa-mode" },
+      "po":        { "code": false, "deploy": false, "pr_review": false, "edit_governance": false, "default_mode": "po-mode", "hidden": true },
+      "super":     { "code": true,  "deploy": true,  "pr_review": true,  "edit_governance": true,  "holders": [] }
+    }
+  },
+
+  "modes": {
+    "active": ["dev-mode", "lead-review", "arch-mode", "grill-me", "qa-mode", "qa-automation", "security-mode", "sre-mode", "prodsupport-mode"],
+    "hidden": ["po-mode", "designer-mode"],
+    "require_mode_before_work": true
+  },
+
+  "stack": {
+    "aem":      { "enabled": false, "flavour": "aemaacs", "cloud_manager": false, "legacy_cq": false, "local_sdk": false },
+    "commerce": { "enabled": false, "platform": "", "occ": false },
+    "cif":      { "enabled": false, "graphql": false, "lerna": false },
+    "search":   { "enabled": false, "providers": [] },
+    "frontend": { "react": true, "redux_patterns": [], "stylesheets": [] },
+    "i18n":     false
+  },
+
+  "repos": [],
+
+  "protected_paths": [
+    {
+      "id": "example-secret-config",
+      "globs": ["**/config/*.properties", "**/config/**/*.p12", "**/config/**/*.jks"],
+      "command_patterns": ["regex:openssl\\s+pkcs12", "regex:keytool\\s+-(list|export)"],
+      "reader_guard_dirs": ["**/config"],
+      "severity": "CRITICAL",
+      "rotatable": false,
+      "owners": [],
+      "why": "REPLACE_ME — describe why this path is sensitive",
+      "enforcement": { "block_read": true, "block_write": true, "block_bash": true,
+                        "block_grep": true, "block_prompt": true, "never_index": true,
+                        "deny_in_settings": true, "hard_stop": true, "escalate_on_touch": true },
+      "message": "REPLACE_ME — message shown when this path is touched"
+    }
+  ],
+
+  "contracts": [],
+
+  "environments": {},
+
+  "platforms": {
+    "scm": { "kind": "azure-devops", "base_url": "", "collection": "", "pat_url": "" },
+    "issue_tracker": { "kind": "none", "site": "", "ticket_regex": "" },
+    "general_chat_alternative": ""
+  },
+
+  "governance": {
+    "locked_paths": [".claude/", "CLAUDE.md"],
+    "plugin_policy": { "approved": [], "pending": [], "blocked": [] }
+  },
+
+  "telemetry": {
+    "salt": "REPLACE_ME_WITH_RANDOM_SALT",
+    "enabled": false,
+    "upload": { "kind": "none" }
+  },
+
+  "data_files": {
+    "build_map": "data/build-map.json",
+    "reviewer_map": "data/reviewer-map.json",
+    "known_issues": "data/known-issues.json",
+    "protected_paths": "data/protected-paths.json"
+  },
+
+  "docs": {},
+
+  "branding": {
+    "logo_path": "assets/titan-mark.svg",
+    "product_name": "Titan",
+    "accent": "#2F6FED"
+  }
+}

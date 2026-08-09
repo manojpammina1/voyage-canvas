@@ -1,0 +1,83 @@
+# electron-builder configuration. Run via `npm run package`.
+#
+# Titan ships UNSIGNED and with a placeholder identity — appId, productName,
+# icon, and code-signing certs are all adopter-supplied. This is a
+# deliberate de-branding decision (Titan extraction plan, Phase 6 step 23):
+# Titan does not ship a pre-signed binary, and no fake/borrowed cert paths
+# are invented here. Before your first real build:
+#   1. Change `appId` to your own reverse-DNS id (e.g. com.acme.titan.installer).
+#   2. Change `productName` (drives the install dir, shortcut name, and
+#      Start Menu entry via the ${productName} tokens below) — or leave it
+#      as "Titan" and only override branding.product_name in
+#      titan.config.json for in-app strings (the two are independent).
+#   3. Replace `win.icon` with your own .ico (assets/titan-mark.svg is a
+#      placeholder monogram meant for in-app use, not a Windows .ico).
+#   4. If you want a signed installer, uncomment `signtoolOptions` and point
+#      it at your own signing script + cert (PFX or HSM-backed). Until then
+#      this produces an UNSIGNED installer — Windows SmartScreen will warn
+#      on first run, which is expected for an unsigned binary.
+
+appId: com.example.titan.installer
+productName: Titan
+copyright: Copyright © 2026 (your organisation — set via titan.config.json org.display_name)
+
+# Bundle the renderer build output (Vite -> dist/) and the compiled Electron
+# main process (tsc -> dist-electron/) into the installed app. node_modules
+# stays excluded except for runtime-required native modules listed below.
+files:
+  - dist/**/*
+  - dist-electron/**/*
+  - assets/**/*
+  - package.json
+  - '!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}'
+  - '!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}'
+  - '!**/{.DS_Store,.git,.svn,.hg,CVS,RCS}'
+
+# Bundle the complete Claude Code harness OUTSIDE the asar so it can be
+# read by Node fs APIs at runtime (asar paths aren't real filesystem paths
+# for the os.execFile / sub-process scripts). titan.config.json travels
+# with the harness, which is how electron/titan-config.ts finds it before
+# a workspace is chosen — see resolveTitanConfigPath()'s doc comment.
+extraResources:
+  - from: harness
+    to: harness
+    filter:
+      - '**/*'
+
+# keytar needs dlopen access — must be outside the asar.
+asarUnpack:
+  - 'node_modules/keytar/**/*'
+  - 'assets/install.py'
+
+directories:
+  output: release
+  buildResources: assets
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  # No icon override: electron-builder's own default icon is used until you
+  # supply one. A raw SVG (assets/titan-mark.svg) CANNOT be used here directly
+  # — electron-builder's icon converter needs a .ico or a >=256x256 PNG to
+  # convert from, and pointing `icon:` at the SVG makes `npm run package` fail
+  # immediately with ERR_ELECTRON_BUILDER_CANNOT_EXECUTE (found packaging this
+  # for the first time). To brand the installer icon: convert titan-mark.svg
+  # to a PNG (e.g. `npx electron-icon-builder --input=assets/titan-mark.svg
+  # --output=assets/icons`), then set `icon: assets/icons/icon.ico` here.
+  # publisherName / signtoolOptions are both commented out on purpose — an
+  # unsigned build with no publisher claim is safer than a fabricated one.
+  # publisherName: 'Your Organisation'
+  # signtoolOptions:
+  #   sign: ./scripts/sign.js
+
+nsis:
+  oneClick: false                  # show install wizard, not a one-click extract
+  allowToChangeInstallationDirectory: true
+  perMachine: false                # per-user install — no admin elevation required
+  artifactName: ${productName}-Setup-${version}.${ext}
+  shortcutName: ${productName}
+  uninstallDisplayName: ${productName}
+  createDesktopShortcut: true
+  createStartMenuShortcut: true

@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+*.local
+# Private hash->name map + roster — contain employee names (PII). Dashboard-only, never committed.
+public/user-map.json
+roster.json
+# Local regression fixtures — real telemetry, never committed.
+fixtures/
+# Merged-PR stats overlay (built by scripts/build-pr-stats.mjs, ADO-derived). Local only.
+public/pr-stats.json

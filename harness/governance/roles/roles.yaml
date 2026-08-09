@@ -1,0 +1,55 @@
+# Role matrix and mode catalog — org-neutral; names resolved from titan.config.json at render time.
+
+version: "1.0"
+
+mode_catalog:
+  dev-mode:
+    command: "/dev-mode"
+    who: "All developers"
+    when: "Writing code, fixing bugs, features, tests, PRs, offshore briefs"
+  lead-review:
+    command: "/lead-review"
+    who: "Tech Lead"
+    when: "PR review"
+  arch-mode:
+    command: "/arch-mode"
+    who: "Lead Architect"
+    when: "Architecture, deployments"
+  grill-me:
+    command: "/grill-me"
+    who: "Any developer"
+    when: "Stress-test a plan before coding starts — one question at a time"
+  qa-mode:
+    command: "/qa-mode"
+    who: "QA Tester"
+    when: "Pull a Jira story, write functional test cases, export a CSV for manual import into Zephyr/Xray"
+  qa-automation:
+    command: "/qa-automation"
+    who: "QA Automation Engineer"
+    when: "Jest/JUnit/Mocha test code, code coverage audits, regression matrices, fixtures"
+  security-mode:
+    command: "/security-mode"
+    who: "Security reviewer (any senior)"
+    when: "AppSec / OWASP / secret scan / MCP audit"
+  sre-mode:
+    command: "/sre-mode"
+    who: "SRE / Cloud Manager / Lead Architect"
+    when: ".cloudmanager/, Adobe I/O Runtime, deploy / rollback, perf triage"
+  prodsupport-mode:
+    command: "/prodsupport-mode"
+    who: "Production support / L2-L3 / on-call"
+    when: "Customer ticket triage, runbook-driven, ADO ticket drafting (READ-ONLY)"
+  po-mode:
+    command: "/po-mode"
+    who: "Product Owner / Manager"
+    when: "User stories, acceptance criteria, backlog"
+  designer-mode:
+    command: "/designer-mode"
+    who: "Frontend / Design engineer"
+    when: "Figma → React, brand tokens, stylesheet, a11y"
+
+permission_columns:
+  - code
+  - deploy
+  - pr_review
+  - edit_governance

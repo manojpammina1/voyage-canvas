@@ -1,0 +1,41 @@
+---
+description: Titan governance — hard stops, security, DoD, escalation (agent-neutral core)
+alwaysApply: true
+---
+
+# Governance — {{org.display_name}}
+
+{{policies.hard_stops}}
+
+## Security
+
+{{policies.security}}
+
+## Protected paths
+
+Enforced via git pre-commit, CI path-guard, and Cursor hooks where wired.
+
+<!-- titan:block protected-paths-summary -->
+<!-- /titan:block protected-paths-summary -->
+
+## Definition of Done
+
+{{policies.definition_of_done}}
+
+## Review
+
+{{policies.review_standards}}
+
+Run: `node .codex/review.mjs`
+
+## Escalation
+
+{{policies.escalation}}
+
+<!-- titan:block contacts -->
+<!-- /titan:block contacts -->
+
+## Advisory controls (not auto-blocked in Cursor)
+
+<!-- titan:block advisory-controls -->
+<!-- /titan:block advisory-controls -->

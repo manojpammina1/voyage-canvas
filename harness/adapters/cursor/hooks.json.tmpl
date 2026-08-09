@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "hooks": {
+    "preToolUse": [
+      {
+        "command": ".cursor/hooks/pre-tool-guard.sh",
+        "matcher": "Write|Edit"
+      }
+    ],
+    "beforeSubmitPrompt": [
+      {
+        "command": ".cursor/hooks/pre-tool-guard.sh"
+      }
+    ]
+  }
+}

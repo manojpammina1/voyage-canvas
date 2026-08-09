@@ -1,0 +1,6 @@
+{
+  "_description": "QA Tester (/qa-mode) running-app context source \u2014 generated from titan.config.json environments.qa. Shared, non-secret default so the wizard does not need a per-tester onboarding step.",
+  "stageUrl": "https://staging.riverstone.example/",
+  "loginNote": "No login system in this stack yet.",
+  "phiReminder": "No PHI in this stack. Standard PII care still applies to any customer contact-form data."
+}

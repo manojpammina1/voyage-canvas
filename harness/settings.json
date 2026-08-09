@@ -1,0 +1,216 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git status)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git branch)",
+      "Bash(git branch -v*)",
+      "Bash(git branch -a*)",
+      "Bash(git branch -r*)",
+      "Bash(git stash*)",
+      "Bash(git checkout -b *)",
+      "Bash(git checkout *)",
+      "Bash(git fetch origin)",
+      "Bash(git -C * status)",
+      "Bash(git -C * diff*)",
+      "Bash(git -C * log*)",
+      "Bash(git -C * remote -v)",
+      "Bash(git -C * fetch origin refs/pull/*)",
+      "Bash(git -C * fetch origin *)",
+      "Bash(git -C * branch)",
+      "Bash(git -C * branch -v*)",
+      "Bash(git -C * branch -a*)",
+      "Bash(mvn clean install -DskipTests*)",
+      "Bash(mvn test*)",
+      "Bash(mvn -pl *)",
+      "Bash(npm ci)",
+      "Bash(npm install)",
+      "Bash(npm run dev*)",
+      "Bash(npm run prod*)",
+      "Bash(npm run lint*)",
+      "Bash(npm test*)",
+      "Bash(npx jest*)",
+      "Bash(yarn install)",
+      "Bash(yarn lint)",
+      "Bash(yarn test*)",
+      "Bash(gulp*)",
+      "Bash(node --version)",
+      "Bash(java -version)",
+      "Bash(mvn --version)",
+      "Bash(ls *)",
+      "Bash(find * -name *.java)",
+      "Bash(find * -name *.tsx)",
+      "Bash(find * -name *.ts)",
+      "Bash(find * -name *.less)",
+      "Bash(find * -name *.scss)"
+    ],
+    "deny": [
+      "Bash(git push*)",
+      "Bash(git push --force*)",
+      "Bash(git push -f *)",
+      "Bash(git push --delete*)",
+      "Bash(git push origin --delete*)",
+      "Bash(git push origin :*)",
+      "Bash(git -C * push*)",
+      "Bash(git branch -d *)",
+      "Bash(git branch -D *)",
+      "Bash(git -C * branch -d *)",
+      "Bash(git -C * branch -D *)",
+      "Bash(git reset --hard*)",
+      "Bash(git -C * reset --hard*)",
+      "Bash(git rebase*)",
+      "Bash(git tag*)",
+      "Bash(git merge*)",
+      "Bash(git commit --amend*)",
+      "Bash(git -C * commit --amend*)",
+      "Bash(rm -rf*)",
+      "Bash(mvn * -PautoInstallSinglePackage*)",
+      "Bash(mvn * -PautoInstallSinglePackagePublish*)",
+      "Bash(mvn clean install -Pprod*)",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "mcp__claude_ai_Atlassian_Rovo__createJiraIssue",
+      "mcp__claude_ai_Atlassian_Rovo__editJiraIssue",
+      "mcp__claude_ai_Atlassian_Rovo__transitionJiraIssue",
+      "mcp__claude_ai_Atlassian_Rovo__addCommentToJiraIssue",
+      "mcp__claude_ai_Atlassian_Rovo__addWorklogToJiraIssue",
+      "mcp__claude_ai_Atlassian_Rovo__createIssueLink",
+      "mcp__claude_ai_Atlassian_Rovo__createConfluencePage",
+      "mcp__claude_ai_Atlassian_Rovo__updateConfluencePage",
+      "mcp__claude_ai_Atlassian_Rovo__createConfluenceFooterComment",
+      "mcp__claude_ai_Atlassian_Rovo__createConfluenceInlineComment",
+      "Bash(cat *hybris/config/*.properties*)",
+      "Bash(type *hybris/config/*.properties*)",
+      "Bash(cat *hybris/config/certs*)",
+      "Bash(cat *hybris/config/azure/saml*)",
+      "Bash(cat *samlKeystore*)",
+      "Bash(strings *.p12*)",
+      "Bash(strings *.jks*)",
+      "Bash(openssl pkcs12*)",
+      "Bash(keytool -list*)",
+      "Bash(keytool -export*)",
+      "Bash(cat *globalLink*.properties*)",
+      "Bash(cat *globalLink*.xml*)",
+      "mcp__azure-devops__create_work_item",
+      "mcp__azure-devops__update_work_item",
+      "mcp__azure-devops__delete_work_item",
+      "mcp__azure-devops__create_pull_request",
+      "mcp__azure-devops__update_pull_request",
+      "mcp__azure-devops__abandon_pull_request",
+      "mcp__azure-devops__complete_pull_request",
+      "mcp__azure-devops__create_branch",
+      "mcp__azure-devops__delete_branch",
+      "mcp__azure-devops__queue_build",
+      "mcp__azure-devops__cancel_build",
+      "mcp__azure-devops__create_wiki_page",
+      "mcp__azure-devops__update_wiki_page"
+    ]
+  },
+  "env": {
+    "CLAUDE_ROLE": "developer"
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.py\""
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c \"echo '[Titan] Before doing any work this session, confirm a mode is active: /roles/dev-mode (developer), /roles/lead-review (tech lead review), /roles/arch-mode (architect), /roles/grill-me (stress-test a plan), /roles/qa-mode (QA tester — test cases from Jira), /roles/qa-automation (automated test code), /roles/security-mode (AppSec review), /roles/sre-mode (.cloudmanager / Adobe I/O / deploys), /roles/prodsupport-mode (L2/L3 customer ticket triage). Dev sub-contexts within /dev-mode: /unit-test /pr-create /offshore-brief. Skills from any role: /common/i18n-check /common/security-check /common/missing-scenarios /common/cost-report /common/test-impact /common/mcp-audit /common/usage-report /common/estimate /common/copilot. Runbooks for prodsupport: harness/runbooks/. If no mode has been selected yet, ask the user to choose one now.'\""
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/answer-cache.py\""
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/cost-estimate.py\""
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/correction-signal.py\""
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/credential-scan.py\""
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/protect-skills.py\""
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/redact-customer-data.py\""
+          }
+        ]
+      },
+      {
+        "matcher": "Read|Write|Edit|Bash|Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/protect-secrets.py\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/telemetry-capture.py\""
+          }
+        ]
+      },
+      {
+        "matcher": "Bash|Grep|mcp__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/tool-output-crush.py\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/stop-usage-capture.py\""
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/correction-scan.py\""
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/verify-gate.py\""
+          }
+        ]
+      }
+    ]
+  }
+}

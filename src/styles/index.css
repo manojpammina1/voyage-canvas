@@ -1,0 +1,36 @@
+/*
+  Global stylesheet. Loaded once via src/main.tsx.
+  Two responsibilities only:
+    1. Pull in Tailwind layers (base/components/utilities)
+    2. A handful of motion / accessibility primitives that don't fit Tailwind
+
+  No bundled font: the reference implementation's Montserrat woff2 files were
+  a licensed brand font and are not redistributed (Titan de-branding pass).
+  tailwind.config.ts's fontFamily.sans falls back to the system UI stack —
+  an adopter who wants a specific typeface supplies their own @font-face
+  block here and prepends it to that stack.
+*/
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Respect user OS-level reduced-motion preference. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Focus-visible — keyboard users see a clear focus ring, mouse users don't.
+   Tailwind's default focus ring is too subtle for an accessibility-first app. */
+@layer base {
+  :focus-visible {
+    outline: 3px solid #2F6FED; /* titan-blue.main */
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "_description": "QA Tester (/qa-mode) running-app context source \u2014 generated from titan.config.json environments.qa. Shared, non-secret default so the wizard does not need a per-tester onboarding step.",
+  "stageUrl": "https://staging.acme.example",
+  "loginNote": "Logged-in flows reuse the test suite's own auth fixtures -- no separate credential captured or stored by the installer.",
+  "phiReminder": "Staging may render real-looking data. Never lift an observed value into a test case -- fictional fixtures only, always."
+}

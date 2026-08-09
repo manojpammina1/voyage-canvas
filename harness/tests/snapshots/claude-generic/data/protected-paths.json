@@ -1,0 +1,40 @@
+{
+  "_description": "Compiled enforcement view of titan.config.json protected_paths[], flattened for hook consumption (protect-secrets.py, cost-estimate.py, gov-retrieve.py). Generated \u2014 do not hand-edit; edit titan.config.json protected_paths[] instead.",
+  "paths": [
+    {
+      "id": "app-secrets",
+      "globs": [
+        "**/config/*.secrets.json",
+        "**/*.pem",
+        "**/*.key"
+      ],
+      "command_patterns": [
+        "regex:openssl\\s+pkcs12"
+      ],
+      "reader_guard_dirs": [
+        "**/config"
+      ],
+      "severity": "CRITICAL",
+      "rotatable": true,
+      "owners": [
+        "security-team"
+      ],
+      "owner_names": [
+        "Security Team"
+      ],
+      "why": "Rotatable app secrets and TLS keys \u2014 no payment/SSO systems in this stack",
+      "enforcement": {
+        "block_read": true,
+        "block_write": true,
+        "block_bash": true,
+        "block_grep": true,
+        "block_prompt": true,
+        "never_index": true,
+        "deny_in_settings": true,
+        "hard_stop": true,
+        "escalate_on_touch": true
+      },
+      "message": "App secrets are rotatable but still never touched via the assistant \u2014 rotate and update the secret store directly."
+    }
+  ]
+}

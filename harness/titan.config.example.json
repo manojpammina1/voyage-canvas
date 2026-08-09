@@ -1,0 +1,166 @@
+{
+  "_description": "Fully-filled example config for a fictional adopter (Acme Corp). Copy to titan.config.json and replace every value. See docs/ADOPTION.md for the minimum 9 keys to fill before first deploy.",
+  "configured": true,
+
+  "org": {
+    "name": "Acme Corp",
+    "short_name": "Acme",
+    "display_name": "Acme Digital Platform",
+    "email_domain": "acme.example",
+    "harness_brand": "Titan",
+    "workspace_note": "Acme ecommerce workspace: storefront, commerce integration layer, migration."
+  },
+
+  "contacts": {
+    "people": {
+      "lead-frontend":     { "name": "Jordan Blake",  "email": "jordan.blake@acme.example",  "title": "Frontend Lead" },
+      "lead-platform":     { "name": "Sam Rivera",     "email": "sam.rivera@acme.example",    "title": "Platform Lead" },
+      "lead-commerce":     { "name": "Riley Chen",     "email": "riley.chen@acme.example",    "title": "Commerce Integration Lead" },
+      "toolkit-owner":     { "name": "Jordan Blake",   "email": "jordan.blake@acme.example",  "title": "Harness Maintainer" },
+      "search-team":       { "name": "Search Team",    "is_group": true },
+      "pim-team":          { "name": "PIM Team",       "is_group": true },
+      "cloud-manager-admin": { "name": "Cloud Ops",    "is_group": true }
+    },
+    "areas": {
+      "ui":           { "label": "React/Redux, LESS/SCSS", "primary": ["lead-frontend"] },
+      "aem":          { "label": "AEM, OSGi, HTL, clientlib, pipelines", "primary": ["lead-platform"] },
+      "commerce":     { "label": "Commerce platform, OCC-style endpoints", "primary": ["lead-commerce"] },
+      "cif":          { "label": "GraphQL schema, integration layer config", "primary": ["lead-commerce"] },
+      "search":       { "label": "Search / discovery field mappings", "primary": ["search-team"], "secondary": ["lead-frontend"] },
+      "pim":          { "label": "Product information contracts", "primary": ["pim-team"], "secondary": ["lead-frontend"] },
+      "cicd":         { "label": "Pipelines, cloud manager", "primary": ["lead-platform"] },
+      "security":     { "label": "Credentials, secrets, PHI/PII", "primary": ["toolkit-owner"] },
+      "architecture": { "label": "Cross-repo architecture, migration sequencing", "primary": ["lead-platform", "lead-commerce"] }
+    }
+  },
+
+  "roles": {
+    "governance_owner": "toolkit-owner",
+    "definitions": {
+      "developer":   { "code": true,  "deploy": false, "pr_review": false, "edit_governance": false, "default_mode": "dev-mode" },
+      "lead":        { "code": true,  "deploy": false, "pr_review": true,  "edit_governance": false, "default_mode": "lead-review" },
+      "architect":   { "code": true,  "deploy": true,  "pr_review": true,  "edit_governance": false, "default_mode": "arch-mode" },
+      "qa":          { "code": false, "deploy": false, "pr_review": false, "edit_governance": false, "default_mode": "qa-mode" },
+      "po":          { "code": false, "deploy": false, "pr_review": false, "edit_governance": false, "default_mode": "po-mode", "hidden": true },
+      "super":       { "code": true,  "deploy": true,  "pr_review": true,  "edit_governance": true,  "holders": ["toolkit-owner"] }
+    }
+  },
+
+  "modes": {
+    "active": ["dev-mode", "lead-review", "arch-mode", "grill-me", "qa-mode", "qa-automation", "security-mode", "sre-mode", "prodsupport-mode"],
+    "hidden": ["po-mode", "designer-mode"],
+    "require_mode_before_work": true
+  },
+
+  "stack": {
+    "aem":      { "enabled": true, "flavour": "aemaacs", "cloud_manager": true, "legacy_cq": false, "local_sdk": true },
+    "commerce": { "enabled": true, "platform": "generic-commerce-platform", "occ": true },
+    "cif":      { "enabled": true, "graphql": true, "lerna": true },
+    "search":   { "enabled": true, "providers": ["generic-search-provider"] },
+    "frontend": { "react": true, "redux_patterns": ["sagas", "slices", "thunks"], "stylesheets": ["less", "scss"] },
+    "i18n":     true
+  },
+
+  "repos": [
+    { "id": "storefront-ui", "dir": "Acme-Storefront-UI", "display": "Acme Storefront UI", "kind": "aem-maven",
+      "role_in_stack": ["aem", "ui"], "module_naming": ["acme-storefront-<feature>-ui.*"],
+      "risk_notes": ["Cloud Manager pipelines"], "default_reviewers": ["lead-frontend"],
+      "branches": { "base": "main", "release_pattern": "release/R*" } },
+    { "id": "commerce-layer", "dir": "Acme-Commerce-Integration-Layer", "display": "Acme Commerce Integration Layer", "kind": "node-lerna",
+      "role_in_stack": ["cif"], "module_naming": ["lerna workspaces"],
+      "risk_notes": ["GraphQL schema", "app.config.yaml"], "default_reviewers": ["lead-commerce"],
+      "branches": { "base": "main", "release_pattern": "release/H*" } },
+    { "id": "platform-migration", "dir": "Acme-Platform-Migration", "display": "Acme Platform Migration", "kind": "aem-maven",
+      "role_in_stack": ["commerce", "pim"], "module_naming": ["acme-webapp-*"],
+      "risk_notes": ["hybris-api/impl", "pim"], "default_reviewers": ["lead-platform"],
+      "branches": { "base": "main", "release_pattern": "release/R*" } }
+  ],
+
+  "protected_paths": [
+    {
+      "id": "commerce-platform-config",
+      "globs": ["**/config/*.properties", "**/config/**/*.p12", "**/config/**/*.jks"],
+      "command_patterns": ["regex:openssl\\s+pkcs12", "regex:keytool\\s+-(list|export)"],
+      "reader_guard_dirs": ["**/config"],
+      "severity": "CRITICAL",
+      "rotatable": false,
+      "owners": ["lead-commerce", "toolkit-owner"],
+      "why": "Irrotatable platform secrets: DB passwords, OCC credentials, payment certs, SAML keystores",
+      "enforcement": { "block_read": true, "block_write": true, "block_bash": true,
+                        "block_grep": true, "block_prompt": true, "never_index": true,
+                        "deny_in_settings": true, "hard_stop": true, "escalate_on_touch": true },
+      "message": "These credentials CANNOT be rotated. Open the file in your IDE, never via the assistant."
+    },
+    {
+      "id": "cif-app-config",
+      "globs": ["**/app.config.yaml", "**/cif/common/options.json"],
+      "severity": "HIGH",
+      "rotatable": true,
+      "owners": ["lead-commerce"],
+      "why": "CIF integration layer runtime config; options.json must never be committed",
+      "enforcement": { "block_write": true, "block_prompt": true, "escalate_on_touch": true },
+      "message": "CIF config change requires lead-commerce sign-off before merge."
+    },
+    {
+      "id": "cicd-pipelines",
+      "globs": ["**/.cloudmanager/**", "**/pipeline/**", "**/ci/**", "**/cd/**"],
+      "severity": "CRITICAL",
+      "rotatable": true,
+      "owners": ["lead-platform"],
+      "why": "Deploy pipeline files — breaking changes affect all environments",
+      "enforcement": { "block_write": true, "hard_stop": true, "escalate_on_touch": true },
+      "message": "Pipeline changes require Platform Lead approval before merge."
+    }
+  ],
+
+  "contracts": [
+    { "name": "GraphQL schema fields", "owner_repo": "commerce-layer", "consumer_repos": ["storefront-ui"], "owners": ["lead-commerce"] },
+    { "name": "Commerce endpoint signature", "owner_repo": "commerce-layer", "consumer_repos": ["storefront-ui", "platform-migration"], "owners": ["lead-commerce", "lead-platform"] },
+    { "name": "PIM product fields", "owner_repo": "platform-migration", "consumer_repos": ["storefront-ui"], "owners": ["pim-team", "lead-platform"] }
+  ],
+
+  "environments": {
+    "staging": { "url": "https://staging.acme.example" },
+    "production": { "url": "https://www.acme.example" },
+    "qa": {
+      "stage_url": "https://staging.acme.example",
+      "login_note": "Logged-in flows reuse the test suite's own auth fixtures -- no separate credential captured or stored by the installer.",
+      "phi_reminder": "Staging may render real-looking data. Never lift an observed value into a test case -- fictional fixtures only, always."
+    },
+    "qa_notes": "QA env refreshes nightly at 02:00 UTC from production snapshot, PHI scrubbed."
+  },
+
+  "platforms": {
+    "scm": { "kind": "azure-devops", "base_url": "https://dev.azure.com/acme", "collection": "acme", "pat_url": "https://dev.azure.com/acme/_usersSettings/tokens" },
+    "issue_tracker": { "kind": "jira", "site": "acme.atlassian.net", "ticket_regex": "[A-Z]+-\\d+" },
+    "general_chat_alternative": "Microsoft Copilot Enterprise"
+  },
+
+  "governance": {
+    "locked_paths": [".claude/", "CLAUDE.md"],
+    "plugin_policy": { "approved": ["dataviz", "claude-api"], "pending": [], "blocked": ["compound-engineering-plugin", "ruflo"] }
+  },
+
+  "telemetry": {
+    "salt": "Titan-Acme-2026",
+    "enabled": true,
+    "upload": { "kind": "none" }
+  },
+
+  "data_files": {
+    "build_map": "data/build-map.json",
+    "reviewer_map": "data/reviewer-map.json",
+    "known_issues": "data/known-issues.json",
+    "protected_paths": "data/protected-paths.json"
+  },
+
+  "docs": {
+    "tech_debt_plan": "not configured"
+  },
+
+  "branding": {
+    "logo_path": "assets/titan-mark.svg",
+    "product_name": "Titan",
+    "accent": "#2F6FED"
+  }
+}

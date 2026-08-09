@@ -1,0 +1,121 @@
+{
+  "_description": "Second Phase-7 fixture — deliberately a different shape than titan.config.ds.json: GitHub instead of Azure DevOps, commerce/CIF disabled (so AEM+Hybris-shaped hard stops must NOT leak into the rendered CLAUDE.md), and only 2 repos. Exercises the render + deploy path for an adopter whose stack looks nothing like the reference implementation's. Fictional company (Riverstone Outfitters, an outdoor-gear retailer) — no real data.",
+  "configured": true,
+
+  "org": {
+    "name": "Riverstone Outfitters",
+    "short_name": "Riverstone",
+    "display_name": "Riverstone Outfitters Engineering",
+    "email_domain": "riverstone.example",
+    "harness_brand": "Titan",
+    "workspace_note": "Riverstone engineering workspace: marketing site + content platform, no commerce integration."
+  },
+
+  "contacts": {
+    "people": {
+      "lead-frontend": { "name": "Priya Nataraj", "email": "priya.nataraj@riverstone.example", "title": "Frontend Lead" },
+      "lead-platform": { "name": "Owen Marsh",    "email": "owen.marsh@riverstone.example",    "title": "Platform Lead" },
+      "toolkit-owner": { "name": "Priya Nataraj",  "email": "priya.nataraj@riverstone.example", "title": "Harness Maintainer" },
+      "security-team": { "name": "Security Team", "is_group": true }
+    },
+    "areas": {
+      "ui":           { "label": "React frontend, styling", "primary": ["lead-frontend"] },
+      "aem":          { "label": "AEM authoring, clientlibs, pipelines", "primary": ["lead-platform"] },
+      "cicd":         { "label": "Pipelines, deploy", "primary": ["lead-platform"] },
+      "security":     { "label": "Credentials, secrets, PHI/PII", "primary": ["security-team"], "secondary": ["toolkit-owner"] },
+      "architecture": { "label": "Cross-repo architecture", "primary": ["toolkit-owner"] }
+    }
+  },
+
+  "roles": {
+    "governance_owner": "toolkit-owner",
+    "definitions": {
+      "developer":   { "code": true,  "deploy": false, "pr_review": false, "edit_governance": false, "default_mode": "dev-mode" },
+      "lead":        { "code": true,  "deploy": false, "pr_review": true,  "edit_governance": false, "default_mode": "lead-review" },
+      "architect":   { "code": true,  "deploy": true,  "pr_review": true,  "edit_governance": false, "default_mode": "arch-mode" },
+      "qa":          { "code": false, "deploy": false, "pr_review": false, "edit_governance": false, "default_mode": "qa-mode" },
+      "po":          { "code": false, "deploy": false, "pr_review": false, "edit_governance": false, "default_mode": "po-mode", "hidden": true },
+      "super":       { "code": true,  "deploy": true,  "pr_review": true,  "edit_governance": true,  "holders": ["toolkit-owner"] }
+    }
+  },
+
+  "modes": {
+    "active": ["dev-mode", "lead-review", "arch-mode", "grill-me", "qa-mode", "security-mode", "sre-mode"],
+    "hidden": ["po-mode", "designer-mode"],
+    "require_mode_before_work": true
+  },
+
+  "stack": {
+    "aem":      { "enabled": true, "flavour": "local-sdk", "cloud_manager": false, "legacy_cq": false, "local_sdk": true },
+    "commerce": { "enabled": false, "platform": "", "occ": false },
+    "cif":      { "enabled": false, "graphql": false, "lerna": false },
+    "search":   { "enabled": false, "providers": [] },
+    "frontend": { "react": true, "redux_patterns": ["hooks"], "stylesheets": ["scss"] },
+    "i18n":     false
+  },
+
+  "repos": [
+    { "id": "site", "dir": "riverstone-site", "display": "Riverstone Site (AEM)", "kind": "aem-maven",
+      "role_in_stack": ["aem", "ui"], "module_naming": ["riverstone-site-<feature>-ui.*"],
+      "risk_notes": ["AEM local SDK only, no Cloud Manager"], "default_reviewers": ["lead-platform"],
+      "branches": { "base": "main", "release_pattern": "release/*" } },
+    { "id": "content-tools", "dir": "riverstone-content-tools", "display": "Content Tooling", "kind": "generic",
+      "role_in_stack": ["ui"], "module_naming": [],
+      "risk_notes": [], "default_reviewers": ["lead-frontend"],
+      "branches": { "base": "main", "release_pattern": "release/*" } }
+  ],
+
+  "protected_paths": [
+    { "id": "app-secrets", "globs": ["**/config/*.secrets.json", "**/*.pem", "**/*.key"],
+      "command_patterns": ["regex:openssl\\s+pkcs12"],
+      "reader_guard_dirs": ["**/config"],
+      "severity": "CRITICAL", "rotatable": true, "owners": ["security-team"],
+      "why": "Rotatable app secrets and TLS keys — no payment/SSO systems in this stack",
+      "enforcement": { "block_read": true, "block_write": true, "block_bash": true,
+                        "block_grep": true, "block_prompt": true, "never_index": true,
+                        "deny_in_settings": true, "hard_stop": true, "escalate_on_touch": true },
+      "message": "App secrets are rotatable but still never touched via the assistant — rotate and update the secret store directly." }
+  ],
+
+  "contracts": [],
+
+  "environments": {
+    "qa": {
+      "stage_url": "https://staging.riverstone.example/",
+      "login_note": "No login system in this stack yet.",
+      "phi_reminder": "No PHI in this stack. Standard PII care still applies to any customer contact-form data."
+    }
+  },
+
+  "platforms": {
+    "scm": { "kind": "github", "base_url": "https://github.com/riverstone-outfitters", "collection": "", "pat_url": "https://github.com/settings/tokens" },
+    "issue_tracker": { "kind": "none", "site": "", "ticket_regex": "" },
+    "general_chat_alternative": "internal chat (no enterprise Copilot license)"
+  },
+
+  "governance": {
+    "locked_paths": [".claude/", "CLAUDE.md"],
+    "plugin_policy": { "approved": [], "pending": [], "blocked": [] }
+  },
+
+  "telemetry": {
+    "salt": "riverstone-2026-fixture-salt",
+    "enabled": true,
+    "upload": { "kind": "none" }
+  },
+
+  "data_files": {
+    "build_map": "data/build-map.json",
+    "reviewer_map": "data/reviewer-map.json",
+    "known_issues": "data/known-issues.json",
+    "protected_paths": "data/protected-paths.json"
+  },
+
+  "docs": {},
+
+  "branding": {
+    "logo_path": "assets/titan-mark.svg",
+    "product_name": "Titan",
+    "accent": "#2F6FED"
+  }
+}

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Journey Secured - Voyage Canvas</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary": "#005d90",
+                      "on-error-container": "#93000a",
+                      "on-secondary-fixed": "#001f24",
+                      "on-tertiary-fixed": "#070a61",
+                      "error": "#ba1a1a",
+                      "primary-fixed": "#cde5ff",
+                      "tertiary-fixed-dim": "#bfc2ff",
+                      "surface-container-highest": "#dbe4ea",
+                      "inverse-on-surface": "#e9f2f8",
+                      "secondary-container": "#9cecfb",
+                      "on-surface-variant": "#404850",
+                      "on-primary": "#ffffff",
+                      "outline-variant": "#bfc7d1",
+                      "primary-container": "#0077b6",
+                      "inverse-surface": "#293236",
+                      "surface-dim": "#d2dbe1",
+                      "primary-fixed-dim": "#94ccff",
+                      "error-container": "#ffdad6",
+                      "background": "#f4faff",
+                      "on-background": "#141d21",
+                      "secondary-fixed": "#9feffe",
+                      "surface-container-high": "#e0e9ef",
+                      "on-primary-fixed": "#001d32",
+                      "on-error": "#ffffff",
+                      "outline": "#707881",
+                      "inverse-primary": "#94ccff",
+                      "secondary-fixed-dim": "#83d3e1",
+                      "on-tertiary-container": "#f9f6ff",
+                      "on-secondary-fixed-variant": "#004f59",
+                      "tertiary-fixed": "#e0e0ff",
+                      "on-secondary": "#ffffff",
+                      "surface-tint": "#006399",
+                      "tertiary": "#4c51a0",
+                      "secondary": "#006875",
+                      "surface": "#f4faff",
+                      "on-tertiary": "#ffffff",
+                      "tertiary-container": "#646aba",
+                      "on-primary-container": "#f3f7ff",
+                      "surface-variant": "#dbe4ea",
+                      "surface-container": "#e6eff5",
+                      "on-secondary-container": "#016d7a",
+                      "surface-bright": "#f4faff",
+                      "on-surface": "#141d21",
+                      "surface-container-low": "#ecf5fb",
+                      "on-tertiary-fixed-variant": "#393e8c",
+                      "on-primary-fixed-variant": "#004b74",
+                      "surface-container-lowest": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-mobile": "16px",
+                      "base": "8px",
+                      "container-max": "1280px",
+                      "gutter": "24px",
+                      "margin-desktop": "48px"
+              },
+              "fontFamily": {
+                      "body-md": [
+                              "Geist"
+                      ],
+                      "body-lg": [
+                              "Geist"
+                      ],
+                      "headline-xl": [
+                              "Geist"
+                      ],
+                      "label-md": [
+                              "Geist"
+                      ],
+                      "headline-lg-mobile": [
+                              "Geist"
+                      ],
+                      "label-sm": [
+                              "Geist"
+                      ],
+                      "headline-lg": [
+                              "Geist"
+                      ]
+              },
+              "fontSize": {
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-xl": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .glass-panel {
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 119, 182, 0.2);
+        }
+        .glass-panel-deep {
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
+            box-shadow: 0 4px 20px rgba(0, 119, 182, 0.1);
+        }
+        
+        .aura-glow {
+            animation: pulse-glow 3s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 20px rgba(156, 236, 251, 0.4), 0 0 40px rgba(0, 119, 182, 0.2); }
+            100% { box-shadow: 0 0 40px rgba(156, 236, 251, 0.7), 0 0 80px rgba(0, 119, 182, 0.5); }
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 215, 0, 0.6);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: float-up linear forwards;
+        }
+
+        @keyframes float-up {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-100px) scale(0); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased overflow-hidden h-screen w-screen relative">
+<!-- Background Image -->
+<div class="absolute inset-0 z-0">
+<div class="w-full h-full bg-cover bg-center" data-alt="A lightweight, dreamy, and high-key video-style background loop of a small girl playing on a sunny beach with her family in the distance. The aesthetic should be soft, slightly blurred (bokeh), and airy to serve as a background for a glassy UI. High quality, cinematic, warm sunset lighting." style="background-image: url('https://lh3.googleusercontent.com/aida/AP1WRLujFmQGhHCUFPpxXOhnE7VsZpXlvW6W0pfbnNwNz_ALSVh16AJmlwK_c2vwpv35OR5nE3mZExAA4vxSmAqEhTBO_Pnek9aEPBsIOd5J8X8VunAJsW9iH01TY2_gbTzgMjn69FUkfJlXUcIBzJQgJhgQgSjHnESbn07naBeQUCLSREVHcTylXoPr5FOsis2Av_cbhjahTUgGV2OwDURsg3sIhVHCbyAJSrggGv0R_RdTD_Oje9XMljVeLA')"></div>
+<div class="absolute inset-0 bg-white/40 backdrop-blur-[2px]"></div> <!-- Soften the background slightly -->
+</div>
+<!-- Navigation suppressed due to Transactional Success Intent -->
+<!-- Main Content Canvas -->
+<main class="relative z-10 w-full h-full flex items-center justify-center p-gutter md:p-margin-desktop">
+<div class="max-w-container-max w-full grid grid-cols-1 lg:grid-cols-12 gap-gutter h-full">
+<!-- Left/Center Canvas: The Journey Core -->
+<div class="lg:col-span-8 flex flex-col items-center justify-center relative h-full">
+<!-- Particle Container -->
+<div class="absolute inset-0 z-0 pointer-events-none" id="particle-container"></div>
+<div class="text-center mb-12 z-10">
+<h1 class="font-headline-xl text-headline-xl text-primary mb-2">Journey Secured</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">The Miller Family's next adventure awaits.</p>
+</div>
+<!-- Central Core -->
+<div class="relative z-10 flex items-center justify-center w-[400px] h-[400px]">
+<!-- Golden-Blue Aura Orbit -->
+<div class="absolute inset-0 rounded-full border-2 border-secondary-container/50 border-dashed animate-[spin_40s_linear_infinite]"></div>
+<div class="absolute inset-8 rounded-full border border-primary/20 animate-[spin_30s_linear_infinite_reverse]"></div>
+<!-- Evidence Nodes -->
+<div class="absolute -top-4 left-1/2 -translate-x-1/2 glass-panel rounded-full px-6 py-3 flex items-center gap-2 shadow-sm transform -translate-y-4 animate-[bounce_3s_ease-in-out_infinite]">
+<span class="material-symbols-outlined text-primary" data-icon="confirmation_number">confirmation_number</span>
+<span class="font-label-md text-label-md text-primary">Booking ID: RCG-7742</span>
+</div>
+<div class="absolute top-1/2 -left-12 -translate-y-1/2 glass-panel rounded-full px-6 py-3 flex items-center gap-2 shadow-sm transform -translate-x-4 animate-[bounce_4s_ease-in-out_infinite_reverse]">
+<span class="material-symbols-outlined text-secondary" data-icon="timer">timer</span>
+<span class="font-label-md text-label-md text-secondary">182 Days to Sail</span>
+</div>
+<div class="absolute bottom-4 left-1/2 -translate-x-1/2 glass-panel rounded-full px-6 py-3 flex items-center gap-2 shadow-sm transform translate-y-4 animate-[bounce_3.5s_ease-in-out_infinite]">
+<span class="material-symbols-outlined text-tertiary" data-icon="airplane_ticket">airplane_ticket</span>
+<span class="font-label-md text-label-md text-tertiary">Digital Boarding Pass Ready</span>
+</div>
+<!-- Family Core Node -->
+<div class="relative w-48 h-48 rounded-full bg-white glass-panel-deep flex flex-col items-center justify-center aura-glow z-20">
+<img class="w-40 h-40 rounded-full object-cover mb-2 border-4 border-white shadow-sm" data-alt="A close-up, high-quality photograph of a happy family of three. The father, mother, and small daughter are smiling broadly, illuminated by bright, warm, high-key studio lighting that feels like a sunny day. They are framed in a perfect circle against a soft white background. The image evokes joy, security, and anticipation." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCW4yxWGEyU7VMqD6ONBDGJgtF8o_ObQ31X1-4rUMmWcgeDBUBWOoPOqWzC1QEg9QAhvFBZr536QK3HpKppIJ-P-294YwBmSmjuHOJgFt3ntJr_h3w6YbCU78Gcnp29U0mQqxDS5z1AmZiQm40IJel22ssXV2tADmOO0SdabZIQsYGGoirurt6h_ZcPbMkUrCYL9iQDQxNmtdP6gUJ9w4-bL1KcEeIaHqQ1ZBIyru4VHRKVpRhSUIk5"/>
+<span class="absolute bottom-4 bg-primary text-on-primary font-label-sm text-label-sm px-3 py-1 rounded-full shadow-md">Family Core</span>
+</div>
+</div>
+</div>
+<!-- Right Panel: Next Steps -->
+<div class="lg:col-span-4 flex flex-col justify-center h-full">
+<div class="glass-panel-deep rounded-xl p-8 h-auto w-full flex flex-col gap-6">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary mb-1">Next Steps</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Prepare for your upcoming voyage.</p>
+</div>
+<div class="flex flex-col gap-4 mt-4">
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md py-4 rounded-lg flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors shadow-sm">
+<span class="material-symbols-outlined" data-icon="calendar_add_on">calendar_add_on</span>
+                            Add to Calendar
+                        </button>
+<button class="w-full glass-panel text-primary font-label-md text-label-md py-4 rounded-lg flex items-center justify-center gap-2 hover:bg-inverse-on-surface transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                            Manage Journey
+                        </button>
+<button class="w-full border border-outline-variant text-on-surface font-label-md text-label-md py-4 rounded-lg flex items-center justify-center gap-2 hover:bg-surface-variant transition-colors mt-2">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+                            View Receipt
+                        </button>
+</div>
+<div class="mt-auto pt-6 border-t border-glass-border">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="support_agent">support_agent</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Need assistance?</p>
+<a class="font-body-md text-body-md text-primary hover:underline" href="#">Contact Concierge</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Simple particle generator for the festive aura
+        const container = document.getElementById('particle-container');
+        
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            
+            // Randomize position, size, and duration
+            const size = Math.random() * 6 + 2;
+            const left = Math.random() * 100;
+            const top = Math.random() * 100;
+            const duration = Math.random() * 2 + 1;
+            
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.left = `${left}%`;
+            particle.style.top = `${top}%`;
+            particle.style.animationDuration = `${duration}s`;
+            
+            container.appendChild(particle);
+            
+            // Remove particle after animation ends
+            setTimeout(() => {
+                particle.remove();
+            }, duration * 1000);
+        }
+
+        // Generate particles periodically
+        setInterval(createParticle, 150);
+    </script>
+</body></html>

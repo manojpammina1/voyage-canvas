@@ -1,0 +1,74 @@
+[
+  {
+    "id": "port-miami",
+    "name": "Miami",
+    "region": "Caribbean",
+    "latitude": 25.7617,
+    "longitude": -80.1918,
+    "canvasX": 220,
+    "canvasY": 420
+  },
+  {
+    "id": "port-nassau",
+    "name": "Nassau",
+    "region": "Caribbean",
+    "latitude": 25.0443,
+    "longitude": -77.3504,
+    "canvasX": 310,
+    "canvasY": 380
+  },
+  {
+    "id": "port-labadee",
+    "name": "Labadee",
+    "region": "Caribbean",
+    "latitude": 19.7866,
+    "longitude": -72.2477,
+    "canvasX": 420,
+    "canvasY": 520
+  },
+  {
+    "id": "port-falmouth",
+    "name": "Falmouth",
+    "region": "Caribbean",
+    "latitude": 18.4936,
+    "longitude": -77.6559,
+    "canvasX": 360,
+    "canvasY": 560
+  },
+  {
+    "id": "port-cozumel",
+    "name": "Cozumel",
+    "region": "Caribbean",
+    "latitude": 20.4229,
+    "longitude": -86.9223,
+    "canvasX": 120,
+    "canvasY": 500
+  },
+  {
+    "id": "port-san-juan",
+    "name": "San Juan",
+    "region": "Caribbean",
+    "latitude": 18.4655,
+    "longitude": -66.1057,
+    "canvasX": 620,
+    "canvasY": 540
+  },
+  {
+    "id": "port-st-thomas",
+    "name": "Charlotte Amalie",
+    "region": "Caribbean",
+    "latitude": 18.3419,
+    "longitude": -64.9307,
+    "canvasX": 680,
+    "canvasY": 560
+  },
+  {
+    "id": "port-st-maarten",
+    "name": "Philipsburg",
+    "region": "Caribbean",
+    "latitude": 18.0292,
+    "longitude": -63.0475,
+    "canvasX": 740,
+    "canvasY": 580
+  }
+]

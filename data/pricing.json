@@ -1,0 +1,20 @@
+{
+  "asOfFixed": "2026-08-01T12:00:00.000Z",
+  "validForSeconds": 900,
+  "heroOccupancy": { "adults": 2, "children": 2 },
+  "heroCabinType": "balcony",
+  "cabinMultipliers": {
+    "interior": 0.72,
+    "ocean_view": 0.85,
+    "balcony": 1.0,
+    "suite": 1.45
+  },
+  "adultWeight": 0.35,
+  "childWeight": 0.15,
+  "taxesFeesUsd": 180,
+  "sailingBaseBalconyHeroUsd": {
+    "sail-serenade-2027-03-06": 4280,
+    "sail-adventure-2027-03-13": 4620,
+    "sail-freedom-2027-03-20": 4740
+  }
+}

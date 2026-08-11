@@ -1,59 +1,79 @@
-# Titan
+# Voyage Canvas
 
-Titan is a company-neutral multi-agent (Claude / Codex / Cursor) governance
-harness: slash commands, hooks, subagents, and runbooks for a team building
-on AEM, a commerce platform (OCC-style), a GraphQL integration layer, and a
-search/discovery provider — extracted from a real production deployment so
-the engineering patterns are proven, not theoretical.
+RCG Part 1 **Agentic Cruise Planning Assistant** — anonymous NL intent → deterministic commerce → policy RAG → hold → signed checkout handoff. Payment stays in existing checkout; the LLM never owns price or inventory.
 
-**What makes it "company-neutral":** every company-specific fact — org
-name, people's names and emails, repo names, SCM/issue-tracker URLs,
-protected-path rules — lives in exactly one place, `titan.config.json`, and
-everything else (`CLAUDE.md`, `data/*.json`, the `settings.json` deny list,
-hook pattern lists, the Electron wizard, the usage dashboard) is generated
-or read from that file. The stack choices (AEM, a commerce platform, CIF,
-Coveo/Discover-style search) stay first-class — only company *identity* was
-removed. See `docs/CONFIG-REFERENCE.md` for the full schema and
-`docs/ADOPTION.md` for the minimum keys to fill in first.
+## Quick start (interview demo)
 
-## What's in here
+```bash
+cd voyage-canvas
+pnpm install --no-frozen-lockfile
+docker compose up -d
+pnpm seed
+pnpm dev
+```
 
-| Path | What |
-|---|---|
-| `harness/` | The deployable harness: 66 slash commands, hooks, subagents, runbooks, and the render pipeline (`titan-render.py`, `titan-config.py`) that turns `titan.config.json` into Claude / Codex / Cursor overlays. |
-| `installer/` | `titan-configure.py` (CLI installer) and `titan-doctor.py` (post-install verification). |
-| `electron/`, `src/` | The guided GUI installer (wizard) — config-driven screens, provider abstraction for SCM/issue-tracker/telemetry-sink. |
-| `dashboard/` | A local, JSONL-driven usage analytics dashboard for the toolkit maintainer. |
-| `tools/ota/` | Signed-manifest tooling for a future auto-update channel (dev/test keys only today — see `docs/HARNESS-UPDATE.md`). |
-| `fixtures/` | Config fixtures for the §G fidelity matrix. `titan.config.github-generic.json` (commerce/CIF off, GitHub) and `titan.config.commerce-shaped.json` (synthetic full AEM+commerce shape — fictional data only). A real reference `titan.config.ds.json` may exist locally but is gitignored and must never ship. |
-| `docs/` | This documentation set. |
-| `scripts/lint-generic.sh` | The de-branding completion gate — fails if any company-identity residue from the reference implementation this harness was extracted from is found anywhere outside `fixtures/**`. |
+Open **http://localhost:3000**
 
-## Quickstart
+Before each demo run (optional):
 
-1. Copy `harness/titan.config.example.json` to your own config and fill in
-   at minimum the 9 keys in `docs/ADOPTION.md` (org name, email domain, one
-   contact, one area mapping, the governance owner, one repo, one protected
-   path, your SCM kind, and a real telemetry salt). Validate it:
-   ```
-   python harness/scripts/titan-config.py --validate path/to/your-config.json
-   ```
-2. Deploy into a target repo:
-   ```
-   python installer/titan-configure.py --config path/to/your-config.json
-   ```
-   or, for scripted/multi-repo rollouts, call the underlying primitive
-   directly — see `docs/INSTALLATION.md`:
-   ```
-   bash harness/scripts/deploy-harness.sh <target-repo-path>
-   ```
-3. Verify: `python installer/titan-doctor.py`.
-4. Start a Claude Code session in the deployed repo. `SessionStart` injects
-   a live governance header (org, active repos, escalation-by-area) so the
-   session is grounded in your config even before any file is read.
+```bash
+pnpm demo:reset
+```
 
-Full documentation: `docs/INSTALLATION.md` (all three install paths, and
-why Titan does not ship a pre-signed Electron binary),
-`docs/CONFIG-REFERENCE.md` (generated, full schema reference),
-`docs/HARNESS-UPDATE.md` (`--update` / `--rollback` / `--prune` mechanics
-and their one documented residual risk).
+## 5-minute demo script (browser only)
+
+Talk track while clicking — no terminal needed during the demo.
+
+| # | Say (brief) | Do |
+|---|-------------|-----|
+| 1 | “Guest describes the trip in natural language — no forms first.” | Click **Explore voyages** (hero prompt pre-filled) |
+| 2 | “Three verified options materialize; prices are deterministic, not invented.” | Point at orbit nodes **$4,280 / $4,620 / $4,740** |
+| 3 | “Guest locks balcony and scrubs budget — no LLM on the slider.” | **Lock balcony preference** → drag budget toward **$4,400** |
+| 4 | “Compare two sailings — delta is server-side math.” | Click **Compare** on two nodes → comparison panel |
+| 5 | “Policy answers cite approved synthetic content only.” | **Ask policy (demo)** → children travel docs citation |
+| 6 | “Progressive auth before commerce commitment.” | Select a voyage → **Simulate sign in** |
+| 7 | “Explicit confirm + atomic hold; inventory is transactional.” | Check confirm box → **Create short-lived hold** |
+| 8 | “Assistant stops at signed handoff — checkout owns payment.” | **Continue to secure checkout** → **Handoff OK** page |
+| 9 | “If the model fails, criteria are preserved.” | Back → **Simulate AI outage** → **Search again** |
+
+**Fallback path (optional):** Step 9 shows **Guided voyage planner** with the same deterministic APIs.
+
+## Architecture one-liner
+
+> AI may propose. Application validates. Services decide. Evidence proves. Guest confirms. Checkout transacts.
+
+## Verification (optional, before interview)
+
+```bash
+pnpm typecheck
+pnpm test
+pnpm eval:retrieval
+pnpm eval
+pnpm redteam
+pnpm latest-trace
+curl -s http://localhost:3000/api/health
+```
+
+`LLM_PROVIDER=mock` — no paid model calls required for CI or demo.
+
+## Docs
+
+| File | Purpose |
+|------|---------|
+| `AGENTS.md` | Implementation governance |
+| `IMPLEMENTATION_PLAN.md` | Scope lock + task order |
+| `ARCHITECTURE.md` | Trust boundaries |
+| `DOMAIN_CONTRACTS.md` | Shared types/tools/events |
+| `CHECKPOINT.md` | Checkpoint testing guide |
+| `DESIGN.md` | UX tokens and behavior |
+
+## Stack
+
+- **apps/web** — Next.js orbital canvas UI
+- **packages/** — shared, commerce, inventory, content-adapter, orchestrator
+- **data/** — March 2027 hero fixtures + synthetic policy corpus
+- Mongo + Redis via `docker-compose.yml`
+
+## Scope note
+
+Playwright E2E specs are **not** included for this interview build; manual browser demo is the release gate. UI visual polish vs `UI-sample/` can follow after the interview.

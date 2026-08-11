@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Voyage Canvas - Family Core</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#f4faff",
+                        "inverse-primary": "#94ccff",
+                        "on-primary-fixed": "#001d32",
+                        "error": "#ba1a1a",
+                        "tertiary": "#4c51a0",
+                        "surface-bright": "#f4faff",
+                        "surface-container-highest": "#dbe4ea",
+                        "inverse-on-surface": "#e9f2f8",
+                        "on-primary-fixed-variant": "#004b74",
+                        "surface-container": "#e6eff5",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#404850",
+                        "on-tertiary-fixed": "#070a61",
+                        "on-secondary-fixed-variant": "#004f59",
+                        "surface-tint": "#006399",
+                        "primary-fixed-dim": "#94ccff",
+                        "surface-dim": "#d2dbe1",
+                        "surface-container-high": "#e0e9ef",
+                        "outline-variant": "#bfc7d1",
+                        "surface-variant": "#dbe4ea",
+                        "tertiary-fixed-dim": "#bfc2ff",
+                        "primary": "#005d90",
+                        "tertiary-fixed": "#e0e0ff",
+                        "on-error": "#ffffff",
+                        "on-primary-container": "#f3f7ff",
+                        "secondary": "#006875",
+                        "primary-container": "#0077b6",
+                        "surface-container-low": "#ecf5fb",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#393e8c",
+                        "inverse-surface": "#293236",
+                        "on-tertiary-container": "#f9f6ff",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed": "#9feffe",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-container": "#016d7a",
+                        "background": "#f4faff",
+                        "on-background": "#141d21",
+                        "primary-fixed": "#cde5ff",
+                        "secondary-container": "#9cecfb",
+                        "outline": "#707881",
+                        "tertiary-container": "#646aba",
+                        "on-surface": "#141d21",
+                        "secondary-fixed-dim": "#83d3e1",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed": "#001f24",
+                        "surface-container-lowest": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1280px",
+                        "gutter": "24px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "48px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Geist"],
+                        "body-lg": ["Geist"],
+                        "label-sm": ["Geist"],
+                        "headline-lg-mobile": ["Geist"],
+                        "headline-xl": ["Geist"],
+                        "headline-lg": ["Geist"],
+                        "label-md": ["Geist"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .bg-glass-surface {
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+        .bg-glass-surface-level2 {
+            background-color: rgba(255, 255, 255, 0.85);
+        }
+        .border-glass-border {
+            border-color: rgba(0, 119, 182, 0.2);
+        }
+        .shadow-glass {
+            box-shadow: 0 4px 20px rgba(0, 119, 182, 0.1);
+        }
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 119, 182, 0.2);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 119, 182, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md overflow-x-hidden min-h-screen">
+<!-- Background Video/Image Concept -->
+<div class="fixed inset-0 z-0">
+<img alt="Dreamy, high-key video background of a family on a beach with soft sunlight and gentle waves" class="w-full h-full object-cover filter blur-sm opacity-60" src="https://lh3.googleusercontent.com/aida/AP1WRLujFmQGhHCUFPpxXOhnE7VsZpXlvW6W0pfbnNwNz_ALSVh16AJmlwK_c2vwpv35OR5nE3mZExAA4vxSmAqEhTBO_Pnek9aEPBsIOd5J8X8VunAJsW9iH01TY2_gbTzgMjn69FUkfJlXUcIBzJQgJhgQgSjHnESbn07naBeQUCLSREVHcTylXoPr5FOsis2Av_cbhjahTUgGV2OwDURsg3sIhVHCbyAJSrggGv0R_RdTD_Oje9XMljVeLA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-background/30"></div>
+</div>
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full bg-glass-surface/40 backdrop-blur-xl border-b border-glass-border shadow-sm flex justify-between items-center h-16 px-gutter z-50 transition-all duration-300">
+<div class="flex items-center gap-4">
+<button aria-label="Open menu" class="md:hidden p-2 text-primary hover:bg-glass-surface/60 transition-colors rounded-full cursor-pointer active:scale-95 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
+</button>
+<div class="font-headline-lg text-headline-lg font-bold text-ocean-deep dark:text-on-primary-container">Voyage Canvas</div>
+</div>
+<div class="hidden md:flex items-center gap-6">
+<nav class="flex gap-6">
+<!-- TopNav Links conceptually moved to SideNav for this specific layout as per JSON, but leaving search/actions here -->
+</nav>
+<!-- Search Bar placeholder -->
+<div class="relative hidden lg:block">
+<input class="pl-10 pr-4 py-2 rounded-full border border-outline-variant/30 bg-surface/50 backdrop-blur-sm focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all w-64 text-body-md text-on-surface placeholder:text-on-surface-variant" placeholder="Search destinations..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+</div>
+<div class="flex items-center gap-2">
+<button aria-label="Notifications" class="p-2 text-primary dark:text-primary-fixed hover:bg-glass-surface/60 transition-colors rounded-full cursor-pointer active:scale-95 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+<button aria-label="Workspace Premium" class="p-2 text-primary dark:text-primary-fixed hover:bg-glass-surface/60 transition-colors rounded-full cursor-pointer active:scale-95 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">workspace_premium</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/20 ml-2">
+<img alt="Traveler Profile with Loyalty Badge" class="w-full h-full object-cover" data-alt="A detailed headshot of a premium traveler profile avatar, minimalist style with soft studio lighting, showcasing a loyalty badge subtle integration. Sea blue accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFYU8l4R5akPJdV8pu6eY9tKraoVbwKWbCU-2gth-KAqiG9W0CKcRsEA7kk3bPo562OQQL2c1E142fZSs_iAJhZ5gzgtGjHz3HmaQa6DXqL4rTXVvab30r3YKDk5xJGoT2YVOjQYbA9FM7D3S4jECnie7U-SwiPXng6G5e8gqgZDTAI6WWr6DjQcdKfCuQynv4DY7Pde5JBBMCcJLCt3bA1wzeBg4VrnEqnOh7e5LhMBBxnwMD-J1Q"/>
+</div>
+</div>
+</div>
+</header>
+<div class="flex pt-16 min-h-screen relative z-10">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col py-6 gap-stack-gap fixed left-0 top-16 h-[calc(100vh-64px)] w-64 bg-glass-surface/40 backdrop-blur-xl border-r border-glass-border shadow-md transition-all duration-300 ease-in-out z-40">
+<div class="px-6 mb-8 flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-primary/30">
+<img alt="Traveler Group Avatar" class="w-full h-full object-cover" data-alt="A stylized group avatar representing a family of four, modern vector art style, soft sea blue and ice blue palette, elegant and premium feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvoHABapRE0RIac1SrOmf6c5xaPtLUSWBjV93zCZZjjbXQh_unqMshQH1BNvzSxwKtuAoYJuglVcB0qEP31R-6A1KtnX0Es4BiJ03LAdhqOUpmbOmbZgd7ft3CkexT07HSXkVwaIE5E3tSzQa7jHS6baSJ2k2J65mD5rH_HN4V8zBYY8D06BEnZ63nlb1CkmXsYGeHp8eZv905aj3_lp-S52_nmDYt48RR1t4fkApHI8DtLQ0jJokh"/>
+</div>
+<div>
+<div class="font-label-md text-label-md font-semibold text-primary">The Miller Family</div>
+<div class="font-label-sm text-label-sm text-secondary">Elite Status</div>
+</div>
+</div>
+<ul class="flex-1 flex flex-col gap-2 px-4">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-primary font-bold border-r-4 border-primary bg-primary/5 transition-all cursor-pointer active:scale-95" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">group</span>
+<span class="font-label-caps text-label-caps tracking-wider uppercase">Traveler Core</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-primary-container/10 transition-all cursor-pointer active:scale-95" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">timeline</span>
+<span class="font-label-caps text-label-caps tracking-wider uppercase">Journey Path</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-primary-container/10 transition-all cursor-pointer active:scale-95" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">verified_user</span>
+<span class="font-label-caps text-label-caps tracking-wider uppercase">Evidence</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-primary-container/10 transition-all cursor-pointer active:scale-95" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span class="font-label-caps text-label-caps tracking-wider uppercase">Settings</span>
+</a>
+</li>
+</ul>
+<div class="px-6 mt-auto">
+<button class="w-full py-3 rounded-xl border border-primary text-primary hover:bg-primary/5 transition-colors font-label-md text-label-md flex justify-center items-center gap-2 shadow-glass backdrop-blur-md">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+                    Lock Preferences
+                </button>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 p-margin-mobile md:p-margin-desktop flex flex-col items-center justify-center min-h-[calc(100vh-64px)] w-full max-w-[1280px] mx-auto">
+<!-- Family Core Node -->
+<section class="w-full max-w-4xl flex flex-col items-center gap-12 relative">
+<!-- Background decorative elements for the "nodes" -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-secondary-container/10 rounded-full blur-[100px] -z-10 pointer-events-none"></div>
+<div class="text-center space-y-4">
+<h1 class="font-headline-xl text-headline-xl md:text-headline-xl text-primary font-bold">Family Core</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">Define the travelers to shape your personalized journey path.</p>
+</div>
+<!-- Circular Traveler Core -->
+<div class="relative w-80 h-80 flex items-center justify-center mb-8">
+<!-- Glowing Path/Thread connecting nodes -->
+<svg class="absolute inset-0 w-full h-full -z-10 animate-pulse text-secondary/20" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="none" r="48" stroke="currentColor" stroke-dasharray="2 4" stroke-width="0.5"></circle>
+<circle cx="50" cy="50" fill="none" r="35" stroke="currentColor" stroke-width="1"></circle>
+</svg>
+<!-- Central Input Node -->
+<div class="w-48 h-48 bg-glass-surface/80 backdrop-blur-2xl rounded-full border border-glass-border shadow-glass flex flex-col items-center justify-center p-6 text-center z-10 transition-transform hover:scale-105 duration-500">
+<span class="material-symbols-outlined text-4xl text-primary mb-2">family_restroom</span>
+<textarea class="w-full bg-transparent border-none text-center font-label-md text-label-md text-on-surface focus:ring-0 resize-none overflow-hidden placeholder:text-on-surface-variant/50" placeholder="Enter ages (e.g., Adult 38, Child 10)" rows="3">Adult 38, Adult 36, Child 10, Child 7</textarea>
+</div>
+<!-- Surrounding Generative Avatars (Nodes) -->
+<!-- Adult 1 -->
+<div class="absolute top-0 right-10 w-16 h-16 bg-glass-surface-level2 backdrop-blur-xl rounded-full border border-primary/20 shadow-glass flex items-center justify-center transform hover:scale-110 transition-all duration-300">
+<img alt="Adult 38" class="w-12 h-12 object-cover rounded-full mix-blend-multiply opacity-80" data-alt="Abstract glowing 3D sphere representing an adult traveler, smooth glass texture, subtle sea blue inner glow, high-end minimalist design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfOhTwYvmsAfAfUCzF4X4sPDEAnXcT9QfXm1jMOZAa8Qf4rRh-CjRbpCDIm9JbBLRktMBJ5KCUG4MjM96wCFADCrOCmrac65ykcIEOO7O8wsq-ASCgWV65phXETprxgkcaswhtnfeY0uT7q93QGkAH1MOa1aFlejVseS-kFvp9l1MEwF3jAW5j_OOXu0CQ3vFQ7tk8qxjne_w9D1nPKSFtWe9E6CBkFR8kl2mw7M_aNHFFost_xb1V"/>
+<div class="absolute -bottom-6 font-label-sm text-label-sm text-primary whitespace-nowrap">Adult 38</div>
+</div>
+<!-- Adult 2 -->
+<div class="absolute bottom-4 right-0 w-16 h-16 bg-glass-surface-level2 backdrop-blur-xl rounded-full border border-primary/20 shadow-glass flex items-center justify-center transform hover:scale-110 transition-all duration-300">
+<img alt="Adult 36" class="w-12 h-12 object-cover rounded-full mix-blend-multiply opacity-80" data-alt="Abstract glowing 3D sphere representing an adult traveler, smooth glass texture, subtle sea blue inner glow, high-end minimalist design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQnh3rwmo6_cJvgM1YBsm-29LTzGooa2whBnGqnDbIxn8XWPj9mZNBXoG7xgf5SBkjnxo8QrHE5ZQ5wW-ZT1kG38NItaShEW2nUXyG8aD7qb_5nJuyv_QTosm_gxco4EHpkuVVeMsBzJcm-SaNVImFdYkVzr7geKFAUhH9DOZVDocIPpI18GVA2lwsNwrD_M8UST09Y_46al8PfkNkRrHj2OnlbY8nSae4kgDB2vgMSeCB-LhF8naC"/>
+<div class="absolute -bottom-6 font-label-sm text-label-sm text-primary whitespace-nowrap">Adult 36</div>
+</div>
+<!-- Child 1 -->
+<div class="absolute bottom-4 left-0 w-14 h-14 bg-glass-surface-level2 backdrop-blur-xl rounded-full border border-secondary/20 shadow-glass flex items-center justify-center transform hover:scale-110 transition-all duration-300">
+<img alt="Child 10" class="w-10 h-10 object-cover rounded-full mix-blend-multiply opacity-80" data-alt="Abstract glowing 3D sphere representing a child traveler, slightly smaller, smooth glass texture, soft ice blue inner glow, playful yet high-end minimalist design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxgFMKj3zcf0YC9PB9OlTC4I-9Shx8JYZ2teFHpW_vly6HCH_CMDu3zShvrM-sOIWDoyUcG0mTEKSyLfzAkeDxE6_hUIy0Jk04bx7FuhKzSm5C0ATF4v6WdT1WZRfE_ryqCUZSC7RRIR04rwWoNVJih_CGloxau3bM6apiwH9XUTbQUgIzYlQ0tGXPblWGZZBNfeiX5EkEqd5XqyzkBUAkq8ferz08ScLheMWeLb3pDCFBQDIHWDO6"/>
+<div class="absolute -bottom-6 font-label-sm text-label-sm text-secondary whitespace-nowrap">Child 10</div>
+</div>
+<!-- Child 2 -->
+<div class="absolute top-0 left-10 w-12 h-12 bg-glass-surface-level2 backdrop-blur-xl rounded-full border border-secondary/20 shadow-glass flex items-center justify-center transform hover:scale-110 transition-all duration-300">
+<img alt="Child 7" class="w-8 h-8 object-cover rounded-full mix-blend-multiply opacity-80" data-alt="Abstract glowing 3D sphere representing a young child traveler, smallest size, smooth glass texture, soft ice blue inner glow, playful yet high-end minimalist design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoRIM5D0_EfEl95SxEj5Cyfd_ez9EW6wl0Db5-HM9iFBGExjXpI2-VtGEOcchgL0r11aciZpnpfY_y-RSZNpRURADKoxcsQKIyEJJBE4dhu95sL2C9seTew_P5b04ngttmgMdA85KNr6k4HOfxpZSiVyUY8h0oEupc3xJCwIgbiKM4JB82lqaG7GKV_oHajMf_xlBqC-havJa-olejjbwrse209vRPUcKYYwssgrXjQ4lEjGmRml35"/>
+<div class="absolute -bottom-6 font-label-sm text-label-sm text-secondary whitespace-nowrap">Child 7</div>
+</div>
+</div>
+<!-- Intent Bar -->
+<div class="w-full max-w-3xl mt-12 bg-glass-surface/70 backdrop-blur-xl rounded-2xl border border-glass-border shadow-glass p-2 relative overflow-hidden group">
+<!-- Subtle glow effect on hover -->
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent -translate-x-full group-hover:translate-x-full duration-1000 transition-transform pointer-events-none"></div>
+<div class="flex items-center bg-surface/50 rounded-xl px-4 py-3 gap-4">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">edit_square</span>
+<input class="flex-1 bg-transparent border-none font-body-lg text-body-lg text-on-surface focus:ring-0 placeholder:text-on-surface-variant/50 w-full" placeholder="What is your voyage intent?" type="text" value="a 7-night Caribbean cruise in March for a family of four, balcony cabin, under $5,000"/>
+<button class="bg-primary hover:bg-primary-container text-on-primary rounded-lg px-6 py-2 font-label-md text-label-md transition-colors shadow-sm flex items-center gap-2">
+<span>Weave</span>
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+</button>
+</div>
+<!-- Suggested Tags/Chips -->
+<div class="flex flex-wrap justify-center gap-2 mt-4 px-2 pb-2">
+<span class="px-3 py-1 bg-secondary-fixed text-on-secondary-fixed rounded-full font-label-sm text-label-sm flex items-center gap-1 cursor-pointer hover:bg-secondary-fixed-dim transition-colors">
+<span class="material-symbols-outlined text-[14px]">sailing</span> Caribbean
+                        </span>
+<span class="px-3 py-1 bg-secondary-fixed text-on-secondary-fixed rounded-full font-label-sm text-label-sm flex items-center gap-1 cursor-pointer hover:bg-secondary-fixed-dim transition-colors">
+<span class="material-symbols-outlined text-[14px]">calendar_month</span> March
+                        </span>
+<span class="px-3 py-1 bg-secondary-fixed text-on-secondary-fixed rounded-full font-label-sm text-label-sm flex items-center gap-1 cursor-pointer hover:bg-secondary-fixed-dim transition-colors">
+<span class="material-symbols-outlined text-[14px]">payments</span> &lt; $5k
+                        </span>
+</div>
+</div>
+</section>
+</main>
+</div>
+</body></html>

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "sail-serenade-2027-03-06",
+    "shipName": "Serenade of the Seas",
+    "destination": "Caribbean",
+    "departureDate": "2027-03-06",
+    "nights": 7,
+    "ports": ["port-miami", "port-labadee", "port-falmouth", "port-cozumel", "port-miami"]
+  },
+  {
+    "id": "sail-adventure-2027-03-13",
+    "shipName": "Adventure of the Seas",
+    "destination": "Caribbean",
+    "departureDate": "2027-03-13",
+    "nights": 7,
+    "ports": ["port-miami", "port-nassau", "port-st-thomas", "port-st-maarten", "port-miami"]
+  },
+  {
+    "id": "sail-freedom-2027-03-20",
+    "shipName": "Freedom of the Seas",
+    "destination": "Caribbean",
+    "departureDate": "2027-03-20",
+    "nights": 7,
+    "ports": ["port-miami", "port-san-juan", "port-st-thomas", "port-labadee", "port-miami"]
+  }
+]

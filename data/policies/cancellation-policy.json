@@ -1,0 +1,11 @@
+{
+  "id": "cancellation-policy",
+  "title": "Demo: Cancellation Policy (Synthetic)",
+  "topic": "cancellation",
+  "publishedAt": "2026-01-10",
+  "contentVersion": "demo-1.0",
+  "classification": "POLICY",
+  "keywords": ["cancellation", "refund", "penalty", "cancel", "policy"],
+  "disclaimer": "SYNTHETIC DEMO CONTENT — not real RCG policy.",
+  "content": "This synthetic demo cancellation policy describes how guests may cancel a cruise booking in the proof-of-concept system. Cancellations made 90 or more days before departure receive a full refund of the cruise fare deposit in demo mode. Cancellations 60–89 days before departure incur a 50% penalty on the cruise fare. Cancellations within 59 days are non-refundable in this demo. Travel insurance, taxes, and fees follow the same demo schedule. No live payment processing occurs in Voyage Canvas; checkout handoff is simulated separately."
+}

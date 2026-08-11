@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Voyage Canvas - Family Core</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Geist:wght@400;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "surface-container-lowest": "#ffffff",
+                "on-background": "#141d21",
+                "surface-container-highest": "#dbe4ea",
+                "on-error-container": "#93000a",
+                "error-container": "#ffdad6",
+                "secondary-fixed-dim": "#83d3e1",
+                "on-surface": "#141d21",
+                "surface-tint": "#006399",
+                "primary-fixed": "#cde5ff",
+                "primary": "#0077b6",
+                "inverse-surface": "#293236",
+                "tertiary": "#4c51a0",
+                "surface": "#f4faff",
+                "tertiary-container": "#646aba",
+                "on-primary-container": "#f3f7ff",
+                "surface-bright": "#f4faff",
+                "inverse-primary": "#94ccff",
+                "on-secondary-container": "#016d7a",
+                "on-tertiary-fixed-variant": "#393e8c",
+                "on-primary-fixed-variant": "#004b74",
+                "on-primary": "#ffffff",
+                "secondary": "#006875",
+                "tertiary-fixed-dim": "#bfc2ff",
+                "surface-container-high": "#e0e9ef",
+                "background": "#f4faff",
+                "on-tertiary": "#ffffff",
+                "on-primary-fixed": "#001d32",
+                "on-tertiary-container": "#f9f6ff",
+                "outline-variant": "#bfc7d1",
+                "on-surface-variant": "#404850",
+                "secondary-container": "#9cecfb",
+                "tertiary-fixed": "#e0e0ff",
+                "on-secondary-fixed-variant": "#004f59",
+                "outline": "#707881",
+                "on-secondary-fixed": "#001f24",
+                "inverse-on-surface": "#e9f2f8",
+                "primary-container": "#0077b6",
+                "surface-container-low": "#ecf5fb",
+                "on-secondary": "#ffffff",
+                "secondary-fixed": "#9feffe",
+                "surface-variant": "#dbe4ea",
+                "on-error": "#ffffff",
+                "surface-container": "#e6eff5",
+                "surface-dim": "#d2dbe1",
+                "primary-fixed-dim": "#94ccff",
+                "error": "#ba1a1a",
+                "on-tertiary-fixed": "#070a61",
+                "glass-surface": "rgba(255, 255, 255, 0.7)",
+                "glass-border": "rgba(255, 255, 255, 0.8)",
+                "evidence-verified": "#00C853",
+                "sunset-glow": "#FFF1E6",
+                "ocean-deep": "#002D54"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "base": "8px",
+                "container-max": "1280px",
+                "margin-mobile": "16px",
+                "gutter": "24px",
+                "margin-desktop": "48px",
+                "canvas-pane-width": "400px",
+                "stack-gap": "12px"
+        },
+        "fontFamily": {
+                "label-sm": [
+                        "Geist"
+                ],
+                "headline-lg": [
+                        "Geist"
+                ],
+                "headline-lg-mobile": [
+                        "Geist"
+                ],
+                "body-md": [
+                        "Geist"
+                ],
+                "body-lg": [
+                        "Geist"
+                ],
+                "label-md": [
+                        "Geist"
+                ],
+                "headline-xl": [
+                        "Geist"
+                ],
+                "label-caps": ["Geist"],
+                "evidence-data": ["Geist"],
+                "display-xl": ["Geist"]
+        },
+        "fontSize": {
+                "label-sm": [
+                        "12px",
+                        {
+                                "lineHeight": "16px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-lg": [
+                        "32px",
+                        {
+                                "lineHeight": "40px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-lg-mobile": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "body-lg": [
+                        "18px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-md": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "letterSpacing": "0.01em",
+                                "fontWeight": "500"
+                        }
+                ],
+                "headline-xl": [
+                        "48px",
+                        {
+                                "lineHeight": "56px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "label-caps": ["12px", { lineHeight: "16px", letterSpacing: "0.08em", fontWeight: "600" }],
+                "evidence-data": ["14px", { lineHeight: "20px", fontWeight: "600" }],
+                "display-xl": ["64px", { lineHeight: "72px", letterSpacing: "-0.04em", fontWeight: "700" }]
+        }
+},
+    },
+  }
+</script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+        .ultra-thin-glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-left: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .core-pulse {
+            animation: pulse-ring 4s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 0.4; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+        .orbit {
+            animation: orbit-spin 60s linear infinite;
+        }
+        .orbit-pulse {
+            animation: orbit-spin 60s linear infinite, glow-pulse 3s ease-in-out infinite alternate;
+        }
+        @keyframes orbit-spin {
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes glow-pulse {
+            0% { border-color: rgba(255, 255, 255, 0.2); box-shadow: 0 0 5px rgba(0,119,182,0.1) inset; }
+            100% { border-color: rgba(255, 255, 255, 0.7); box-shadow: 0 0 20px rgba(0,119,182,0.4) inset; }
+        }
+        .thread-glow {
+            filter: drop-shadow(0 0 8px rgba(0, 119, 182, 0.5));
+            animation: thread-pulse 3s infinite alternate;
+        }
+        @keyframes thread-pulse {
+            from { opacity: 0.4; stroke-width: 1px; }
+            to { opacity: 1; stroke-width: 2px; }
+        }
+    </style>
+</head>
+<body class="bg-background min-h-screen text-on-surface overflow-hidden relative font-body-md text-body-md">
+<!-- Ambient Video Background -->
+<div class="fixed inset-0 z-0">
+<div class="absolute inset-0 bg-primary/10 mix-blend-multiply z-10"></div>
+<img alt="" class="w-full h-full object-cover filter blur-[2px] scale-105" src="https://lh3.googleusercontent.com/aida/AP1WRLthfbj61MvjiqBBF9b8lwirYQPB4h4LGQH_3bzWHw_rjWO7tqsgNyp7ejrTyDLh7y8zc6eAThYvnnvb5Qs6oXJHcfl6EnlH3ZjSRTmso54jLqe5n2U_sedJ6KS-_B7MHFcQl9T7VD5PObGTyWTRqm5KSYDOsHxj44GhcwfjStIwHohiK7wr86UE-cMNhoDflMMV4GyjQak1pwGZsFvFPazTZhr8ku3ywCephr3epjSjXU4wXtEz3_3i_4o"/>
+</div>
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full bg-glass-surface backdrop-blur-xl border-b border-glass-border shadow-sm flex justify-between items-center h-16 px-gutter z-50">
+<div class="flex items-center">
+<h1 class="font-headline-lg text-headline-lg font-bold text-primary dark:text-on-primary-container m-0">Voyage Canvas</h1>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined cursor-pointer hover:bg-glass-surface/80 transition-colors p-2 rounded-full text-primary" data-icon="search">search</span>
+<span class="material-symbols-outlined cursor-pointer hover:bg-glass-surface/80 transition-colors p-2 rounded-full text-primary" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined cursor-pointer hover:bg-glass-surface/80 transition-colors p-2 rounded-full text-primary" data-icon="workspace_premium">workspace_premium</span>
+<img alt="Traveler Profile with Loyalty Badge" class="w-8 h-8 rounded-full border border-glass-border object-cover" data-alt="A detailed, high-resolution portrait of a sophisticated traveler serving as a profile avatar. The person has a friendly, professional expression, shot in soft, natural daylight with a shallow depth of field. The background is a subtle, out-of-focus premium airline lounge environment, reinforcing a high-end travel aesthetic. Clean, bright, and modern lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7_kt7pAHTHEBozzMkjZR-aVFQ8YxQASSsEMePf0_R_ySWDteE4x3Cgr6kBHK_zTSgxh1Ng5JK0hD1PsRFdKkhJXs-CIhvVRrVMEYmcqlqCG_iYU3mMpim3esQdVbUIjsalDPq_j3SpMAF1CqlGyAmcXaSKS4RwEIfMg3TOCSV_3hbQfo4o_h-IIEh4acvFGpvirIFdtl5N-8jsMPFcPUZFSUs6sWpJDypuZF67GHe77p0mcd3Mm4P"/>
+</div>
+</header>
+<!-- Main Generative Canvas -->
+<main class="relative z-10 mt-16 h-[calc(100vh-64px)] w-full flex flex-col items-center justify-center overflow-hidden pr-[350px]">
+<!-- Generative Map Threads (SVG) -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none z-0" style="left: 0; top: 0;">
+<path class="thread-glow" d="M 50% 50% Q 30% 20% 25% 30%" fill="none" stroke="#0077b6" stroke-dasharray="4 4" stroke-width="1.5"></path>
+<path class="thread-glow" d="M 50% 50% Q 60% 80% 70% 70%" fill="none" stroke="#0077b6" stroke-dasharray="4 4" stroke-width="1.5"></path>
+</svg>
+<!-- The Family Core -->
+<div class="relative w-[600px] h-[600px] flex items-center justify-center pb-20">
+<!-- Central Glowing Core Base -->
+<div class="absolute inset-0 rounded-full bg-primary/30 blur-3xl core-pulse"></div>
+<!-- Journey Threads (Orbits) -->
+<div class="absolute inset-0 border border-white/30 rounded-full orbit orbit-pulse" style="animation-duration: 45s;"></div>
+<div class="absolute inset-[-100px] border border-white/20 rounded-full orbit orbit-pulse" style="animation-duration: 75s; animation-direction: reverse;"></div>
+<!-- Floating Generative Nodes -->
+<div class="absolute w-full h-full orbit" style="animation-duration: 45s;">
+<div class="absolute top-[10%] left-[20%] -translate-x-1/2 -translate-y-1/2 rounded-full flex flex-col items-center gap-2 cursor-pointer hover:scale-110 transition-transform duration-300" style="transform: rotate(0deg);">
+<div class="w-20 h-20 rounded-full bg-white/30 backdrop-blur-md flex items-center justify-center border border-white/50 shadow-[0_0_20px_rgba(0,119,182,0.3)] relative group">
+<div class="absolute inset-0 rounded-full bg-primary/10 scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+<span class="material-symbols-outlined text-primary text-3xl relative z-10">sailing</span>
+</div>
+<div class="bg-white/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/50 shadow-sm mt-2">
+<span class="font-label-caps text-label-caps text-primary tracking-wider">Caribbean</span>
+</div>
+</div>
+</div>
+<div class="absolute w-full h-full orbit" style="animation-duration: 75s; animation-direction: reverse;">
+<div class="absolute bottom-[15%] right-[15%] translate-x-1/2 translate-y-1/2 rounded-full flex flex-col items-center gap-2 cursor-pointer hover:scale-110 transition-transform duration-300" style="transform: rotate(0deg);">
+<div class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40 shadow-[0_0_15px_rgba(255,255,255,0.3)] relative group">
+<div class="absolute inset-0 rounded-full bg-primary/10 scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+<span class="material-symbols-outlined text-white text-2xl relative z-10">water</span>
+</div>
+<div class="bg-white/30 backdrop-blur-md px-3 py-1 rounded-full border border-white/30 shadow-sm mt-2">
+<span class="font-label-caps text-label-caps text-white/90 tracking-wider">Mediterranean</span>
+</div>
+</div>
+</div>
+<!-- The Avatars -->
+<div class="relative w-64 h-64 glass-panel rounded-full flex items-center justify-center p-8 shadow-2xl shadow-primary/20 backdrop-blur-3xl z-10">
+<!-- Inner glow -->
+<div class="absolute inset-2 rounded-full border border-white/50 bg-gradient-to-br from-white/40 to-transparent"></div>
+<div class="grid grid-cols-2 gap-4 relative z-10 w-full h-full">
+<div class="relative group cursor-pointer">
+<img alt="Adult 1" class="w-full h-full object-cover rounded-full border-2 border-white/60 hover:border-primary transition-colors" data-alt="High quality 3d render of an adult male avatar icon, soft lighting, modern glassmorphism style, set against a transparent or very light background, representing a father figure in a family travel app UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMzpsvKT3fM0zmFXMQqwu-bzL8xlLydau0fMv2g2DFkYc0H0TTeBBcnSuBepj2Z5mQnGsl0Tnl69ckNvNSZHgSQHCTN99LFHP5jhljaESrHlaiITOq5ngrMWfn047tn7LMzYCWE9LoELR2Y-6SJwoS1fBBXi0vgRZXQGRg51JRvgniotG1xi6c9J_Ffh5VNdd8KvBuB7x1S6EcC4jtR6uGOdXQ9_AFJkncKQa1iGWiNWlUozMlhJRe"/>
+<div class="absolute inset-0 bg-primary/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
+<span class="material-symbols-outlined text-on-primary">tune</span>
+</div>
+</div>
+<div class="relative group cursor-pointer">
+<img alt="Adult 2" class="w-full h-full object-cover rounded-full border-2 border-white/60 hover:border-primary transition-colors" data-alt="High quality 3d render of an adult female avatar icon, soft lighting, modern glassmorphism style, set against a transparent or very light background, representing a mother figure in a family travel app UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcb6LeRxxIPc6egiDTSKly1LrYT5F3IOMBCI3z5QUeHj61ziHzNCeFkgiwY6ZfDC1ZPmRAsRrn2xCZ_mZNW96PCIrijWWYo7bnS-lTAjzqIv2ed-oQs4wW0_djzPjJV3SKgsXckAE4ny9rFmRc9L60IJCcRkSOSeZ_6XC1ZG_DsxS2CnesQPU-G4Z_EcizqCSl2zbEOCfmOQn7dybeBw7fnj0knE5shCUq52o2IBzO0NSGiZZE1OrH"/>
+<div class="absolute inset-0 bg-primary/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
+<span class="material-symbols-outlined text-on-primary">tune</span>
+</div>
+</div>
+<div class="relative group cursor-pointer">
+<img alt="Child 1" class="w-full h-full object-cover rounded-full border-2 border-white/60 hover:border-primary transition-colors" data-alt="High quality 3d render of a child avatar icon, soft lighting, modern glassmorphism style, set against a transparent or very light background, representing a kid in a family travel app UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgAUrFCM4KQvRHZXzbC2EByEzXopdlLB6zgnCt2uKIndiQ0m8EACY88DMofBnCSFJoQcLSxP4k83C5rMQSr_82i6jN2GsHBFzbY-qrQQHaEerw-h3WsTFt82j6_R_ysFBDmgbyuOAB2ENJ6WM2q-4sqU5yR6-ZIGS8wudi78kQ5my5tmWMqQne5nTgtzkvPzXBXEnc-hCW0WAZnTqvQcE8zPzKn_oFSQ4JSIsqLRG1I6RPTlkaRBKV"/>
+</div>
+<div class="relative group cursor-pointer">
+<img alt="Child 2" class="w-full h-full object-cover rounded-full border-2 border-white/60 hover:border-primary transition-colors" data-alt="High quality 3d render of a younger child avatar icon, soft lighting, modern glassmorphism style, set against a transparent or very light background, representing a toddler in a family travel app UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAv2FHGsMrg1sm1uOkaavmIBUAXpgb9UvMfMeVZdiB0iNMM77CTtYkX16wX5wizIXg2pdt-CCSrWHdyN64h7NYRTmsSadItrjGTvk-XAiH3zT8fExErwyiSu0XYq26AgFzs9XxRgmIbwAt3tkdexiRU4ulEkIew0H0-T66wvHBj8RnCwlUtN1ngkFM3d4rWK0lkX0PY9j-tLnO2QMQvp-a_4XBZWNOHEqY6qL6J3SKko96KTqDFycqW"/>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Prompt Input Field -->
+<div class="fixed bottom-12 left-1/2 -translate-x-1/2 z-40 w-full max-w-2xl px-4 pr-[350px] lg:pr-0 xl:pr-[350px]">
+<div class="bg-white/40 p-2 rounded-full flex items-center gap-4 shadow-[0_8px_30px_rgba(0,119,182,0.2)] border border-white/60 backdrop-blur-2xl transition-all hover:bg-white/50">
+<span class="material-symbols-outlined text-primary ml-4">auto_awesome</span>
+<input class="flex-grow bg-transparent border-none outline-none focus:ring-0 text-primary placeholder:text-primary/70 font-body-md" placeholder="Change destination, update travelers, or refine your trip..." type="text"/>
+<button class="bg-primary text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-primary/90 transition-colors shadow-md">
+<span class="material-symbols-outlined text-sm">send</span>
+</button>
+</div>
+</div>
+<!-- Contextual Evidence Pane -->
+<div class="fixed right-0 top-16 bottom-0 w-[350px] ultra-thin-glass p-6 transform translate-x-0 transition-transform duration-500 z-30 flex flex-col gap-6">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-primary flex items-center gap-2 drop-shadow-sm">
+<span class="material-symbols-outlined">auto_awesome</span> Active Canvas
+        </h3>
+<div class="bg-white/10 rounded-xl p-5 border border-white/20 backdrop-blur-md">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h4 class="font-body-md text-body-md font-bold text-primary drop-shadow-sm">Royal Caribbean</h4>
+<p class="font-label-caps text-label-caps text-primary/80 mt-1">Symphony of the Seas</p>
+</div>
+<span class="material-symbols-outlined text-primary cursor-pointer drop-shadow-sm" style="font-variation-settings: 'FILL' 1;">lock</span>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-center border-b border-white/20 pb-2">
+<span class="text-sm text-primary/80">Dates</span>
+<span class="font-evidence-data text-evidence-data text-primary">Oct 12 - Oct 19</span>
+</div>
+<div class="flex justify-between items-center border-b border-white/20 pb-2">
+<span class="text-sm text-primary/80">Base Fare</span>
+<span class="font-evidence-data text-evidence-data text-primary">$3,240</span>
+</div>
+</div>
+<button class="w-full mt-6 py-3 rounded-lg bg-primary/90 text-white font-body-md text-body-md font-bold hover:bg-primary transition-colors shadow-md backdrop-blur-sm border border-primary/50">
+                Commit Journey
+            </button>
+</div>
+</div>
+</body></html>

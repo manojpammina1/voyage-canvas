@@ -1,0 +1,11 @@
+{
+  "id": "children-travel-policy",
+  "title": "Demo: Children Travel Documents (Synthetic)",
+  "topic": "family",
+  "publishedAt": "2026-01-15",
+  "contentVersion": "demo-1.0",
+  "classification": "POLICY",
+  "keywords": ["children", "kids", "travel documents", "passport", "birth certificate", "family"],
+  "disclaimer": "SYNTHETIC DEMO CONTENT — not real RCG policy.",
+  "content": "For this demo voyage planning assistant, children traveling on a Caribbean cruise must have an acceptable proof-of-identity document. Acceptable documents include a valid passport or, for closed-loop sailings departing from the same U.S. port, a government-issued birth certificate plus a photo ID for the accompanying adult. All minors must appear on the same reservation as their parent or legal guardian. The cruise line may require additional documentation for international ports; guests should verify requirements before sailing. This is synthetic approved demo content for policy retrieval testing only."
+}

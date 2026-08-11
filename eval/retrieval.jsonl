@@ -1,0 +1,5 @@
+{"id":"ret-001","question":"What travel documents do children need?","expectedSourceIds":["children-travel-policy"]}
+{"id":"ret-002","question":"What is the cancellation policy for this demo?","expectedSourceIds":["cancellation-policy"]}
+{"id":"ret-003","question":"What is included with the cruise fare in this demo?","expectedSourceIds":["whats-included-faq"]}
+{"id":"ret-004","question":"Tell me about the Caribbean route in the approved demo content.","expectedSourceIds":["caribbean-destination-guide"]}
+{"id":"ret-005","question":"What family information is available in the approved content?","expectedSourceIds":["family-travel-faq","children-travel-policy"]}

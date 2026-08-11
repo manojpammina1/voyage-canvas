@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Voyage Canvas - Checkout</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-fixed-dim": "#bfc2ff",
+                    "on-tertiary-fixed": "#070a61",
+                    "on-primary-fixed-variant": "#004b74",
+                    "error": "#ba1a1a",
+                    "on-secondary-fixed": "#001f24",
+                    "secondary-fixed-dim": "#83d3e1",
+                    "tertiary-container": "#646aba",
+                    "outline": "#707881",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-high": "#e0e9ef",
+                    "on-surface-variant": "#404850",
+                    "surface-bright": "#f4faff",
+                    "surface-container-highest": "#dbe4ea",
+                    "primary-fixed": "#cde5ff",
+                    "secondary-container": "#9cecfb",
+                    "secondary-fixed": "#9feffe",
+                    "primary-container": "#0077b6",
+                    "on-secondary-container": "#016d7a",
+                    "on-surface": "#141d21",
+                    "on-tertiary-container": "#f9f6ff",
+                    "tertiary-fixed": "#e0e0ff",
+                    "surface": "#f4faff",
+                    "outline-variant": "#bfc7d1",
+                    "on-tertiary-fixed-variant": "#393e8c",
+                    "background": "#f4faff",
+                    "on-secondary-fixed-variant": "#004f59",
+                    "surface-dim": "#d2dbe1",
+                    "surface-container-low": "#ecf5fb",
+                    "on-error": "#ffffff",
+                    "surface-tint": "#006399",
+                    "inverse-primary": "#94ccff",
+                    "on-primary-container": "#f3f7ff",
+                    "on-secondary": "#ffffff",
+                    "inverse-on-surface": "#e9f2f8",
+                    "on-tertiary": "#ffffff",
+                    "on-background": "#141d21",
+                    "on-error-container": "#93000a",
+                    "secondary": "#006875",
+                    "on-primary": "#ffffff",
+                    "inverse-surface": "#293236",
+                    "primary": "#005d90",
+                    "on-primary-fixed": "#001d32",
+                    "tertiary": "#4c51a0",
+                    "primary-fixed-dim": "#94ccff",
+                    "error-container": "#ffdad6",
+                    "surface-container": "#e6eff5",
+                    "surface-variant": "#dbe4ea"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "16px",
+                    "container-max": "1280px",
+                    "base": "8px",
+                    "gutter": "24px",
+                    "margin-desktop": "48px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Geist", "sans-serif"],
+                    "body-lg": ["Geist", "sans-serif"],
+                    "headline-xl": ["Geist", "sans-serif"],
+                    "body-md": ["Geist", "sans-serif"],
+                    "label-md": ["Geist", "sans-serif"],
+                    "headline-lg-mobile": ["Geist", "sans-serif"],
+                    "label-sm": ["Geist", "sans-serif"]
+            },
+            "fontSize": {
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill-icon {
+            font-variation-settings: 'FILL' 1, 'wght' 300;
+        }
+        
+        /* Ambient Orbit Animations */
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        @keyframes float-reverse {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(10px) rotate(-2deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        .animate-float-1 { animation: float 6s ease-in-out infinite; }
+        .animate-float-2 { animation: float-reverse 8s ease-in-out infinite; }
+        .animate-float-3 { animation: float 7s ease-in-out infinite; animation-delay: 1s; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-sans antialiased relative selection:bg-primary-container/30">
+<!-- Background Layer with Heavy Glass Blur -->
+<div class="fixed inset-0 z-0">
+<div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida/AP1WRLspXz4wCp78tjc6h86lUOtz-hioxf-deT03OgCjcrON9SYIFJo13BBJP6U__f_Ew4QmmQICiHvy5CmntGHdPp2UzgADYIOBTWz9Ja-qxIS7c00gMXezA5e9XKy2dKs60Y-fyOTqDHFzHqhOjx-TFn6LZA9FS_AWopPJChSLJvOdqTdYuPO3UwYcEmrfRKcO6laaXOXCXbbgwJndYt9JUApCuXeXDWiTIycBDYHt9rU1mu_jNZz0NXvrIW4');"></div>
+<!-- Heavy glassmorphism blur overlay -->
+<div class="absolute inset-0 backdrop-blur-[40px] bg-surface-container-lowest/50"></div>
+<!-- Vignette/Gradient to ensure text readability -->
+<div class="absolute inset-0 bg-gradient-to-b from-surface-container-lowest/20 via-transparent to-surface-container-lowest/60"></div>
+</div>
+<!-- TopAppBar (From JSON, modified for transactional state) -->
+<header class="fixed top-0 w-full bg-surface-container-lowest/40 backdrop-blur-xl border-b border-primary/10 shadow-sm flex justify-between items-center h-16 px-gutter w-full z-50">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-3xl">sailing</span>
+<span class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg font-bold text-primary">Voyage Canvas</span>
+</div>
+<!-- Intent Bar: Securing Journey -->
+<div class="hidden md:flex items-center gap-3 bg-surface-container-lowest/50 px-4 py-1.5 rounded-full border border-primary/20">
+<span class="material-symbols-outlined text-primary text-sm animate-pulse">lock</span>
+<span class="font-label-md text-label-md text-primary">Securing Journey</span>
+<div class="w-16 h-1 bg-surface-variant rounded-full overflow-hidden ml-2">
+<div class="w-3/4 h-full bg-primary rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center gap-4 text-primary">
+<div class="cursor-pointer hover:bg-surface-container-lowest/60 transition-colors p-2 rounded-full border border-primary/0 hover:border-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="relative z-10 flex-grow flex flex-col md:flex-row items-center justify-center w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-24 pb-12 gap-8 md:gap-16">
+<!-- Left Pane: Payment Core & Orbits -->
+<div class="flex-grow w-full md:w-auto relative min-h-[500px] md:min-h-[600px] flex items-center justify-center">
+<!-- Structural Rings (Visual only) -->
+<div class="absolute w-[280px] h-[280px] md:w-[400px] md:h-[400px] rounded-full border border-primary/10 border-dashed animate-[spin_120s_linear_infinite]"></div>
+<div class="absolute w-[360px] h-[360px] md:w-[540px] md:h-[540px] rounded-full border border-primary/5 animate-[spin_180s_linear_infinite_reverse]"></div>
+<!-- PAYMENT CORE (Center) -->
+<div class="relative z-30 w-48 h-48 md:w-56 md:h-56 bg-surface-container-lowest/80 backdrop-blur-2xl rounded-full border border-primary/20 shadow-[0_8px_32px_rgba(0,119,182,0.15)] flex flex-col items-center justify-center animate-float-1">
+<span class="material-symbols-outlined text-primary-container text-4xl mb-2 fill-icon">verified_user</span>
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Verified Price</span>
+<span class="font-headline-xl text-headline-xl text-primary font-bold mt-1">$2,450</span>
+</div>
+<!-- INNER ORBIT: Payment Methods -->
+<div class="absolute z-20 top-[10%] left-[15%] md:top-[15%] md:left-[20%] w-20 h-20 bg-surface-container-lowest/70 backdrop-blur-xl rounded-full border border-primary/20 shadow-sm flex items-center justify-center animate-float-2 hover:bg-surface-container-lowest transition-colors cursor-pointer ring-2 ring-primary/40 ring-offset-2 ring-offset-transparent">
+<span class="material-symbols-outlined text-primary text-2xl">credit_card</span>
+</div>
+<div class="absolute z-20 bottom-[15%] left-[20%] md:bottom-[20%] md:left-[25%] w-16 h-16 bg-surface-container-lowest/50 backdrop-blur-md rounded-full border border-primary/15 shadow-sm flex items-center justify-center animate-float-3 hover:bg-surface-container-lowest transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-on-surface-variant text-xl">account_balance_wallet</span>
+</div>
+<div class="absolute z-20 top-[40%] right-[10%] md:right-[15%] w-16 h-16 bg-surface-container-lowest/50 backdrop-blur-md rounded-full border border-primary/15 shadow-sm flex items-center justify-center animate-float-1 hover:bg-surface-container-lowest transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-on-surface-variant text-xl">loyalty</span>
+</div>
+<!-- MIDDLE ORBIT: Trip Summary Nodes -->
+<div class="absolute z-10 top-[0%] right-[20%] md:top-[5%] md:right-[30%] bg-surface-container-lowest/60 backdrop-blur-lg px-4 py-2 rounded-full border border-primary/10 shadow-sm flex items-center gap-2 animate-float-3">
+<span class="material-symbols-outlined text-primary text-sm">sailing</span>
+<span class="font-label-sm text-label-sm text-on-surface">Caribbean Route</span>
+</div>
+<div class="absolute z-10 bottom-[5%] right-[15%] md:bottom-[10%] md:right-[20%] bg-surface-container-lowest/60 backdrop-blur-lg px-4 py-2 rounded-full border border-primary/10 shadow-sm flex items-center gap-2 animate-float-2">
+<span class="material-symbols-outlined text-primary text-sm">bed</span>
+<span class="font-label-sm text-label-sm text-on-surface">Balcony Stateroom</span>
+</div>
+<div class="absolute z-10 top-[25%] left-[0%] md:top-[30%] md:left-[5%] bg-surface-container-lowest/60 backdrop-blur-lg px-4 py-2 rounded-full border border-primary/10 shadow-sm flex items-center gap-2 animate-float-1">
+<span class="material-symbols-outlined text-primary text-sm">group</span>
+<span class="font-label-sm text-label-sm text-on-surface">4 Travelers</span>
+</div>
+<!-- OUTER ORBIT: Security Signals -->
+<div class="absolute z-10 bottom-[-5%] md:bottom-[0%] bg-surface-container-lowest/40 backdrop-blur-md px-4 py-2 rounded-full border border-primary/5 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-sm">enhanced_encryption</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Secure AES-256 Encryption</span>
+</div>
+</div>
+<!-- Right Pane: Transaction Summary -->
+<div class="w-full md:w-[400px] shrink-0">
+<div class="bg-surface-container-lowest/70 backdrop-blur-[24px] border border-primary/20 rounded-2xl p-6 md:p-8 shadow-[0_8px_32px_rgba(0,119,182,0.08)] flex flex-col gap-6 relative overflow-hidden">
+<!-- Subtle internal glass highlight -->
+<div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-primary/5 to-transparent z-0 pointer-events-none"></div>
+<div class="relative z-10">
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface font-semibold mb-1">Complete Express Checkout</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Review your crystalline itinerary details before final authorization.</p>
+</div>
+<div class="relative z-10 flex flex-col gap-4 py-4 border-y border-primary/10">
+<div class="flex justify-between items-center">
+<span class="font-body-md text-body-md text-on-surface-variant">Base Fare (4 Travelers)</span>
+<span class="font-body-md text-body-md text-on-surface font-medium">$2,100</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-md text-body-md text-on-surface-variant">Taxes &amp; Port Fees</span>
+<span class="font-body-md text-body-md text-on-surface font-medium">$450</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-md text-body-md text-primary flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">local_offer</span> Loyalty Discount
+                        </span>
+<span class="font-body-md text-body-md text-primary font-medium">-$100</span>
+</div>
+</div>
+<div class="relative z-10 flex justify-between items-end mt-2">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wide">Total Due</span>
+<span class="font-body-sm text-sm text-on-surface-variant/70">Charged to Visa ending in 4242</span>
+</div>
+<span class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary font-bold">$2,450</span>
+</div>
+<button class="relative z-10 w-full bg-primary-container text-on-primary-container font-label-md text-label-md py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-primary transition-colors mt-4 shadow-md group">
+<span class="material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform">lock</span>
+                    Confirm &amp; Pay
+                </button>
+<p class="relative z-10 text-center font-label-sm text-label-sm text-on-surface-variant/60 mt-2 flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[12px]">shield</span> Includes Money-Back Guarantee
+                </p>
+</div>
+</div>
+</main>
+<!-- Footer (From JSON) -->
+<footer class="relative z-10 w-full mt-auto bg-ocean-deep dark:bg-surface-container-lowest text-on-primary dark:text-on-surface font-body-md text-body-md flex justify-between items-center px-margin-mobile md:px-margin-desktop py-8 border-t border-primary/10 backdrop-blur-md bg-surface-container-lowest/30">
+<div class="font-label-caps text-label-caps text-on-surface-variant text-sm uppercase tracking-widest">
+            © 2024 Voyage Canvas. Adaptive Serenity Engine.
+        </div>
+<div class="flex gap-6">
+<a class="text-on-surface-variant/70 underline-offset-4 hover:underline hover:text-primary transition-colors text-sm" href="#">Help Center</a>
+<a class="text-on-surface-variant/70 underline-offset-4 hover:underline hover:text-primary transition-colors text-sm" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant/70 underline-offset-4 hover:underline hover:text-primary transition-colors text-sm" href="#">Commitment Terms</a>
+</div>
+</footer>
+</body></html>

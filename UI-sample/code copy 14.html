@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Voyage Canvas - Secure Checkout</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary": "#005d90",
+                      "on-error-container": "#93000a",
+                      "on-secondary-fixed": "#001f24",
+                      "on-tertiary-fixed": "#070a61",
+                      "error": "#ba1a1a",
+                      "primary-fixed": "#cde5ff",
+                      "tertiary-fixed-dim": "#bfc2ff",
+                      "surface-container-highest": "#dbe4ea",
+                      "inverse-on-surface": "#e9f2f8",
+                      "secondary-container": "#9cecfb",
+                      "on-surface-variant": "#404850",
+                      "on-primary": "#ffffff",
+                      "outline-variant": "#bfc7d1",
+                      "primary-container": "#0077b6",
+                      "inverse-surface": "#293236",
+                      "surface-dim": "#d2dbe1",
+                      "primary-fixed-dim": "#94ccff",
+                      "error-container": "#ffdad6",
+                      "background": "#f4faff",
+                      "on-background": "#141d21",
+                      "secondary-fixed": "#9feffe",
+                      "surface-container-high": "#e0e9ef",
+                      "on-primary-fixed": "#001d32",
+                      "on-error": "#ffffff",
+                      "outline": "#707881",
+                      "inverse-primary": "#94ccff",
+                      "secondary-fixed-dim": "#83d3e1",
+                      "on-tertiary-container": "#f9f6ff",
+                      "on-secondary-fixed-variant": "#004f59",
+                      "tertiary-fixed": "#e0e0ff",
+                      "on-secondary": "#ffffff",
+                      "surface-tint": "#006399",
+                      "tertiary": "#4c51a0",
+                      "secondary": "#006875",
+                      "surface": "#f4faff",
+                      "on-tertiary": "#ffffff",
+                      "tertiary-container": "#646aba",
+                      "on-primary-container": "#f3f7ff",
+                      "surface-variant": "#dbe4ea",
+                      "surface-container": "#e6eff5",
+                      "on-secondary-container": "#016d7a",
+                      "surface-bright": "#f4faff",
+                      "on-surface": "#141d21",
+                      "surface-container-low": "#ecf5fb",
+                      "on-tertiary-fixed-variant": "#393e8c",
+                      "on-primary-fixed-variant": "#004b74",
+                      "surface-container-lowest": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-mobile": "16px",
+                      "base": "8px",
+                      "container-max": "1280px",
+                      "gutter": "24px",
+                      "margin-desktop": "48px"
+              },
+              "fontFamily": {
+                      "body-md": [
+                              "Geist"
+                      ],
+                      "body-lg": [
+                              "Geist"
+                      ],
+                      "headline-xl": [
+                              "Geist"
+                      ],
+                      "label-md": [
+                              "Geist"
+                      ],
+                      "headline-lg-mobile": [
+                              "Geist"
+                      ],
+                      "label-sm": [
+                              "Geist"
+                      ],
+                      "headline-lg": [
+                              "Geist"
+                      ]
+              },
+              "fontSize": {
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-xl": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .orbit-container {
+            position: relative;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            border: 1px dashed rgba(0, 119, 182, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .orbit-node {
+            position: absolute;
+            width: auto;
+            min-width: 160px;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 119, 182, 0.2);
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 20px rgba(0, 119, 182, 0.1);
+            transform-origin: center center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .orbit-node:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 30px rgba(0, 119, 182, 0.15);
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(0, 119, 182, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 119, 182, 0.1);
+        }
+
+        .bg-image {
+            background-image: url('https://lh3.googleusercontent.com/aida/AP1WRLspXz4wCp78tjc6h86lUOtz-hioxf-deT03OgCjcrON9SYIFJo13BBJP6U__f_Ew4QmmQICiHvy5CmntGHdPp2UzgADYIOBTWz9Ja-qxIS7c00gMXezA5e9XKy2dKs60Y-fyOTqDHFzHqhOjx-TFn6LZA9FS_AWopPJChSLJvOdqTdYuPO3UwYcEmrfRKcO6laaXOXCXbbgwJndYt9JUApCuXeXDWiTIycBDYHt9rU1mu_jNZz0NXvrIW4');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md overflow-x-hidden">
+<!-- Header (Suppressed due to transactional nature, replacing with a minimal back button) -->
+<header class="absolute top-0 left-0 w-full z-50 p-6 flex justify-between items-center">
+<button class="flex items-center gap-2 text-primary hover:text-primary-container transition-colors font-label-md">
+<span class="material-symbols-outlined">arrow_back</span>
+            Back to Journey
+        </button>
+<div class="font-headline-lg text-headline-lg font-bold text-ocean-deep dark:text-on-primary-container text-primary">
+            Voyage Canvas
+        </div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-grow relative w-full h-screen bg-image flex items-center justify-center p-gutter">
+<!-- Overlay to ensure readability -->
+<div class="absolute inset-0 bg-white/40 backdrop-blur-[2px]"></div>
+<div class="relative z-10 w-full max-w-container-max mx-auto grid grid-cols-1 lg:grid-cols-12 gap-gutter items-center h-full pt-16">
+<!-- Left: Concentric Orbits -->
+<div class="lg:col-span-8 flex justify-center items-center h-full relative">
+<div class="orbit-container">
+<!-- Core: Family -->
+<div class="z-20 flex flex-col items-center justify-center bg-white/90 backdrop-blur-xl rounded-full w-48 h-48 border border-primary/20 shadow-lg relative">
+<div class="absolute inset-0 rounded-full border-2 border-primary/10 animate-pulse"></div>
+<img class="w-24 h-24 rounded-full object-cover mb-2 shadow-inner" data-alt="A detailed circular portrait of a smiling family of four, framed in a clean white digital UI style. Soft, even lighting creates a welcoming mood. The aesthetic is modern and premium, fitting a luxury travel app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuASSgUgiOW00FvA05TP6V1IHLcW9EqrRIsdMWCfF_GD_hgjH4VgpyS87V1qzlBbx5VlATPa4SKdqk3cZTLYK49cGAeyVLrOUC9mdjmm7Fo5d3n2DNyoi7MjylGOMfkwuz4OPtQLu4x7DKzJYTHMnvQyQmw-k7YTxekrqnztI96vwLW1Ix4LM1CeTMfdicWBlybsTF0imzHBU6dfXKii_nFloCs7hoRo5_df5ODCecbPneasC25WR2or"/>
+<span class="font-label-md text-primary font-bold">The Miller Family</span>
+<span class="font-label-sm text-outline">Voyage Core</span>
+</div>
+<!-- Orbit Nodes -->
+<!-- Node 1: Payment Method -->
+<div class="orbit-node absolute top-[10%] left-[10%]">
+<div class="bg-primary-container/10 p-2 rounded-full text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">credit_card</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-on-surface font-semibold">Visa ending in 4242</span>
+<span class="font-label-sm text-outline">Primary Method</span>
+</div>
+</div>
+<!-- Node 2: Security -->
+<div class="orbit-node absolute bottom-[15%] left-[5%]">
+<div class="bg-secondary-container/30 p-2 rounded-full text-secondary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">lock</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-on-surface font-semibold">AES-256 Encrypted</span>
+<span class="font-label-sm text-outline">Secure Transaction</span>
+</div>
+</div>
+<!-- Node 3: Price -->
+<div class="orbit-node absolute top-[40%] -right-[15%]">
+<div class="bg-primary/10 p-2 rounded-full text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-on-surface font-semibold">Verified Price</span>
+<span class="font-label-sm text-outline font-bold text-primary">$2,450.00</span>
+</div>
+</div>
+<!-- Decorative rings -->
+<div class="absolute w-[120%] h-[120%] rounded-full border border-primary/5 border-dashed"></div>
+<div class="absolute w-[140%] h-[140%] rounded-full border border-primary/5"></div>
+</div>
+</div>
+<!-- Right: Checkout Summary Glass Panel -->
+<div class="lg:col-span-4 h-full flex items-center">
+<div class="glass-panel w-full rounded-xl p-8 flex flex-col gap-6 relative overflow-hidden">
+<!-- Decorative subtle gradient glow -->
+<div class="absolute -top-20 -right-20 w-40 h-40 bg-secondary-container rounded-full blur-[60px] opacity-50 pointer-events-none"></div>
+<div class="flex flex-col gap-2 relative z-10">
+<h2 class="font-headline-lg text-primary">Complete Checkout</h2>
+<p class="font-body-md text-on-surface-variant">Review your expedition details and securely finalize your booking.</p>
+</div>
+<div class="h-[1px] w-full bg-primary/10 relative z-10"></div>
+<div class="flex flex-col gap-4 relative z-10">
+<div class="flex justify-between items-center">
+<span class="font-body-md text-on-surface">Base Fare</span>
+<span class="font-body-md text-on-surface font-medium">$2,100.00</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-md text-on-surface">Taxes &amp; Fees</span>
+<span class="font-body-md text-on-surface font-medium">$350.00</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-label-md text-primary bg-primary/5 px-2 py-1 rounded-full">Voyage Elite Discount</span>
+<span class="font-body-md text-primary font-medium">-$0.00</span>
+</div>
+</div>
+<div class="h-[1px] w-full bg-primary/10 relative z-10"></div>
+<div class="flex justify-between items-end relative z-10">
+<div class="flex flex-col">
+<span class="font-label-sm text-outline uppercase tracking-wider">Total Amount</span>
+<span class="font-headline-lg text-primary">$2,450.00</span>
+</div>
+<span class="font-label-sm text-on-surface-variant mb-2">USD</span>
+</div>
+<div class="mt-4 relative z-10">
+<button class="w-full bg-primary hover:bg-primary-container text-white rounded-lg py-4 px-6 font-label-md transition-colors flex justify-center items-center gap-2 group">
+                            Confirm &amp; Pay
+                            <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+<div class="text-center relative z-10 mt-2">
+<span class="font-label-sm text-outline flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[14px]">shield</span>
+                            Payments are securely processed and encrypted.
+                        </span>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

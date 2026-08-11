@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Voyage Canvas - Value-Curve Orbit</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#d2dbe1",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#004b74",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary": "#4c51a0",
+                        "on-tertiary-fixed-variant": "#393e8c",
+                        "inverse-on-surface": "#e9f2f8",
+                        "surface-container-low": "#ecf5fb",
+                        "secondary-container": "#9cecfb",
+                        "on-primary-container": "#f3f7ff",
+                        "secondary": "#006875",
+                        "on-surface": "#141d21",
+                        "surface": "#f4faff",
+                        "on-primary-fixed": "#001d32",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed": "#9feffe",
+                        "on-error": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "primary-fixed-dim": "#94ccff",
+                        "tertiary-fixed": "#e0e0ff",
+                        "background": "#f4faff",
+                        "error-container": "#ffdad6",
+                        "primary": "#005d90",
+                        "on-surface-variant": "#404850",
+                        "surface-container-high": "#e0e9ef",
+                        "surface-bright": "#f4faff",
+                        "inverse-primary": "#94ccff",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed": "#070a61",
+                        "tertiary-container": "#646aba",
+                        "on-tertiary-container": "#f9f6ff",
+                        "on-secondary-container": "#016d7a",
+                        "on-secondary-fixed": "#001f24",
+                        "surface-tint": "#006399",
+                        "surface-container-highest": "#dbe4ea",
+                        "primary-container": "#0077b6",
+                        "tertiary-fixed-dim": "#bfc2ff",
+                        "inverse-surface": "#293236",
+                        "outline-variant": "#bfc7d1",
+                        "surface-variant": "#dbe4ea",
+                        "secondary-fixed-dim": "#83d3e1",
+                        "on-background": "#141d21",
+                        "on-secondary-fixed-variant": "#004f59",
+                        "primary-fixed": "#cde5ff",
+                        "on-tertiary": "#ffffff",
+                        "surface-container": "#e6eff5",
+                        "outline": "#707881",
+                        "ocean-deep": "#001d32",
+                        "glass-border": "rgba(0, 119, 182, 0.2)",
+                        "glass-surface": "rgba(255, 255, 255, 0.7)"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "container-max": "1280px",
+                        "margin-desktop": "48px",
+                        "gutter": "24px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Geist"],
+                        "headline-xl": ["Geist"],
+                        "headline-lg-mobile": ["Geist"],
+                        "body-lg": ["Geist"],
+                        "headline-lg": ["Geist"],
+                        "body-md": ["Geist"],
+                        "label-md": ["Geist"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+        .orbit-arc {
+            stroke: rgba(0, 119, 182, 0.4);
+            stroke-width: 2;
+            fill: none;
+            filter: drop-shadow(0 0 8px rgba(0, 119, 182, 0.6));
+        }
+        .glass-bead {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .glass-bead:hover {
+            transform: scale(1.5);
+            fill: #0077b6;
+        }
+        .bg-glass {
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 119, 182, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-x-hidden min-h-screen flex flex-col relative">
+<!-- Cinematic Background -->
+<div class="absolute inset-0 z-0">
+<div class="w-full h-full bg-cover bg-center absolute inset-0" style="background-image: url('https://lh3.googleusercontent.com/aida/AP1WRLspXz4wCp78tjc6h86lUOtz-hioxf-deT03OgCjcrON9SYIFJo13BBJP6U__f_Ew4QmmQICiHvy5CmntGHdPp2UzgADYIOBTWz9Ja-qxIS7c00gMXezA5e9XKy2dKs60Y-fyOTqDHFzHqhOjx-TFn6LZA9FS_AWopPJChSLJvOdqTdYuPO3UwYcEmrfRKcO6laaXOXCXbbgwJndYt9JUApCuXeXDWiTIycBDYHt9rU1mu_jNZz0NXvrIW4')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent"></div>
+</div>
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full bg-glass-surface/40 backdrop-blur-xl border-b border-glass-border shadow-sm flex justify-between items-center h-16 px-gutter z-50">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary cursor-pointer active:scale-95 transition-transform" data-icon="menu">menu</span>
+<h1 class="font-headline-lg text-headline-lg font-bold text-ocean-deep dark:text-on-primary-container">Voyage Canvas</h1>
+</div>
+<div class="hidden md:flex flex-1 justify-center gap-8">
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors" href="#">Destinations</a>
+<a class="text-primary font-bold border-b-2 border-primary font-label-md text-label-md py-4" href="#">Explore</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors" href="#">My Voyages</a>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed cursor-pointer hover:bg-glass-surface/60 transition-colors p-2 rounded-full" data-icon="search">search</span>
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed cursor-pointer hover:bg-glass-surface/60 transition-colors p-2 rounded-full" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed cursor-pointer hover:bg-glass-surface/60 transition-colors p-2 rounded-full" data-icon="workspace_premium">workspace_premium</span>
+<img alt="Traveler Profile with Loyalty Badge" class="w-8 h-8 rounded-full border-2 border-primary object-cover ml-2 cursor-pointer" data-alt="A small circular profile picture showing a smiling traveler with a loyal badge overlay. High resolution, bright lighting, nautical theme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwZOq4UwaGDNGzvZ4Co4E0sUM6W5NyXX6Q6ljQwas462LPG5hiyOnwbpzgsNU-SJYaRgt2WcRLyUyHBt0kraBdiGe86uavlJIjSQCpbByMiBARmQdRGZ5u7RQdS_4uzCIw5IPmJiM3DynE09kA9WwWj3J47k9YT6wPQzyiee5n3N8s-9Y2dWnsA1dvA_tXuInF5tbAk_tjXygl_UOo8RUpg-AE5Nh44OHLrDaSzGN7GRBHsm_4Bd3t"/>
+</div>
+</header>
+<!-- Main Content Container -->
+<main class="relative z-10 flex-grow flex flex-col items-center justify-center pt-24 pb-32 px-margin-mobile md:px-margin-desktop w-full max-w-container-max mx-auto h-[100vh]">
+<!-- The Orbit Area -->
+<div class="relative w-full max-w-4xl aspect-[2/1] mt-auto flex items-end justify-center">
+<!-- SVG Arc -->
+<svg class="absolute bottom-0 w-full h-full pointer-events-none" preserveaspectratio="xMidYMax meet" viewbox="0 0 800 400">
+<path class="orbit-arc" d="M 50,400 A 350,350 0 0,1 750,400"></path>
+<!-- Beads (Decorative in SVG, interactive HTML overlays below) -->
+<circle cx="100" cy="300" fill="rgba(255,255,255,0.8)" r="4"></circle>
+<circle cx="160" cy="220" fill="rgba(255,255,255,0.8)" r="4"></circle>
+<circle cx="240" cy="150" fill="rgba(255,255,255,0.8)" r="4"></circle>
+<circle cx="330" cy="100" fill="rgba(255,255,255,0.8)" r="4"></circle>
+<circle cx="470" cy="100" fill="rgba(255,255,255,0.8)" r="4"></circle>
+<circle cx="560" cy="150" fill="rgba(255,255,255,0.8)" r="4"></circle>
+<circle cx="640" cy="220" fill="rgba(255,255,255,0.8)" r="4"></circle>
+<circle cx="700" cy="300" fill="rgba(255,255,255,0.8)" r="4"></circle>
+</svg>
+<!-- Family Core (Center) -->
+<div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center z-20">
+<div class="bg-glass rounded-full p-4 shadow-lg border border-primary/20 backdrop-blur-xl">
+<span class="material-symbols-outlined text-primary text-4xl fill" data-icon="family_restroom">family_restroom</span>
+</div>
+<div class="mt-4 text-center">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-ocean-deep">The Miller Family</h2>
+<p class="font-label-md text-label-md text-on-surface-variant">4 Travelers • Caribbean Route</p>
+</div>
+</div>
+<!-- Central Glass Portal (Current Selection) -->
+<div class="absolute top-[10%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30">
+<div class="bg-glass rounded-2xl p-6 shadow-xl border border-primary/30 w-72 flex flex-col items-center backdrop-blur-2xl transition-all duration-300">
+<div class="bg-primary/10 rounded-full p-3 mb-3">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="balcony">balcony</span>
+</div>
+<h3 class="font-body-lg text-body-lg font-bold text-ocean-deep text-center">Oceanview Suite</h3>
+<p class="font-label-sm text-label-sm text-primary font-bold mt-1">BEST VALUE</p>
+<div class="flex justify-between w-full mt-4 border-t border-glass-border pt-4">
+<div class="text-center">
+<p class="font-label-sm text-label-sm text-on-surface-variant">Space</p>
+<p class="font-body-md text-body-md font-semibold text-ocean-deep">320 sqft</p>
+</div>
+<div class="text-center">
+<p class="font-label-sm text-label-sm text-on-surface-variant">Price</p>
+<p class="font-body-md text-body-md font-semibold text-ocean-deep">$2,450</p>
+</div>
+</div>
+<button class="w-full mt-4 bg-primary text-on-primary py-2 rounded-lg font-label-md text-label-md hover:bg-primary-container transition-colors shadow-sm">Select Cabin</button>
+</div>
+</div>
+<!-- Interactive Nodes (HTML Overlays mapping roughly to arc) -->
+<div class="absolute top-[35%] left-[25%] transform -translate-x-1/2 -translate-y-1/2 group z-20 cursor-pointer">
+<div class="w-4 h-4 rounded-full bg-white/80 border border-primary/30 shadow-sm group-hover:scale-150 transition-transform duration-300"></div>
+<div class="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-300 -top-12 left-1/2 transform -translate-x-1/2 bg-glass px-3 py-1.5 rounded-lg whitespace-nowrap border border-primary/20 shadow-md flex items-center gap-2">
+<span class="font-label-sm text-label-sm font-bold text-ocean-deep">Interior</span>
+<span class="font-label-sm text-label-sm text-error bg-error-container/50 px-1.5 rounded text-[10px]">-$400</span>
+</div>
+</div>
+<div class="absolute top-[20%] left-[35%] transform -translate-x-1/2 -translate-y-1/2 group z-20 cursor-pointer">
+<div class="w-4 h-4 rounded-full bg-white/80 border border-primary/30 shadow-sm group-hover:scale-150 transition-transform duration-300"></div>
+<div class="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-300 -top-12 left-1/2 transform -translate-x-1/2 bg-glass px-3 py-1.5 rounded-lg whitespace-nowrap border border-primary/20 shadow-md flex items-center gap-2">
+<span class="font-label-sm text-label-sm font-bold text-ocean-deep">Porthole</span>
+<span class="font-label-sm text-label-sm text-error bg-error-container/50 px-1.5 rounded text-[10px]">-$150</span>
+</div>
+</div>
+<div class="absolute top-[20%] right-[35%] transform translate-x-1/2 -translate-y-1/2 group z-20 cursor-pointer">
+<div class="w-4 h-4 rounded-full bg-white/80 border border-primary/30 shadow-sm group-hover:scale-150 transition-transform duration-300"></div>
+<div class="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-300 -top-12 left-1/2 transform -translate-x-1/2 bg-glass px-3 py-1.5 rounded-lg whitespace-nowrap border border-primary/20 shadow-md flex items-center gap-2">
+<span class="font-label-sm text-label-sm font-bold text-ocean-deep">Veranda</span>
+<span class="font-label-sm text-label-sm text-primary bg-primary-container/10 px-1.5 rounded text-[10px]">+$300</span>
+</div>
+</div>
+<div class="absolute top-[35%] right-[25%] transform translate-x-1/2 -translate-y-1/2 group z-20 cursor-pointer">
+<div class="w-4 h-4 rounded-full bg-white/80 border border-primary/30 shadow-sm group-hover:scale-150 transition-transform duration-300"></div>
+<div class="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-300 -top-12 left-1/2 transform -translate-x-1/2 bg-glass px-3 py-1.5 rounded-lg whitespace-nowrap border border-primary/20 shadow-md flex items-center gap-2">
+<span class="font-label-sm text-label-sm font-bold text-ocean-deep">Grand Suite</span>
+<span class="font-label-sm text-label-sm text-primary bg-primary-container/10 px-1.5 rounded text-[10px]">+$800</span>
+</div>
+</div>
+<!-- Scrub Instructions -->
+<div class="absolute bottom-40 left-1/2 transform -translate-x-1/2 flex items-center gap-2 opacity-60 pointer-events-none">
+<span class="material-symbols-outlined text-sm" data-icon="swipe_left">swipe_left</span>
+<span class="font-label-sm text-label-sm uppercase tracking-widest">Scrub Orbit to Explore</span>
+<span class="material-symbols-outlined text-sm" data-icon="swipe_right">swipe_right</span>
+</div>
+</div>
+</main>
+<!-- Bottom Intent Bar -->
+<div class="fixed bottom-0 w-full bg-glass-surface/80 backdrop-blur-2xl border-t border-glass-border px-gutter py-4 z-40">
+<div class="max-w-container-max mx-auto flex justify-between items-center">
+<div class="flex items-center gap-4">
+<div class="bg-surface-container-high rounded-full p-1 flex">
+<button class="px-4 py-2 rounded-full bg-primary text-on-primary font-label-sm text-label-sm shadow-sm transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="data_usage">data_usage</span>
+                        Orbit View
+                    </button>
+<button class="px-4 py-2 rounded-full text-on-surface-variant hover:text-primary font-label-sm text-label-sm transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="format_list_bulleted">format_list_bulleted</span>
+                        List View
+                    </button>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="text-right hidden sm:block">
+<p class="font-label-sm text-label-sm text-on-surface-variant">Total Trip Value</p>
+<p class="font-body-lg text-body-lg font-bold text-ocean-deep">$2,450</p>
+</div>
+<button class="bg-primary text-on-primary px-6 py-3 rounded-lg font-label-md text-label-md font-bold hover:bg-primary-container transition-colors shadow-sm flex items-center gap-2">
+                    Confirm Selection
+                    <span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</body></html>

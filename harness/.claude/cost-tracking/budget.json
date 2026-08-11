@@ -1,4 +1,0 @@
-{
-  "_description": "Monthly Claude token budget in USD. Read by /common/cost-report and the Titan dashboard.",
-  "monthly_budget_usd": 100
-}

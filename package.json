@@ -1,46 +1,33 @@
 {
-  "name": "titan-installer",
-  "version": "1.0.0",
-  "description": "Electron installer + dashboard for the Titan Claude Code governance harness.",
+  "name": "voyage-app",
+  "version": "0.1.0",
   "private": true,
-  "main": "dist-electron/main.js",
-  "author": {
-    "name": "Titan harness maintainer (set via titan.config.json org.display_name)"
-  },
-  "license": "UNLICENSED",
+  "description": "Voyage Canvas — RCG Part 1 Agentic Cruise Planning Assistant POC",
+  "packageManager": "pnpm@10.34.5",
   "scripts": {
-    "dev": "vite",
-    "dev:electron-only": "tsc -p electron/tsconfig.json && electron .",
-    "dev:electron": "concurrently -k -n \"vite,electron\" -c \"cyan,magenta\" \"npm run dev\" \"wait-on tcp:5173 && npm run dev:electron-only\"",
-    "build": "npm run sync:install && tsc && vite build && tsc -p electron/tsconfig.json",
-    "preview": "vite preview",
-    "prepackage": "node harness/scripts/check-hook-paths.mjs",
-    "package": "npm run build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder",
-    "package:harness-patch": "node harness/scripts/package-harness-patch.mjs",
-    "lint": "tsc --noEmit",
-    "sync:install": "node -e \"require('fs').copyFileSync('installer/titan-configure.py','assets/install.py')\" && echo [sync] assets/install.py updated from installer/titan-configure.py"
+    "dev": "pnpm --filter @voyage/web dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "test:int": "pnpm -r --filter @voyage/inventory --filter @voyage/commerce test",
+    "seed": "tsx scripts/seed.ts",
+    "demo:reset": "tsx scripts/demo-reset.ts",
+    "eval": "tsx eval/runEval.ts",
+    "eval:validate": "tsx eval/validateCases.ts",
+    "eval:retrieval": "tsx eval/runRetrievalEval.ts",
+    "redteam": "tsx eval/runRedteam.ts",
+    "latest-trace": "tsx scripts/latest-trace.ts"
   },
   "dependencies": {
-    "keytar": "^7.9.0",
-    "lottie-react": "^2.4.1",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "zustand": "^4.5.5"
+    "ioredis": "^5.4.2",
+    "mongodb": "^6.12.0"
   },
   "devDependencies": {
-    "@types/node": "^20.14.10",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.3.1",
-    "autoprefixer": "^10.4.19",
-    "concurrently": "^8.2.2",
-    "cross-env": "^7.0.3",
-    "electron": "^30.0.0",
-    "electron-builder": "^24.13.3",
-    "postcss": "^8.4.39",
-    "tailwindcss": "^3.4.6",
-    "typescript": "^5.5.3",
-    "vite": "^5.3.3",
-    "wait-on": "^7.2.0"
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8",
+    "zod": "^3.24.1"
   }
 }

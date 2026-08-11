@@ -1,0 +1,11 @@
+{
+  "id": "whats-included-faq",
+  "title": "Demo: What's Included in Cruise Fare (Synthetic FAQ)",
+  "topic": "inclusions",
+  "publishedAt": "2026-02-01",
+  "contentVersion": "demo-1.0",
+  "classification": "FAQ",
+  "keywords": ["included", "fare", "meals", "entertainment", "cabin", "what's included"],
+  "disclaimer": "SYNTHETIC DEMO CONTENT — not real RCG policy.",
+  "content": "In this demo, the cruise fare typically includes your stateroom accommodation, most onboard meals in the main dining venues, select non-alcoholic beverages, daily entertainment, and access to pools and fitness areas. Specialty dining, alcoholic beverages, spa services, shore excursions, and Wi‑Fi packages are not included unless explicitly bundled in a promotional demo package. Gratuities may be added separately at checkout in the existing checkout boundary. Prices and availability are always determined by deterministic commerce services, never by AI narration."
+}

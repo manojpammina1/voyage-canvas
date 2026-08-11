@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Caribbean Route Expansion - Voyage Canvas</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Config injected from system prompt -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-bright": "#f4faff",
+                    "primary": "#005d90",
+                    "on-tertiary-fixed": "#070a61",
+                    "on-primary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "secondary-fixed": "#9feffe",
+                    "surface-dim": "#d2dbe1",
+                    "tertiary-fixed-dim": "#bfc2ff",
+                    "on-secondary": "#ffffff",
+                    "surface-container-high": "#e0e9ef",
+                    "secondary-fixed-dim": "#83d3e1",
+                    "outline-variant": "#bfc7d1",
+                    "tertiary-fixed": "#e0e0ff",
+                    "inverse-primary": "#94ccff",
+                    "surface-container": "#e6eff5",
+                    "surface-tint": "#006399",
+                    "tertiary-container": "#646aba",
+                    "on-tertiary": "#ffffff",
+                    "surface": "#f4faff",
+                    "inverse-on-surface": "#e9f2f8",
+                    "primary-container": "#0077b6",
+                    "inverse-surface": "#293236",
+                    "on-error-container": "#93000a",
+                    "on-primary-fixed-variant": "#004b74",
+                    "outline": "#707881",
+                    "on-tertiary-fixed-variant": "#393e8c",
+                    "background": "#f4faff",
+                    "surface-container-lowest": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "on-surface": "#141d21",
+                    "primary-fixed": "#cde5ff",
+                    "on-tertiary-container": "#f9f6ff",
+                    "on-primary-fixed": "#001d32",
+                    "on-surface-variant": "#404850",
+                    "error": "#ba1a1a",
+                    "on-secondary-fixed": "#001f24",
+                    "secondary": "#006875",
+                    "tertiary": "#4c51a0",
+                    "surface-container-low": "#ecf5fb",
+                    "on-secondary-fixed-variant": "#004f59",
+                    "on-background": "#141d21",
+                    "on-primary-container": "#f3f7ff",
+                    "secondary-container": "#9cecfb",
+                    "primary-fixed-dim": "#94ccff",
+                    "surface-container-highest": "#dbe4ea",
+                    "on-secondary-container": "#016d7a",
+                    "surface-variant": "#dbe4ea"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px",
+                    "3": "3rem"
+            },
+            "spacing": {
+                    "container-max": "1280px",
+                    "margin-desktop": "48px",
+                    "base": "8px",
+                    "gutter": "24px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "label-sm": ["Geist", "sans-serif"],
+                    "label-md": ["Geist", "sans-serif"],
+                    "body-md": ["Geist", "sans-serif"],
+                    "headline-lg": ["Geist", "sans-serif"],
+                    "body-lg": ["Geist", "sans-serif"],
+                    "headline-xl": ["Geist", "sans-serif"],
+                    "headline-lg-mobile": ["Geist", "sans-serif"]
+            },
+            "fontSize": {
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Geist', sans-serif; background-color: #f4faff; color: #141d21; overflow-x: hidden; }
+        .glass-tier-1 { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(0, 119, 182, 0.2); }
+        .glass-tier-2 { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(32px); box-shadow: 0 4px 20px rgba(0, 119, 182, 0.1); }
+        .pulse-node { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 119, 182, 0.4); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(0, 119, 182, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 119, 182, 0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col relative">
+<!-- Blurred Background Image -->
+<div class="fixed inset-0 w-full h-full bg-cover bg-center -z-10 blur-xl opacity-60" data-alt="A serene, wide-angle aerial view of a luxury cruise ship navigating through crystal clear, translucent turquoise waters of the Caribbean. The image has a light, airy, modern aesthetic with soft sunlight reflecting off the water. The overall palette is dominated by airy sea-blues and bright whites, creating a calm and expansive maritime atmosphere." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCVYlO6RwqPw4X_d9PS36KUxM15wvGlhUwVEIp7IU7k_TbZKXMebm1N_XGfI_prihqXwYx9t1k8Y1ygmO8sU99DzoEiStYRCdiKh1R5rWUew_JV-_yhotWHqmbgU1r0H33rzvqRIEHa5jm3Ba5LLHufxG7aKJ0iUGezn2c2TZFJO6wqag1JYbjSLKopSB69xoVEu_L8m3MtIKJL0SDV8llRGf1P972aGZT8BAaYl5VKHL2SFHBwuv_x')"></div>
+<!-- TopAppBar -->
+<header class="bg-glass-surface/40 backdrop-blur-xl border-b border-glass-border shadow-sm fixed top-0 w-full z-50 flex justify-between items-center h-16 px-gutter w-full">
+<div class="font-headline-lg text-headline-lg font-bold text-ocean-deep dark:text-on-primary-container hidden md:block">Voyage Canvas</div>
+<div class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary md:hidden">Voyage Canvas</div>
+<nav class="hidden md:flex gap-8">
+<a class="font-body-md text-body-md text-on-surface-variant hover:bg-glass-surface/60 transition-colors cursor-pointer active:scale-95 transition-transform px-3 py-1 rounded" href="#">Traveler Core</a>
+<a class="font-body-md text-body-md text-primary font-bold border-b-2 border-primary hover:bg-glass-surface/60 transition-colors cursor-pointer active:scale-95 transition-transform px-3 py-1" href="#">Journey Path</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:bg-glass-surface/60 transition-colors cursor-pointer active:scale-95 transition-transform px-3 py-1 rounded" href="#">Evidence</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:bg-glass-surface/60 transition-colors cursor-pointer active:scale-95 transition-transform px-3 py-1 rounded" href="#">Settings</a>
+</nav>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined cursor-pointer hover:bg-glass-surface/60 transition-colors p-2 rounded-full" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined cursor-pointer hover:bg-glass-surface/60 transition-colors p-2 rounded-full" data-icon="workspace_premium">workspace_premium</span>
+<img alt="Traveler Profile with Loyalty Badge" class="w-8 h-8 rounded-full border-2 border-primary object-cover cursor-pointer" data-alt="A small, stylized digital avatar portrait of a modern traveler with a subtle loyalty badge overlaid. The style is clean, vector-like, and aligns with a premium UI aesthetic in sea-blue tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDfpf62zDhjSzycosoz5phx8WrWwTaS0KAUZwDJgBacxYa2aW5eagmOYls6_P85p3mkNYswwUL0nI8kg-k_dthwoFuEepFBOWSJ8KodmVsKSj4LNwHmb5kPXDz_mDpVXbyb4qVSMkUU8k3WE3jOqhwkbmyOtv1Q_Qv0ke-3fOeVYzFjH9srzJNvTBd2OPAwSStUp_cVUm76o4ACH1ldBMF9yNrcxdOOQeRZfUL0gePZ86xm8w2_YA3"/>
+</div>
+</header>
+<!-- SideNavBar (Desktop Only) -->
+<aside class="bg-glass-surface/40 backdrop-blur-xl border-r border-glass-border shadow-md fixed left-0 top-16 h-[calc(100vh-64px)] w-64 hidden md:flex flex-col py-6 gap-stack-gap z-40">
+<div class="px-6 mb-8 text-center">
+<img alt="Traveler Group Avatar" class="w-16 h-16 rounded-full mx-auto mb-2 border border-primary/30" data-alt="A high-quality, polished circular avatar representing a traveling family group. The image should feature a stylized, minimalist family silhouette or graphic set against a soft sea-blue background, conveying a premium, modern travel experience." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1NyQp_hDeiY9obgpxtDDKom-2yptgx8hrraNFRjockS_R80SaSqKf9HnyAE76oDDMhjR3JcCF0RN9krR9MdWUy6thoUrD-WDSRW7HwEhr_q7KpdLACA7nhy2-Ym0V_wYexIZXqrCx0bDQFvdbn1uOFMlOL5E_YpOk_E66e7UjHZDQLb3xWk9u-rcQ8GoCgAJP8JUVDOptXa3wy-OE6F0rWc2FLAR5LMci1MjXcndSOLeDMBLPpV1W"/>
+<div class="font-label-md text-label-md font-bold text-on-surface">The Miller Family</div>
+<div class="font-label-sm text-label-sm text-primary">Elite Status</div>
+</div>
+<nav class="flex-1 flex flex-col gap-2 px-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-caps text-label-caps text-on-surface-variant hover:bg-primary-container/10 transition-all duration-300 ease-in-out cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+                Traveler Core
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-caps text-label-caps text-primary font-bold border-r-4 border-primary bg-primary/5 hover:bg-primary-container/10 transition-all duration-300 ease-in-out cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="timeline">timeline</span>
+                Journey Path
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-caps text-label-caps text-on-surface-variant hover:bg-primary-container/10 transition-all duration-300 ease-in-out cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="verified_user">verified_user</span>
+                Evidence
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-caps text-label-caps text-on-surface-variant hover:bg-primary-container/10 transition-all duration-300 ease-in-out cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                Settings
+            </a>
+</nav>
+<div class="px-6 mt-auto">
+<button class="w-full py-2 bg-transparent border border-primary text-primary font-label-md text-label-md rounded hover:bg-primary/5 transition-colors">Lock Preferences</button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 mt-16 md:ml-64 p-margin-mobile md:p-margin-desktop relative z-10 flex flex-col items-center justify-center min-h-[calc(100vh-64px)] pb-32">
+<div class="max-w-container-max w-full text-center mb-12">
+<h1 class="font-headline-xl text-headline-xl text-on-surface mb-2">Caribbean Route</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Materialized Path Preview</p>
+</div>
+<!-- Interactive Map Container -->
+<div class="relative w-full max-w-4xl aspect-[16/9] glass-tier-1 rounded-xl p-4 flex items-center justify-center overflow-hidden">
+<!-- Simulated glowing map path (SVG or simple div shapes for layout) -->
+<svg class="absolute inset-0 w-full h-full opacity-30" viewbox="0 0 1000 500">
+<path d="M 200 400 Q 400 200 600 300 T 900 100" fill="none" stroke="#0077B6" stroke-dasharray="10, 10" stroke-width="4"></path>
+</svg>
+<!-- Family Core Node -->
+<div class="absolute top-1/2 left-1/4 transform -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center group">
+<div class="w-16 h-16 rounded-full bg-surface-bright border-4 border-primary shadow-lg flex items-center justify-center z-10 relative">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="home">home</span>
+</div>
+<div class="font-label-md text-label-md text-on-surface mt-2 bg-surface-bright/80 px-2 py-1 rounded backdrop-blur-sm">Origin</div>
+</div>
+<!-- St. Maarten Node -->
+<div class="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center group cursor-pointer">
+<div class="pulse-node w-8 h-8 rounded-full bg-secondary-fixed border-2 border-primary shadow-lg z-10 relative group-hover:scale-125 transition-transform"></div>
+<div class="font-label-md text-label-md text-on-surface mt-2 bg-surface-bright/80 px-2 py-1 rounded backdrop-blur-sm shadow-sm transition-all group-hover:bg-primary-container group-hover:text-on-primary">St. Maarten</div>
+<!-- Hover Portal -->
+<div class="absolute bottom-full mb-4 w-64 glass-tier-2 rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none transform translate-y-4 group-hover:translate-y-0 duration-300">
+<img alt="St. Maarten Port" class="w-full h-32 object-cover rounded mb-2" data-alt="A breathtaking, high-resolution drone shot of the St. Maarten port. The scene features crystal-clear, vibrant turquoise water, white sandy beaches, and lush green hills in the background. The lighting is bright and sunny, perfectly capturing a premium, idyllic Caribbean shore excursion vibe in a modern aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7wYEbVTB5QdmoJg00Flo-bXNQn9yqvf4o2JF3vK6Dx8W6V37_S83xv4QrAetQEZ7J9QDXN-zbxGxmiRVbkmGb3ryMRzHYHuXImqICK7AL6NAsrDwT8AFYj4B3J2UwTN2d-SQ3It0EL3bB0ZK6d8dq3oJEoMM7nehhJlEaHcxg7tVpUMhwlUAYcEREJaywEcDLJQivvHlqP0BJlTL5uFMXqB4tn9bzsB8S_JGHKC-3W7kI6iQ08KEr"/>
+<p class="font-label-sm text-label-sm text-center text-on-surface">Explore Philipsburg &amp; Maho Beach</p>
+</div>
+</div>
+<!-- San Juan Node -->
+<div class="absolute top-1/4 right-1/4 transform translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center group cursor-pointer">
+<div class="pulse-node w-8 h-8 rounded-full bg-secondary-fixed border-2 border-primary shadow-lg z-10 relative group-hover:scale-125 transition-transform" style="animation-delay: 0.5s;"></div>
+<div class="font-label-md text-label-md text-on-surface mt-2 bg-surface-bright/80 px-2 py-1 rounded backdrop-blur-sm shadow-sm transition-all group-hover:bg-primary-container group-hover:text-on-primary">San Juan</div>
+</div>
+</div>
+</main>
+<!-- Intent Bar (Bottom Fixed) -->
+<div class="fixed bottom-0 md:ml-64 w-full md:w-[calc(100%-256px)] glass-tier-2 border-t border-glass-border p-4 flex justify-center gap-4 z-50 rounded-t-xl shadow-[0_-4px_20px_rgba(0,119,182,0.1)]">
+<button class="bg-[#90E0EF] text-primary-container font-label-md text-label-md px-6 py-2 rounded-3 hover:bg-secondary-fixed transition-colors flex items-center gap-2 shadow-sm">
+<span>✨</span> Explore Shore Excursions
+        </button>
+<button class="bg-primary-container text-on-primary font-label-md text-label-md px-6 py-2 rounded-3 hover:bg-primary transition-colors flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-sm" data-icon="lock">lock</span> Lock this Route
+        </button>
+<button class="bg-transparent border border-primary/30 text-primary font-label-md text-label-md px-6 py-2 rounded-3 hover:bg-primary/5 transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="partly_cloudy_day">partly_cloudy_day</span> View Port Weather
+        </button>
+</div>
+</body></html>

@@ -1,0 +1,29 @@
+:root {
+  --motion-fast: 160ms;
+  --motion-med: 280ms;
+  --motion-slow: 480ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+@keyframes orbit-drift {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.motion-pulse { animation: pulse-soft 2.4s var(--ease-out) infinite; }
+.motion-orbit { animation: orbit-drift 48s linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .motion-pulse, .motion-orbit { animation: none !important; }
+}

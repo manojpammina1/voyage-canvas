@@ -1,0 +1,594 @@
+/* Generative materialization — progressive reveal without changing commerce authority */
+
+.vc-ambient--active {
+  animation: vc-ambient-shift 8s ease-in-out infinite alternate;
+}
+
+@keyframes vc-ambient-shift {
+  0% {
+    filter: hue-rotate(0deg) brightness(1);
+  }
+  100% {
+    filter: hue-rotate(8deg) brightness(1.05);
+  }
+}
+
+.vc-ambient__shimmer {
+  position: absolute;
+  inset: -50%;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 255, 255, 0.35) 0%,
+    transparent 55%
+  );
+  animation: vc-shimmer 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes vc-shimmer {
+  0%,
+  100% {
+    transform: translate(-10%, 5%) scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translate(10%, -5%) scale(1.1);
+    opacity: 0.7;
+  }
+}
+
+/* Materialization overlay (intent → orbit) */
+.vc-materialize {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: color-mix(in srgb, var(--background) 75%, transparent);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+}
+
+.vc-materialize__core {
+  position: relative;
+  width: 7rem;
+  height: 7rem;
+  margin-bottom: 2rem;
+}
+
+.vc-materialize__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--primary) 35%, transparent);
+  animation: vc-ring-pulse 2s var(--ease-out) infinite;
+}
+
+.vc-materialize__ring:nth-child(2) {
+  inset: -0.75rem;
+  animation-delay: 0.4s;
+  border-color: color-mix(in srgb, var(--secondary-container) 45%, transparent);
+}
+
+.vc-materialize__ring:nth-child(3) {
+  inset: -1.5rem;
+  animation-delay: 0.8s;
+  opacity: 0.5;
+}
+
+@keyframes vc-ring-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+.vc-materialize__orb {
+  position: absolute;
+  inset: 1rem;
+  border-radius: 50%;
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--primary-container) 80%, white),
+    var(--primary)
+  );
+  box-shadow:
+    0 0 40px color-mix(in srgb, var(--primary) 40%, transparent),
+    inset 0 0 20px rgba(255, 255, 255, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vc-materialize__orb-inner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  animation: vc-orb-glow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes vc-orb-glow {
+  from {
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+  }
+  to {
+    box-shadow: 0 0 28px rgba(255, 255, 255, 0.9);
+  }
+}
+
+.vc-materialize__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-weight: 700;
+  color: var(--ocean-deep);
+  margin: 0 0 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+/* Step pipeline */
+.vc-gen-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  width: min(22rem, 100%);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.vc-gen-step {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--glass-surface) 70%, white);
+  border: 1px solid var(--glass-border);
+  font-size: 0.875rem;
+  color: var(--on-surface-variant);
+  opacity: 0.45;
+  transform: translateY(4px);
+  transition:
+    opacity var(--motion-med) var(--ease-out),
+    transform var(--motion-med) var(--ease-out),
+    background var(--motion-med),
+    border-color var(--motion-med);
+}
+
+.vc-gen-step--active {
+  opacity: 1;
+  transform: translateY(0);
+  background: color-mix(in srgb, var(--glass-surface-active) 90%, white);
+  border-color: color-mix(in srgb, var(--primary) 35%, white);
+  color: var(--ocean-deep);
+  font-weight: 600;
+  box-shadow: 0 4px 24px color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+.vc-gen-step--done {
+  opacity: 0.85;
+  transform: translateY(0);
+  color: var(--on-surface);
+}
+
+.vc-gen-step__dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--outline-variant);
+  transition: background var(--motion-fast), box-shadow var(--motion-fast);
+}
+
+.vc-gen-step--active .vc-gen-step__dot {
+  background: var(--primary);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--primary) 60%, transparent);
+  animation: vc-dot-pulse 1s ease-in-out infinite;
+}
+
+.vc-gen-step--done .vc-gen-step__dot {
+  background: var(--evidence-verified);
+}
+
+@keyframes vc-dot-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.25);
+  }
+}
+
+/* Intent hero — generative pill */
+.vc-intent-hero--cinematic {
+  position: relative;
+  padding: 4rem 1rem 5rem;
+}
+
+.vc-intent-glow {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(32rem, 90vw);
+  height: 12rem;
+  background: radial-gradient(
+    ellipse,
+    color-mix(in srgb, var(--primary) 18%, transparent) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+  animation: vc-intent-glow 4s ease-in-out infinite alternate;
+}
+
+@keyframes vc-intent-glow {
+  from {
+    opacity: 0.5;
+    transform: translateX(-50%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.05);
+  }
+}
+
+.vc-intent-pill {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  padding: 0.5rem 0.5rem 0.5rem 1.25rem;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--glass-surface) 85%, white);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--blur-glass-heavy));
+  -webkit-backdrop-filter: blur(var(--blur-glass-heavy));
+  box-shadow:
+    0 8px 32px color-mix(in srgb, var(--primary) 10%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  margin-top: 2rem;
+  transition: box-shadow var(--motion-med), border-color var(--motion-med);
+}
+
+.vc-intent-pill:focus-within {
+  border-color: color-mix(in srgb, var(--primary) 45%, white);
+  box-shadow:
+    0 12px 40px color-mix(in srgb, var(--primary) 18%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.vc-intent-pill textarea {
+  flex: 1;
+  min-height: 2.75rem;
+  max-height: 8rem;
+  padding: 0.65rem 0;
+  border: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  resize: none;
+  line-height: 1.5;
+  color: var(--on-surface);
+}
+
+.vc-intent-pill textarea:focus {
+  outline: none;
+}
+
+.vc-intent-pill textarea::placeholder {
+  color: var(--on-surface-variant);
+  opacity: 0.75;
+}
+
+.vc-intent-send {
+  flex-shrink: 0;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, var(--primary-container), var(--primary));
+  color: white;
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--primary) 35%, transparent);
+  transition: transform var(--motion-fast), box-shadow var(--motion-fast);
+}
+
+.vc-intent-send:hover:not(:disabled) {
+  transform: scale(1.06);
+  box-shadow: 0 6px 24px color-mix(in srgb, var(--primary) 45%, transparent);
+}
+
+.vc-intent-send:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.vc-intent-send svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Traveler core — family constellation */
+.vc-traveler-core--live {
+  position: relative;
+  padding: 1.25rem 1.5rem;
+  min-width: 14rem;
+}
+
+.vc-traveler-core__pulse {
+  position: absolute;
+  inset: -0.5rem;
+  border-radius: var(--radius-xl);
+  border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent);
+  animation: vc-core-border 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes vc-core-border {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.vc-family-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.vc-family-avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 2px 8px rgba(0, 45, 84, 0.15);
+  animation: vc-avatar-in 0.5s var(--ease-out) backwards;
+}
+
+.vc-family-avatar:nth-child(1) {
+  animation-delay: 0.05s;
+  background: linear-gradient(145deg, #0077b6, #004b74);
+}
+.vc-family-avatar:nth-child(2) {
+  animation-delay: 0.12s;
+  background: linear-gradient(145deg, #006875, #004f59);
+}
+.vc-family-avatar:nth-child(3) {
+  animation-delay: 0.19s;
+  background: linear-gradient(145deg, #fc8a40, #9b4500);
+}
+.vc-family-avatar:nth-child(4) {
+  animation-delay: 0.26s;
+  background: linear-gradient(145deg, #646aba, #393e8c);
+}
+
+@keyframes vc-avatar-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.vc-criteria-chip {
+  animation: vc-chip-materialize 0.45s var(--ease-out) backwards;
+}
+
+@keyframes vc-chip-materialize {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Orbit node materialize */
+.vc-orbit-node--materialize {
+  animation: vc-node-in 0.65s var(--ease-out) backwards;
+}
+
+@keyframes vc-node-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.3);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    filter: blur(0);
+  }
+}
+
+.vc-orbit-node--materialize .vc-orbit-node__bead {
+  animation: vc-bead-pop 0.5s var(--ease-out) backwards;
+}
+
+@keyframes vc-bead-pop {
+  0% {
+    transform: scale(0);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--primary) 60%, transparent);
+  }
+  70% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.vc-orbit-arc--animated path {
+  stroke-dasharray: 12 8;
+  animation: vc-arc-flow 3s linear infinite;
+}
+
+@keyframes vc-arc-flow {
+  to {
+    stroke-dashoffset: -40;
+  }
+}
+
+.vc-orbit-region {
+  position: absolute;
+  top: 0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--primary) 70%, var(--ocean-deep));
+  padding: 0.35rem 1rem;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--glass-surface) 80%, white);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(12px);
+  animation: vc-region-in 0.6s var(--ease-out);
+}
+
+@keyframes vc-region-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-8px);
+  }
+}
+
+.vc-selection-card--materialize {
+  animation: vc-card-in 0.55s var(--ease-out);
+}
+
+@keyframes vc-card-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-12px) scale(0.95);
+  }
+}
+
+/* Bottom generative bar */
+.vc-gen-bar {
+  position: fixed;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 45;
+  width: min(calc(100% - 2rem), 42rem);
+  padding: 0.45rem 0.45rem 0.45rem 1rem;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--glass-surface) 92%, white);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--blur-glass-heavy));
+  -webkit-backdrop-filter: blur(var(--blur-glass-heavy));
+  box-shadow:
+    0 12px 48px color-mix(in srgb, var(--ocean-deep) 12%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.vc-gen-bar__sparkle {
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--secondary-container), var(--primary-container));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: vc-sparkle 2s ease-in-out infinite;
+}
+
+@keyframes vc-sparkle {
+  0%,
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(12deg) scale(1.08);
+  }
+}
+
+.vc-gen-bar__status {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.875rem;
+  color: var(--on-surface-variant);
+}
+
+.vc-gen-bar__status--streaming {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.vc-gen-bar__stream-text {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.8rem;
+  margin-top: 0.15rem;
+  color: var(--ocean-deep);
+  animation: vc-stream-fade 0.3s var(--ease-out);
+}
+
+@keyframes vc-stream-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+.vc-header--glass {
+  margin: 0.75rem var(--gutter) 0;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 4px 24px color-mix(in srgb, var(--ocean-deep) 6%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vc-ambient--active,
+  .vc-ambient__shimmer,
+  .vc-materialize__ring,
+  .vc-orbit-arc--animated path,
+  .vc-gen-bar__sparkle,
+  .vc-intent-glow {
+    animation: none !important;
+  }
+
+  .vc-orbit-node--materialize,
+  .vc-family-avatar,
+  .vc-criteria-chip,
+  .vc-selection-card--materialize {
+    animation-duration: 0.01ms !important;
+  }
+}

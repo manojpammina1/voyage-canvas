@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Voyage Canvas - Family Core</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Geist:wght@400;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "surface-container-lowest": "#ffffff",
+                "on-background": "#141d21",
+                "surface-container-highest": "#dbe4ea",
+                "on-error-container": "#93000a",
+                "error-container": "#ffdad6",
+                "secondary-fixed-dim": "#83d3e1",
+                "on-surface": "#141d21",
+                "surface-tint": "#006399",
+                "primary-fixed": "#cde5ff",
+                "primary": "#0077b6",
+                "inverse-surface": "#293236",
+                "tertiary": "#4c51a0",
+                "surface": "#f4faff",
+                "tertiary-container": "#646aba",
+                "on-primary-container": "#f3f7ff",
+                "surface-bright": "#f4faff",
+                "inverse-primary": "#94ccff",
+                "on-secondary-container": "#016d7a",
+                "on-tertiary-fixed-variant": "#393e8c",
+                "on-primary-fixed-variant": "#004b74",
+                "on-primary": "#ffffff",
+                "secondary": "#006875",
+                "tertiary-fixed-dim": "#bfc2ff",
+                "surface-container-high": "#e0e9ef",
+                "background": "#f4faff",
+                "on-tertiary": "#ffffff",
+                "on-primary-fixed": "#001d32",
+                "on-tertiary-container": "#f9f6ff",
+                "outline-variant": "#bfc7d1",
+                "on-surface-variant": "#404850",
+                "secondary-container": "#9cecfb",
+                "tertiary-fixed": "#e0e0ff",
+                "on-secondary-fixed-variant": "#004f59",
+                "outline": "#707881",
+                "on-secondary-fixed": "#001f24",
+                "inverse-on-surface": "#e9f2f8",
+                "primary-container": "#0077b6",
+                "surface-container-low": "#ecf5fb",
+                "on-secondary": "#ffffff",
+                "secondary-fixed": "#9feffe",
+                "surface-variant": "#dbe4ea",
+                "on-error": "#ffffff",
+                "surface-container": "#e6eff5",
+                "surface-dim": "#d2dbe1",
+                "primary-fixed-dim": "#94ccff",
+                "error": "#ba1a1a",
+                "on-tertiary-fixed": "#070a61",
+                "glass-surface": "rgba(255, 255, 255, 0.7)",
+                "glass-border": "rgba(255, 255, 255, 0.8)",
+                "evidence-verified": "#00C853",
+                "sunset-glow": "#FFF1E6",
+                "ocean-deep": "#002D54"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "base": "8px",
+                "container-max": "1280px",
+                "margin-mobile": "16px",
+                "gutter": "24px",
+                "margin-desktop": "48px",
+                "canvas-pane-width": "400px",
+                "stack-gap": "12px"
+        },
+        "fontFamily": {
+                "label-sm": [
+                        "Geist"
+                ],
+                "headline-lg": [
+                        "Geist"
+                ],
+                "headline-lg-mobile": [
+                        "Geist"
+                ],
+                "body-md": [
+                        "Geist"
+                ],
+                "body-lg": [
+                        "Geist"
+                ],
+                "label-md": [
+                        "Geist"
+                ],
+                "headline-xl": [
+                        "Geist"
+                ],
+                "label-caps": ["Geist"],
+                "evidence-data": ["Geist"],
+                "display-xl": ["Geist"]
+        },
+        "fontSize": {
+                "label-sm": [
+                        "12px",
+                        {
+                                "lineHeight": "16px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-lg": [
+                        "32px",
+                        {
+                                "lineHeight": "40px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-lg-mobile": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "body-lg": [
+                        "18px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-md": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "letterSpacing": "0.01em",
+                                "fontWeight": "500"
+                        }
+                ],
+                "headline-xl": [
+                        "48px",
+                        {
+                                "lineHeight": "56px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "label-caps": ["12px", { lineHeight: "16px", letterSpacing: "0.08em", fontWeight: "600" }],
+                "evidence-data": ["14px", { lineHeight: "20px", fontWeight: "600" }],
+                "display-xl": ["64px", { lineHeight: "72px", letterSpacing: "-0.04em", fontWeight: "700" }]
+        }
+},
+    },
+  }
+</script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+        .ultra-thin-glass {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(60px);
+            -webkit-backdrop-filter: blur(60px);
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .core-pulse {
+            animation: pulse-ring 4s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 0.4; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+        .orbit {
+            animation: orbit-spin 60s linear infinite;
+        }
+        @keyframes orbit-spin {
+            100% { transform: rotate(360deg); }
+        }
+        .thread-glow {
+            filter: drop-shadow(0 0 8px rgba(0, 119, 182, 0.5));
+            animation: thread-pulse 3s infinite alternate;
+        }
+        @keyframes thread-pulse {
+            from { opacity: 0.4; stroke-width: 1px; }
+            to { opacity: 1; stroke-width: 2px; }
+        }
+    </style>
+</head>
+<body class="bg-background min-h-screen text-on-surface overflow-hidden relative font-body-md text-body-md">
+<!-- Ambient Video Background -->
+<div class="fixed inset-0 z-0">
+<div class="absolute inset-0 bg-primary/10 mix-blend-multiply z-10"></div>
+<img alt="" class="w-full h-full object-cover filter blur-[2px] scale-105" src="https://lh3.googleusercontent.com/aida/AP1WRLthfbj61MvjiqBBF9b8lwirYQPB4h4LGQH_3bzWHw_rjWO7tqsgNyp7ejrTyDLh7y8zc6eAThYvnnvb5Qs6oXJHcfl6EnlH3ZjSRTmso54jLqe5n2U_sedJ6KS-_B7MHFcQl9T7VD5PObGTyWTRqm5KSYDOsHxj44GhcwfjStIwHohiK7wr86UE-cMNhoDflMMV4GyjQak1pwGZsFvFPazTZhr8ku3ywCephr3epjSjXU4wXtEz3_3i_4o"/>
+</div>
+<!-- TopAppBar from JSON -->
+<header class="fixed top-0 w-full bg-glass-surface backdrop-blur-xl border-b border-glass-border shadow-sm flex justify-between items-center h-16 px-gutter z-50">
+<div class="flex items-center">
+<span class="material-symbols-outlined mr-4 cursor-pointer text-primary">menu</span>
+<h1 class="font-headline-lg text-headline-lg font-bold text-primary dark:text-on-primary-container m-0">Voyage Canvas</h1>
+</div>
+<!-- Center Nav Area - Active Tab Setup -->
+<nav class="hidden md:flex space-x-8">
+<a class="text-primary font-bold border-b-2 border-primary h-16 flex items-center" href="#">Traveler Core</a>
+<a class="text-on-surface-variant hover:bg-glass-surface/80 transition-colors h-16 flex items-center px-4 rounded-t-lg" href="#">Journey Path</a>
+<a class="text-on-surface-variant hover:bg-glass-surface/80 transition-colors h-16 flex items-center px-4 rounded-t-lg" href="#">Evidence</a>
+<a class="text-on-surface-variant hover:bg-glass-surface/80 transition-colors h-16 flex items-center px-4 rounded-t-lg" href="#">Settings</a>
+</nav>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined cursor-pointer hover:bg-glass-surface/80 transition-colors p-2 rounded-full text-primary" data-icon="search">search</span>
+<span class="material-symbols-outlined cursor-pointer hover:bg-glass-surface/80 transition-colors p-2 rounded-full text-primary" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined cursor-pointer hover:bg-glass-surface/80 transition-colors p-2 rounded-full text-primary" data-icon="workspace_premium">workspace_premium</span>
+<img alt="Traveler Profile with Loyalty Badge" class="w-8 h-8 rounded-full border border-glass-border object-cover" data-alt="A detailed, high-resolution portrait of a sophisticated traveler serving as a profile avatar. The person has a friendly, professional expression, shot in soft, natural daylight with a shallow depth of field. The background is a subtle, out-of-focus premium airline lounge environment, reinforcing a high-end travel aesthetic. Clean, bright, and modern lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7_kt7pAHTHEBozzMkjZR-aVFQ8YxQASSsEMePf0_R_ySWDteE4x3Cgr6kBHK_zTSgxh1Ng5JK0hD1PsRFdKkhJXs-CIhvVRrVMEYmcqlqCG_iYU3mMpim3esQdVbUIjsalDPq_j3SpMAF1CqlGyAmcXaSKS4RwEIfMg3TOCSV_3hbQfo4o_h-IIEh4acvFGpvirIFdtl5N-8jsMPFcPUZFSUs6sWpJDypuZF67GHe77p0mcd3Mm4P"/>
+</div>
+</header>
+<!-- Main Generative Canvas -->
+<main class="relative z-10 mt-16 h-[calc(100vh-64px)] w-full flex flex-col items-center justify-center overflow-hidden">
+<!-- Generative Map Threads (SVG) -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none z-0" style="left: 0; top: 0;">
+<path class="thread-glow" d="M 50% 50% Q 30% 20% 25% 30%" fill="none" stroke="#0077b6" stroke-dasharray="4 4" stroke-width="1.5"></path>
+<path class="thread-glow" d="M 50% 50% Q 60% 80% 70% 70%" fill="none" stroke="#0077b6" stroke-dasharray="4 4" stroke-width="1.5"></path>
+</svg>
+<!-- The Family Core -->
+<div class="relative w-[600px] h-[600px] flex items-center justify-center pb-20"><div class="absolute inset-0 z-0 opacity-80 scale-125 pointer-events-none"><img alt="Caribbean Map" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida/AP1WRLtDf125yIU5CGzKXz_jvEOcubZznmI5gxGadKDDuT-y2xzYVDCPBjapmTvJkJ7Jh97EXYDZAddWKhKdeNYG5fT8MwWVbPwyvxj5KQXSy7AF1w7JFcbG3NlNPWTPXBxepyn6s0nCIIs962sQ-0uzd7Jfx6W6PPxh6JJW8r8Sg0X1I4k1dNg5KtugdGz1He-aiuNI7HV-UmUdxFbiVnHzCLctzMS-30IVppw9Fh_Y_l_ZD_XcMS_dRYNTxA"/></div><div class="absolute -top-12 left-1/2 -translate-x-1/2 z-20 text-center"><h2 class="font-headline-xl text-white drop-shadow-lg tracking-[0.2em] opacity-90">CARIBBEAN</h2><div class="h-1 w-24 bg-white/50 mx-auto mt-2 rounded-full"></div></div><div class="relative w-64 h-64 glass-panel rounded-full flex items-center justify-center p-8 shadow-2xl shadow-primary/20 backdrop-blur-3xl z-10"><div class="absolute inset-2 rounded-full border border-white/50 bg-gradient-to-br from-white/40 to-transparent"></div><div class="grid grid-cols-2 gap-4 relative z-10 w-full h-full"><div class="relative group cursor-pointer"><img alt="Adult 1" class="w-full h-full object-cover rounded-full border-2 border-white/60 hover:border-primary transition-colors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMzpsvKT3fM0zmFXMQqwu-bzL8xlLydau0fMv2g2DFkYc0H0TTeBBcnSuBepj2Z5mQnGsl0Tnl69ckNvNSZHgSQHCTN99LFHP5jhljaESrHlaiITOq5ngrMWfn047tn7LMzYCWE9LoELR2Y-6SJwoS1fBBXi0vgRZXQGRg51JRvgniotG1xi6c9J_Ffh5VNdd8KvBuB7x1S6EcC4jtR6uGOdXQ9_AFJkncKQa1iGWiNWlUozMlhJRe"/><div class="absolute inset-0 bg-primary/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm"><span class="material-symbols-outlined text-on-primary">tune</span></div></div><div class="relative group cursor-pointer"><img alt="Adult 2" class="w-full h-full object-cover rounded-full border-2 border-white/60 hover:border-primary transition-colors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcb6LeRxxIPc6egiDTSKly1LrYT5F3IOMBCI3z5QUeHj61ziHzNCeFkgiwY6ZfDC1ZPmRAsRrn2xCZ_mZNW96PCIrijWWYo7bnS-lTAjzqIv2ed-oQs4wW0_djzPjJV3SKgsXckAE4ny9rFmRc9L60IJCcRkSOSeZ_6XC1ZG_DsxS2CnesQPU-G4Z_EcizqCSl2zbEOCfmOQn7dybeBw7fnj0knE5shCUq52o2IBzO0NSGiZZE1OrH"/><div class="absolute inset-0 bg-primary/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm"><span class="material-symbols-outlined text-on-primary">tune</span></div></div><div class="relative group cursor-pointer"><img alt="Child 1" class="w-full h-full object-cover rounded-full border-2 border-white/60 hover:border-primary transition-colors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgAUrFCM4KQvRHZXzbC2EByEzXopdlLB6zgnCt2uKIndiQ0m8EACY88DMofBnCSFJoQcLSxP4k83C5rMQSr_82i6jN2GsHBFzbY-qrQQHaEerw-h3WsTFt82j6_R_ysFBDmgbyuOAB2ENJ6WM2q-4sqU5yR6-ZIGS8wudi78kQ5my5tmWMqQne5nTgtzkvPzXBXEnc-hCW0WAZnTqvQcE8zPzKn_oFSQ4JSIsqLRG1I6RPTlkaRBKV"/></div><div class="relative group cursor-pointer"><img alt="Child 2" class="w-full h-full object-cover rounded-full border-2 border-white/60 hover:border-primary transition-colors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAv2FHGsMrg1sm1uOkaavmIBUAXpgb9UvMfMeVZdiB0iNMM77CTtYkX16wX5wizIXg2pdt-CCSrWHdyN64h7NYRTmsSadItrjGTvk-XAiH3zT8fExErwyiSu0XYq26AgFzs9XxRgmIbwAt3tkdexiRU4ulEkIew0H0-T66wvHBj8RnCwlUtN1ngkFM3d4rWK0lkX0PY9j-tLnO2QMQvp-a_4XBZWNOHEqY6qL6J3SKko96KTqDFycqW"/></div></div></div></div>
+</main>
+<!-- Prompt Input Field -->
+<div class="fixed bottom-12 left-1/2 -translate-x-1/2 z-40 w-full max-w-2xl px-4 lg:pr-0">
+<div class="bg-white/40 p-2 rounded-full flex items-center gap-4 shadow-[0_8px_30px_rgba(0,119,182,0.2)] border border-white/60 backdrop-blur-2xl transition-all hover:bg-white/50">
+<span class="material-symbols-outlined text-primary ml-4">auto_awesome</span>
+<input class="flex-grow bg-transparent border-none outline-none focus:ring-0 text-primary placeholder:text-primary/70 font-body-md" placeholder="Ask about cabin types, like Balcony or Suite..." type="text"/>
+<button class="bg-primary text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-primary/90 transition-colors shadow-md">
+<span class="material-symbols-outlined text-sm">send</span>
+</button>
+</div>
+</div>
+<!-- Contextual Evidence Pane -->
+</body></html>

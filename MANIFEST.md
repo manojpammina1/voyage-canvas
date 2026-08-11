@@ -1,0 +1,25 @@
+# Handoff Manifest
+
+- `.cursor/rules/voyage-canvas.mdc`
+- `.env.example`
+- `AGENTS.md`
+- `ARCHITECTURE.md`
+- `CURSOR_START_PROMPT.md`
+- `DESIGN.md`
+- `DOMAIN_CONTRACTS.md`
+- `EVAL_SPEC.md`
+- `IMPLEMENTATION_PLAN.md`
+- `MANIFEST.md`
+- `README.md`
+- `docs/references/RCG_Part1_System_Architecture_and_Technical_Design.docx`
+- `docs/references/ui/01-intent.html`
+- `docs/references/ui/02-traveler-core.html`
+- `docs/references/ui/03-caribbean-route.html`
+- `docs/references/ui/04-decision-orbit.html`
+- `docs/references/ui/05-evidence.html`
+- `docs/references/ui/06-auth-hold.html`
+- `docs/references/ui/README.md`
+- `docs/references/ui/caribbean-map-concept.png`
+- `eval/golden.jsonl`
+- `eval/redteam.jsonl`
+- `eval/retrieval.jsonl`

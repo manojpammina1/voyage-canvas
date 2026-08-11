@@ -123,6 +123,9 @@ importers:
 
   packages/inventory:
     dependencies:
+      '@voyage/commerce':
+        specifier: workspace:*
+        version: link:../commerce
       '@voyage/shared':
         specifier: workspace:*
         version: link:../shared

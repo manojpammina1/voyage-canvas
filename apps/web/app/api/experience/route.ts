@@ -1,7 +1,10 @@
 import { NextRequest } from 'next/server';
-import { MongoClient } from 'mongodb';
 import { join } from 'node:path';
-import { ExperienceEventSchema, LockedPreferenceSchema, type LockedPreference } from '@voyage/shared';
+import {
+  ExperienceEventSchema,
+  LockedPreferenceSchema,
+  type LockedPreference,
+} from '@voyage/shared';
 import {
   createEmbeddingModelFromEnv,
   createMongoRetrievalAdapter,
@@ -11,9 +14,16 @@ import {
 import { z } from 'zod';
 import { streamExperience } from '@voyage/orchestrator';
 import { resolveDataDir } from '../../../lib/dataDir';
+import { getDb } from '../../../lib/infra';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+
+const ExperienceRequestSchema = z.object({
+  intent: z.string().trim().min(1),
+  policyQuestion: z.string().trim().min(1).optional(),
+  locks: z.array(LockedPreferenceSchema).optional(),
+});
 
 let retrievalReady: Promise<Awaited<ReturnType<typeof createMongoRetrievalAdapter>>> | null =
   null;
@@ -21,15 +31,7 @@ let retrievalReady: Promise<Awaited<ReturnType<typeof createMongoRetrievalAdapte
 async function getRetrievalAdapter() {
   if (!retrievalReady) {
     retrievalReady = (async () => {
-      const mongoUrl =
-        process.env.MONGO_URL ??
-        'mongodb://localhost:27017/voyage?replicaSet=rs0&directConnection=true';
-      const client = new MongoClient(mongoUrl);
-      await client.connect();
-      const dbName =
-        mongoUrl.replace(/^mongodb(\+srv)?:\/\//, '').split('/')[1]?.split('?')[0] ||
-        'voyage';
-      const db = client.db(dbName);
+      const db = await getDb();
       const count = await db.collection('policy_chunks').countDocuments();
       if (count === 0) {
         const store = new MongoVectorStore(db);
@@ -50,28 +52,21 @@ function sseLine(event: string, data: unknown): string {
 }
 
 export async function POST(req: NextRequest): Promise<Response> {
-  const body = (await req.json()) as {
-    intent?: string;
-    policyQuestion?: string;
-    locks?: unknown;
-  };
-
-  const intent = body.intent?.trim();
-  if (!intent) {
-    return Response.json({ error: 'intent required' }, { status: 400 });
+  let body: z.infer<typeof ExperienceRequestSchema>;
+  try {
+    body = ExperienceRequestSchema.parse(await req.json());
+  } catch {
+    return Response.json({ error: 'invalid experience request' }, { status: 400 });
   }
 
-  const locks: LockedPreference[] | undefined = body.locks
-    ? (z.array(LockedPreferenceSchema).parse(body.locks) as LockedPreference[])
-    : undefined;
-
   const retrieval = await getRetrievalAdapter();
+  const locks = body.locks as LockedPreference[] | undefined;
   const stream = new ReadableStream({
     async start(controller) {
       const encoder = new TextEncoder();
       try {
         for await (const event of streamExperience({
-          intent,
+          intent: body.intent,
           policyQuestion: body.policyQuestion,
           locks,
           retrieval,

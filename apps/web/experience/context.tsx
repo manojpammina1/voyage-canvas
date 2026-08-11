@@ -11,14 +11,19 @@ import {
 } from 'react';
 import type {
   AuthenticationState,
+  CabinAvailability,
   ComparisonEvidenceData,
   Evidence,
+  ExperienceEvent,
   FallbackReason,
   Hold,
   LockableCriterion,
   LockedPreference,
   Port,
+  PriceQuote,
   SearchCriteria,
+  StatusStep,
+  VoyageOption,
 } from '@voyage/shared';
 import { HERO_INTENT } from '../lib/constants';
 import type { EnrichedOption, PlanResult } from '../lib/planTypes';
@@ -81,6 +86,7 @@ type Action =
   | { type: 'SET_POLICY_STREAMING'; streaming: boolean }
   | { type: 'SET_ERROR'; error?: string }
   | { type: 'APPLY_PLAN'; plan: PlanResult; stage?: CanvasStage }
+  | { type: 'MERGE_EVIDENCE'; evidence: Evidence[] }
   | { type: 'SELECT_OPTION'; optionId: string }
   | { type: 'SET_VIEW'; viewMode: ViewMode }
   | { type: 'SET_COMPARE'; optionIds: [string, string] }
@@ -107,6 +113,14 @@ const initialState: CanvasState = {
   policyStreaming: false,
 };
 
+function mergeEvidence(existing: Evidence[], incoming: Evidence[]): Evidence[] {
+  const byId = new Map(existing.map((ev) => [ev.id, ev]));
+  for (const ev of incoming) {
+    byId.set(ev.id, ev);
+  }
+  return [...byId.values()];
+}
+
 function reducer(state: CanvasState, action: Action): CanvasState {
   switch (action.type) {
     case 'SET_LOADING':
@@ -129,6 +143,7 @@ function reducer(state: CanvasState, action: Action): CanvasState {
       return {
         ...state,
         ...action.plan,
+        evidence: action.plan.evidence,
         stage: action.stage ?? 'exploring',
         loading: false,
         error: undefined,
@@ -140,6 +155,11 @@ function reducer(state: CanvasState, action: Action): CanvasState {
           action.plan.options.length > 0
             ? `${action.plan.options.length} voyage possibilities verified`
             : 'Adjust criteria to see more options',
+      };
+    case 'MERGE_EVIDENCE':
+      return {
+        ...state,
+        evidence: mergeEvidence(state.evidence, action.evidence),
       };
     case 'SELECT_OPTION':
       return {
@@ -223,6 +243,115 @@ async function postPlan(body: Record<string, unknown>): Promise<PlanResult> {
   return res.json() as Promise<PlanResult>;
 }
 
+const STATUS_TO_PHASE: Partial<Record<StatusStep, MaterializePhase>> = {
+  UNDERSTANDING_INTENT: 'UNDERSTANDING_INTENT',
+  SEARCHING_SAILINGS: 'SEARCHING_SAILINGS',
+  CHECKING_AVAILABILITY: 'CHECKING_AVAILABILITY',
+  CHECKING_PRICING: 'CHECKING_PRICING',
+};
+
+interface SailingEvidenceData {
+  criteria?: SearchCriteria;
+  options?: VoyageOption[];
+  ports?: Port[];
+}
+
+function isPriceQuote(data: unknown): data is PriceQuote {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    'quoteId' in data &&
+    'sailingId' in data &&
+    'totalUsd' in data
+  );
+}
+
+function isAvailability(data: unknown): data is CabinAvailability {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    'sailingId' in data &&
+    'availableCount' in data
+  );
+}
+
+function buildPlanFromStreamEvidence(
+  evidence: Evidence[],
+  locks: LockedPreference[],
+): PlanResult | null {
+  const sailingEv = evidence.find((ev) => ev.type === 'SAILING');
+  if (!sailingEv) return null;
+
+  const sailingData = sailingEv.data as SailingEvidenceData;
+  const options = sailingData.options ?? [];
+  const criteria = sailingData.criteria ?? {};
+  const pricesBySailing = new Map<string, PriceQuote>();
+  const availabilityBySailing = new Map<string, CabinAvailability>();
+
+  for (const ev of evidence) {
+    if (ev.type === 'PRICE' && isPriceQuote(ev.data)) {
+      pricesBySailing.set(ev.data.sailingId, ev.data);
+    }
+    if (ev.type === 'AVAILABILITY' && isAvailability(ev.data)) {
+      availabilityBySailing.set(ev.data.sailingId, ev.data);
+    }
+  }
+
+  const enriched: EnrichedOption[] = [];
+  for (const opt of options) {
+    const quote = pricesBySailing.get(opt.sailing.id);
+    if (!quote) continue;
+    enriched.push({
+      ...opt,
+      cabinType: opt.cabinType ?? quote.cabinType,
+      cabinId: opt.cabinId ?? availabilityBySailing.get(opt.sailing.id)?.cabinId,
+      totalUsd: quote.totalUsd,
+      quoteId: quote.quoteId,
+      asOf: quote.asOf,
+      validUntil: quote.validUntil,
+      shipLabel: opt.sailing.shipName,
+      departureLabel: new Date(opt.sailing.departureDate).toLocaleDateString(
+        'en-US',
+        { month: 'short', day: 'numeric', year: 'numeric' },
+      ),
+    });
+  }
+
+  return {
+    criteria,
+    confirmedCriteria: { ...criteria },
+    lockedPreferences: locks,
+    options: enriched,
+    evidence,
+    ports: sailingData.ports ?? [],
+    statusStep: enriched.length ? 'CHECKING_PRICING' : 'SEARCHING_SAILINGS',
+    uncertainty: enriched.length ? undefined : 'NEEDS_DETAIL',
+  };
+}
+
+async function readExperienceStream(
+  res: Response,
+  onEvent: (event: ExperienceEvent) => void,
+): Promise<void> {
+  if (!res.body) throw new Error('Experience stream unavailable');
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const parts = buffer.split('\n\n');
+    buffer = parts.pop() ?? '';
+    for (const part of parts) {
+      const dataLine = part.split('\n').find((line) => line.startsWith('data: '));
+      if (!dataLine) continue;
+      onEvent(JSON.parse(dataLine.slice(6)) as ExperienceEvent);
+    }
+  }
+}
+
 export function CanvasProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [intentDraft, setIntentDraft] = useState(HERO_INTENT);
@@ -282,13 +411,73 @@ export function CanvasProvider({ children }: { children: ReactNode }) {
   const submitIntent = useCallback(
     async (intent?: string) => {
       const text = (intent ?? intentDraft).trim();
-      await apply({
-        action: 'search',
-        intent: text,
-        locks: state.lockedPreferences,
-      });
+      const locks = state.lockedPreferences;
+      const streamedEvidence: Evidence[] = [];
+      let latestPlan: PlanResult | null = null;
+      let sawFallback = false;
+
+      dispatch({ type: 'SET_LOADING', loading: true });
+      dispatch({ type: 'SET_NODES_REVEAL', reveal: false });
+      dispatch({ type: 'SET_MATERIALIZE', phase: 'UNDERSTANDING_INTENT' });
+
+      try {
+        const res = await fetch('/api/experience', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ intent: text, locks }),
+        });
+        if (!res.ok) throw new Error('Experience stream failed');
+
+        await readExperienceStream(res, (event) => {
+          if (event.type === 'status') {
+            const phase = STATUS_TO_PHASE[event.step];
+            if (phase) dispatch({ type: 'SET_MATERIALIZE', phase });
+          }
+          if (event.type === 'fallback') {
+            sawFallback = true;
+            dispatch({
+              type: 'SET_FALLBACK',
+              reason: event.reason,
+              criteria: event.criteria,
+            });
+          }
+          if (event.type === 'evidence') {
+            streamedEvidence.push(event.evidence);
+            const plan = buildPlanFromStreamEvidence(streamedEvidence, locks);
+            if (plan && plan.options.length > 0) {
+              latestPlan = plan;
+              dispatch({ type: 'APPLY_PLAN', plan });
+              dispatch({ type: 'SET_NODES_REVEAL', reveal: true });
+            }
+          }
+          if (event.type === 'error' && event.code !== 'AVAILABILITY_UNAVAILABLE') {
+            dispatch({
+              type: 'SET_ERROR',
+              error: event.code.replace(/_/g, ' ').toLowerCase(),
+            });
+          }
+        });
+
+        if (sawFallback) {
+          return;
+        }
+        if (latestPlan) {
+          dispatch({ type: 'APPLY_PLAN', plan: latestPlan });
+          dispatch({ type: 'SET_NODES_REVEAL', reveal: true });
+        } else {
+          dispatch({
+            type: 'SET_ERROR',
+            error: 'No verified voyage options returned',
+          });
+        }
+      } catch (e) {
+        dispatch({
+          type: 'SET_ERROR',
+          error: e instanceof Error ? e.message : 'Experience stream failed',
+        });
+      }
     },
-    [apply, intentDraft, state.lockedPreferences],
+    [intentDraft, state.lockedPreferences],
   );
 
   const updateBudget = useCallback(
@@ -372,9 +561,13 @@ export function CanvasProvider({ children }: { children: ReactNode }) {
             const payload = JSON.parse(dataLine.slice(6)) as {
               type?: string;
               text?: string;
+              evidence?: Evidence;
               reason?: FallbackReason;
               criteria?: SearchCriteria;
             };
+            if (payload.type === 'evidence' && payload.evidence) {
+              dispatch({ type: 'MERGE_EVIDENCE', evidence: [payload.evidence] });
+            }
             if (payload.type === 'token' && payload.text) {
               narrative += payload.text;
               dispatch({

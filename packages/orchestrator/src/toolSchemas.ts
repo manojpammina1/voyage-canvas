@@ -30,7 +30,10 @@ export const GetPolicyContentArgsSchema = z.object({
 export const CreateHoldArgsSchema = z.object({
   sailingId: z.string().min(1),
   cabinId: z.string().min(1),
+  cabinType: CabinTypeSchema,
   quoteId: z.string().min(1),
+  occupancy: OccupancySchema,
+  quotedTotalUsd: z.number().positive(),
   idempotencyKey: z.string().min(1),
   guestConfirmed: z.literal(true),
   guestAuthCtx: GuestAuthCtxSchema,

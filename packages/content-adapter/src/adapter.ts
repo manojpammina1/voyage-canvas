@@ -1,5 +1,6 @@
 import { join } from 'node:path';
 import type { EmbeddingModel, PolicyChunk, RetrievalAdapter } from '@voyage/shared';
+import { createGeminiEmbeddingModel } from './embeddings/gemini.js';
 import { createMockEmbeddingModel } from './embeddings/mock.js';
 import { chunkAllDocuments, loadPolicyDocuments } from './ingestion.js';
 import {
@@ -17,8 +18,7 @@ export function resolvePoliciesDir(dataDir: string): string {
 export function createEmbeddingModelFromEnv(): EmbeddingModel {
   const provider = (process.env.LLM_PROVIDER ?? 'mock').toLowerCase();
   if (provider === 'gemini') {
-    // Gemini embeddings wired in T13 orchestrator gateway; content-adapter stays mock-first.
-    return createMockEmbeddingModel();
+    return createGeminiEmbeddingModel();
   }
   return createMockEmbeddingModel();
 }
@@ -69,6 +69,7 @@ export {
 } from './ingestion.js';
 export { policyEvidenceFromPassages, passagesToCitations } from './citations.js';
 export { ContentRetrievalAdapter, embedAndStoreChunks } from './retrieval.js';
+export { createGeminiEmbeddingModel } from './embeddings/gemini.js';
 export { createMockEmbeddingModel, mockEmbedText, cosineSimilarity } from './embeddings/mock.js';
 export { MemoryVectorStore, searchChunks } from './stores/vectorStore.js';
 export { MongoVectorStore, ensurePolicyChunkIndexes, POLICY_CHUNKS_COLLECTION } from './stores/mongoVectorStore.js';

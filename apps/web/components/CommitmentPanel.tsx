@@ -8,7 +8,7 @@ import { useCanvas } from '../experience/context';
 const HOLD_CONFIRMATION = 'CONFIRM_HOLD';
 
 export function CommitmentPanel() {
-  const { selectedOption, authenticationState, hold, refreshAuth } = useCanvas();
+  const { selectedOption, authenticationState, hold, refreshAuth, criteria } = useCanvas();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string>();
   const [confirmHold, setConfirmHold] = useState(false);
@@ -44,7 +44,7 @@ export function CommitmentPanel() {
     } finally {
       setBusy(false);
     }
-  }, [refreshAuth]);
+  }, [loadSession]);
 
   const createHold = useCallback(async () => {
     if (!selectedOption) return;
@@ -60,6 +60,8 @@ export function CommitmentPanel() {
         body: JSON.stringify({
           sailingId: selectedOption.sailing.id,
           quoteId: selectedOption.quoteId,
+          occupancy: criteria.occupancy,
+          quotedTotalUsd: selectedOption.totalUsd,
           cabinType: selectedOption.cabinType ?? 'balcony',
           cabinId: selectedOption.cabinId,
           confirmationToken: HOLD_CONFIRMATION,
@@ -81,7 +83,7 @@ export function CommitmentPanel() {
     } finally {
       setBusy(false);
     }
-  }, [selectedOption, refreshAuth]);
+  }, [criteria.occupancy, loadSession, selectedOption]);
 
   const continueCheckout = useCallback(async () => {
     setBusy(true);

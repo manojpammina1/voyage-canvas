@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
+import { quotePrice } from '@voyage/commerce';
 import type { GuestAuthCtx } from '@voyage/shared';
 import {
   bindMongo,
@@ -18,6 +19,16 @@ import {
 
 const SAILING = 'sail-serenade-2027-03-06';
 const CABIN = `cabin-${SAILING}-balcony`;
+const QUOTE = quotePrice(SAILING, 'balcony', { adults: 2, children: 2 });
+
+function quoteFields() {
+  return {
+    cabinType: 'balcony' as const,
+    quoteId: QUOTE.quoteId,
+    occupancy: QUOTE.occupancy,
+    quotedTotalUsd: QUOTE.totalUsd,
+  };
+}
 
 const guestA: GuestAuthCtx = {
   guestId: 'guest-demo-a',
@@ -66,7 +77,7 @@ describe('@voyage/inventory holds (T6)', () => {
     const result = await createHold({
       sailingId: SAILING,
       cabinId: CABIN,
-      quoteId: 'quote-test-1',
+      ...quoteFields(),
       guestAuthCtx: guestA,
       idempotencyKey: 'idem-decrement-1',
       guestConfirmed: true,
@@ -88,7 +99,7 @@ describe('@voyage/inventory holds (T6)', () => {
     const first = await createHold({
       sailingId: SAILING,
       cabinId: CABIN,
-      quoteId: 'quote-test-2',
+      ...quoteFields(),
       guestAuthCtx: guestA,
       idempotencyKey: 'idem-sold-1',
       guestConfirmed: true,
@@ -98,7 +109,7 @@ describe('@voyage/inventory holds (T6)', () => {
     const second = await createHold({
       sailingId: SAILING,
       cabinId: CABIN,
-      quoteId: 'quote-test-3',
+      ...quoteFields(),
       guestAuthCtx: guestB,
       idempotencyKey: 'idem-sold-2',
       guestConfirmed: true,
@@ -114,7 +125,7 @@ describe('@voyage/inventory holds (T6)', () => {
     const first = await createHold({
       sailingId: SAILING,
       cabinId: CABIN,
-      quoteId: 'quote-test-4',
+      ...quoteFields(),
       guestAuthCtx: guestA,
       idempotencyKey: 'idem-same-key',
       guestConfirmed: true,
@@ -122,7 +133,7 @@ describe('@voyage/inventory holds (T6)', () => {
     const second = await createHold({
       sailingId: SAILING,
       cabinId: CABIN,
-      quoteId: 'quote-test-4',
+      ...quoteFields(),
       guestAuthCtx: guestA,
       idempotencyKey: 'idem-same-key',
       guestConfirmed: true,
@@ -136,11 +147,29 @@ describe('@voyage/inventory holds (T6)', () => {
     expect(after[0]?.availableCount).toBe(2);
   });
 
+  it('rejects forged quote context before claiming inventory', async () => {
+    const result = await createHold({
+      sailingId: SAILING,
+      cabinId: CABIN,
+      ...quoteFields(),
+      quoteId: 'quote-forged',
+      guestAuthCtx: guestA,
+      idempotencyKey: 'idem-forged-quote',
+      guestConfirmed: true,
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.error?.code).toBe('QUOTE_CHANGED');
+
+    const after = await getAvailability(SAILING, 'balcony');
+    expect(after[0]?.availableCount).toBe(3);
+  });
+
   it('expired hold releases inventory once (CAS)', async () => {
     const created = await createHold({
       sailingId: SAILING,
       cabinId: CABIN,
-      quoteId: 'quote-test-5',
+      ...quoteFields(),
       guestAuthCtx: guestA,
       idempotencyKey: 'idem-expire-1',
       guestConfirmed: true,
@@ -171,7 +200,7 @@ describe('@voyage/inventory holds (T6)', () => {
     const created = await createHold({
       sailingId: SAILING,
       cabinId: CABIN,
-      quoteId: 'quote-test-6',
+      ...quoteFields(),
       guestAuthCtx: guestA,
       idempotencyKey: 'idem-xguest-1',
       guestConfirmed: true,
@@ -192,7 +221,7 @@ describe('@voyage/inventory holds (T6)', () => {
     const created = await createHold({
       sailingId: SAILING,
       cabinId: CABIN,
-      quoteId: 'quote-test-7',
+      ...quoteFields(),
       guestAuthCtx: guestA,
       idempotencyKey: 'idem-booking-1',
       guestConfirmed: true,
@@ -220,7 +249,7 @@ describe('@voyage/inventory holds (T6)', () => {
         await createHold({
           sailingId: SAILING,
           cabinId: CABIN,
-          quoteId: `quote-contention-${i}`,
+          ...quoteFields(),
           guestAuthCtx: i === 0 ? guestA : guestB,
           idempotencyKey: `idem-contention-${i}`,
           guestConfirmed: true,

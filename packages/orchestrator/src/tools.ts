@@ -118,7 +118,10 @@ export async function invokeTool(
       const result = await createHold({
         sailingId: args.sailingId,
         cabinId: args.cabinId,
+        cabinType: args.cabinType,
         quoteId: args.quoteId,
+        occupancy: args.occupancy,
+        quotedTotalUsd: args.quotedTotalUsd,
         guestAuthCtx: args.guestAuthCtx,
         idempotencyKey: args.idempotencyKey,
         guestConfirmed: args.guestConfirmed,

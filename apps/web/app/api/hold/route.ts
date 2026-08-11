@@ -2,7 +2,8 @@ import { randomUUID } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { cabinIdFor } from '@voyage/commerce';
 import { createHold } from '@voyage/inventory';
-import type { CabinType } from '@voyage/shared';
+import { CabinTypeSchema, OccupancySchema } from '@voyage/shared';
+import { z } from 'zod';
 import { getDb } from '../../../lib/infra';
 import {
   getOrCreateSession,
@@ -16,19 +17,23 @@ export const runtime = 'nodejs';
 
 const CONFIRMATION_TOKEN = 'CONFIRM_HOLD';
 
+const HoldRequestSchema = z.object({
+  sailingId: z.string().min(1),
+  quoteId: z.string().min(1),
+  occupancy: OccupancySchema.optional(),
+  quotedTotalUsd: z.number().positive().optional(),
+  cabinType: CabinTypeSchema.optional(),
+  cabinId: z.string().min(1).optional(),
+  confirmationToken: z.string(),
+});
+
 export async function POST(request: NextRequest) {
   try {
     await getDb();
     const cookieSession = parseSessionIdFromCookie(request.headers.get('cookie'));
     const session = await getOrCreateSession(cookieSession);
 
-    const body = (await request.json()) as {
-      sailingId: string;
-      quoteId: string;
-      cabinType?: CabinType;
-      cabinId?: string;
-      confirmationToken: string;
-    };
+    const body = HoldRequestSchema.parse(await request.json());
 
     if (body.confirmationToken !== CONFIRMATION_TOKEN) {
       return NextResponse.json(
@@ -41,11 +46,21 @@ export async function POST(request: NextRequest) {
       request.headers.get('idempotency-key')?.trim() || `hold-${randomUUID()}`;
     const cabinType = body.cabinType ?? 'balcony';
     const cabinId = body.cabinId ?? cabinIdFor(body.sailingId, cabinType);
+    const occupancy = body.occupancy ?? session.criteria.occupancy;
+    if (!occupancy || body.quotedTotalUsd === undefined) {
+      return NextResponse.json(
+        { ok: false, error: 'Quote occupancy and total are required' },
+        { status: 400 },
+      );
+    }
 
     const result = await createHold({
       sailingId: body.sailingId,
       cabinId,
+      cabinType,
       quoteId: body.quoteId,
+      occupancy,
+      quotedTotalUsd: body.quotedTotalUsd,
       guestAuthCtx: toGuestAuthCtx(session),
       idempotencyKey,
       guestConfirmed: true,
@@ -66,6 +81,9 @@ export async function POST(request: NextRequest) {
     }
     return res;
   } catch (err) {
+    if (err instanceof z.ZodError) {
+      return NextResponse.json({ ok: false, error: 'Invalid hold request' }, { status: 400 });
+    }
     const message = err instanceof Error ? err.message : 'Hold failed';
     return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }

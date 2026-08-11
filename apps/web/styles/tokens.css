@@ -40,8 +40,8 @@
   --evidence-verified: #00c853;
   --ocean-deep: #002d54;
   --sunset-glow: #fff1e6;
-  --font-display: "Geist", "Segoe UI", sans-serif;
-  --font-body: "Inter", "Segoe UI", sans-serif;
+  --font-display: "Segoe UI", system-ui, sans-serif;
+  --font-body: "Segoe UI", system-ui, sans-serif;
   --radius-sm: 0.25rem;
   --radius-md: 0.75rem;
   --radius-lg: 1rem;

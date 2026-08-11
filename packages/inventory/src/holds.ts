@@ -1,12 +1,22 @@
 import { randomUUID } from 'node:crypto';
-import type { GuestAuthCtx, Hold, ToolResult } from '@voyage/shared';
+import { quotePrice } from '@voyage/commerce';
+import type {
+  CabinType,
+  GuestAuthCtx,
+  Hold,
+  Occupancy,
+  ToolResult,
+} from '@voyage/shared';
 import type { CabinInventoryDoc } from './availability.js';
 import { COLLECTIONS, getDb, getMongoClient } from './db.js';
 
 export interface CreateHoldInput {
   sailingId: string;
   cabinId: string;
+  cabinType: CabinType;
   quoteId: string;
+  occupancy: Occupancy;
+  quotedTotalUsd: number;
   guestAuthCtx: GuestAuthCtx;
   idempotencyKey: string;
   /** Explicit UI confirmation signal — required. */
@@ -71,6 +81,29 @@ function authGate(
   return null;
 }
 
+function quoteGate(
+  input: CreateHoldInput,
+  requestId: string,
+): ToolResult<Hold> | null {
+  try {
+    const current = quotePrice(input.sailingId, input.cabinType, input.occupancy);
+    if (
+      current.quoteId !== input.quoteId ||
+      current.totalUsd !== input.quotedTotalUsd
+    ) {
+      return fail(
+        'QUOTE_CHANGED',
+        'Price changed or quote no longer matches current pricing',
+        true,
+        requestId,
+      );
+    }
+  } catch {
+    return fail('QUOTE_INVALID', 'Quote could not be revalidated', true, requestId);
+  }
+  return null;
+}
+
 async function returnExistingIdempotent(
   idempotencyKey: string,
   guestId: string,
@@ -107,6 +140,9 @@ export async function createHold(input: CreateHoldInput): Promise<ToolResult<Hol
     requestId,
   );
   if (prior) return prior;
+
+  const quoteChecked = quoteGate(input, requestId);
+  if (quoteChecked) return quoteChecked;
 
   const ttl = input.holdTtlSeconds ?? Number(process.env.HOLD_TTL_SECONDS ?? 600);
   const now = input.now ?? new Date();

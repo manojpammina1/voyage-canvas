@@ -62,7 +62,10 @@ async function main(): Promise<void> {
   );
 
   const redis = new Redis(redisUrl);
-  const sessionKeys = await redis.keys('voyage:session:*');
+  const sessionKeys = [
+    ...(await redis.keys('voyage:session:*')),
+    ...(await redis.keys('voyage:web-session:*')),
+  ];
   if (sessionKeys.length > 0) {
     await redis.del(...sessionKeys);
   }

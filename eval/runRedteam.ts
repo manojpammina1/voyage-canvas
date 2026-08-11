@@ -4,6 +4,7 @@ import { RedteamEvalCaseSchema } from '@voyage/shared';
 import { sanitizeForModel } from '../packages/orchestrator/src/guardrails.js';
 import { validateCommerceClaimsInText } from '../packages/orchestrator/src/grounding.js';
 import { invokeTool } from '../packages/orchestrator/src/tools.js';
+import { quotePrice } from '@voyage/commerce';
 import {
   createMemoryRetrievalAdapter,
   ingestPolicyCorpus,
@@ -26,6 +27,10 @@ async function main(): Promise<void> {
   const { adapter, store } = createMemoryRetrievalAdapter();
   await ingestPolicyCorpus(join(resolveDataDir(), 'policies'), store);
   const toolCtx = { retrieval: adapter };
+  const holdQuote = quotePrice('sail-serenade-2027-03-06', 'balcony', {
+    adults: 2,
+    children: 2,
+  });
 
   for (const line of lines) {
     const evalCase = RedteamEvalCaseSchema.parse(JSON.parse(line));
@@ -51,12 +56,15 @@ async function main(): Promise<void> {
     if (evalCase.category === 'authorization') {
       const result = await invokeTool(
         'create_hold',
-        {
-          sailingId: 'sail-serenade-2027-03-06',
-          cabinId: 'cabin-sail-serenade-2027-03-06-balcony',
-          quoteId: 'q-demo',
-          idempotencyKey: `rt-${evalCase.id}`,
-          guestConfirmed: true,
+          {
+            sailingId: 'sail-serenade-2027-03-06',
+            cabinId: 'cabin-sail-serenade-2027-03-06-balcony',
+            cabinType: 'balcony',
+            quoteId: holdQuote.quoteId,
+            occupancy: holdQuote.occupancy,
+            quotedTotalUsd: holdQuote.totalUsd,
+            idempotencyKey: `rt-${evalCase.id}`,
+            guestConfirmed: true,
           guestAuthCtx: {
             guestId: 'anon-guest',
             sessionId: 'anon-session',

@@ -5,6 +5,7 @@ import {
   quotePrice,
   searchSailings,
 } from '@voyage/commerce';
+import { getAvailability } from '@voyage/inventory';
 import { parseCriteria } from '@voyage/orchestrator';
 import type {
   Evidence,
@@ -44,10 +45,10 @@ function enrichOptions(
   });
 }
 
-function buildEvidence(
+async function buildEvidence(
   options: EnrichedOption[],
   criteria: SearchCriteria,
-): Evidence[] {
+): Promise<Evidence[]> {
   const catalog = loadCatalog();
   const occupancy = criteria.occupancy ?? catalog.pricing.heroOccupancy;
   const evidence: Evidence[] = [];
@@ -72,23 +73,43 @@ function buildEvidence(
         sourceId: quote.quoteId,
       },
     });
-    evidence.push({
-      id: `ev-avail-${opt.id}`,
-      type: 'AVAILABILITY',
-      source: 'deterministic',
-      data: {
-        sailingId: opt.sailing.id,
-        cabinType: opt.cabinType,
-        cabinId: opt.cabinId,
-        availableCount: 4,
+    try {
+      const rows = await getAvailability(opt.sailing.id, opt.cabinType);
+      const availability = rows.find((row) => row.cabinId === opt.cabinId) ?? rows[0];
+      if (availability) {
+        evidence.push({
+          id: `ev-avail-${opt.id}`,
+          type: 'AVAILABILITY',
+          source: 'deterministic',
+          data: availability,
+          asOf: availability.asOf,
+          provenance: {
+            tool: 'check_availability',
+            requestId: `req-avail-${opt.id}`,
+            sourceId: availability.cabinId,
+          },
+        });
+      }
+    } catch {
+      evidence.push({
+        id: `ev-avail-${opt.id}`,
+        type: 'AVAILABILITY',
+        source: 'deterministic',
+        data: {
+          sailingId: opt.sailing.id,
+          cabinType: opt.cabinType,
+          cabinId: opt.cabinId,
+          availableCount: 0,
+          asOf: quote.asOf,
+        },
         asOf: quote.asOf,
-      },
-      asOf: quote.asOf,
-      provenance: {
-        tool: 'check_availability',
-        requestId: `req-avail-${opt.id}`,
-      },
-    });
+        provenance: {
+          tool: 'check_availability',
+          requestId: `req-avail-${opt.id}`,
+          sourceId: 'availability-unavailable',
+        },
+      });
+    }
   }
 
   return evidence;
@@ -120,15 +141,15 @@ function collectPorts(options: EnrichedOption[]): Port[] {
   return ports;
 }
 
-export function planFromIntent(
+export async function planFromIntent(
   intent: string,
   locks: LockedPreference[] = [],
-): PlanResult {
+): Promise<PlanResult> {
   const parsed = parseCriteria(intent);
   const criteria = applyLocksToCriteria(parsed, locks);
   const raw = searchSailings(criteria);
   const options = enrichOptions(raw, criteria);
-  const evidence = buildEvidence(options, criteria);
+  const evidence = await buildEvidence(options, criteria);
   const ports = collectPorts(options);
 
   return {
@@ -143,14 +164,14 @@ export function planFromIntent(
   };
 }
 
-export function planWithCriteria(
+export async function planWithCriteria(
   criteria: SearchCriteria,
   locks: LockedPreference[] = [],
-): PlanResult {
+): Promise<PlanResult> {
   const merged = applyLocksToCriteria(criteria, locks);
   const raw = searchSailings(merged);
   const options = enrichOptions(raw, merged);
-  const evidence = buildEvidence(options, merged);
+  const evidence = await buildEvidence(options, merged);
   const ports = collectPorts(options);
 
   return {
@@ -184,13 +205,13 @@ export function toggleLock(
   ];
 }
 
-export function compareTwo(
+export async function compareTwo(
   criteria: SearchCriteria,
   locks: LockedPreference[],
   optionIds: [string, string],
   options: EnrichedOption[],
-): PlanResult {
-  const base = planWithCriteria(criteria, locks);
+): Promise<PlanResult> {
+  const base = await planWithCriteria(criteria, locks);
   const a = options.find((o) => o.id === optionIds[0]);
   const b = options.find((o) => o.id === optionIds[1]);
   if (!a || !b) {

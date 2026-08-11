@@ -4,6 +4,7 @@ import {
   createMemoryRetrievalAdapter,
   ingestPolicyCorpus,
 } from '@voyage/content-adapter';
+import { quotePrice } from '@voyage/commerce';
 import { HERO_INTENT, runExperience } from '@voyage/orchestrator';
 import { GoldenEvalCaseSchema } from '@voyage/shared';
 import { parseCriteria } from '../packages/orchestrator/src/criteriaParser.js';
@@ -27,6 +28,10 @@ async function main(): Promise<void> {
   const { adapter, store } = createMemoryRetrievalAdapter();
   await ingestPolicyCorpus(join(resolveDataDir(), 'policies'), store);
   const toolCtx = { retrieval: adapter };
+  const holdQuote = quotePrice('sail-serenade-2027-03-06', 'balcony', {
+    adults: 2,
+    children: 2,
+  });
 
   for (const line of lines) {
     const evalCase = GoldenEvalCaseSchema.parse(JSON.parse(line));
@@ -64,12 +69,15 @@ async function main(): Promise<void> {
     if (evalCase.id === 'hold-anon-006') {
       const result = await invokeTool(
         'create_hold',
-        {
-          sailingId: 'sail-serenade-2027-03-06',
-          cabinId: 'cabin-sail-serenade-2027-03-06-balcony',
-          quoteId: 'q-demo',
-          idempotencyKey: 'eval-anon',
-          guestConfirmed: true,
+          {
+            sailingId: 'sail-serenade-2027-03-06',
+            cabinId: 'cabin-sail-serenade-2027-03-06-balcony',
+            cabinType: 'balcony',
+            quoteId: holdQuote.quoteId,
+            occupancy: holdQuote.occupancy,
+            quotedTotalUsd: holdQuote.totalUsd,
+            idempotencyKey: 'eval-anon',
+            guestConfirmed: true,
           guestAuthCtx: {
             guestId: 'anon-1',
             sessionId: 'anon-1',

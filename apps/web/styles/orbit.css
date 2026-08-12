@@ -119,11 +119,12 @@
   margin: 0 auto;
 }
 
+/* No `opacity` here: at 12.8px over the photo backdrop, fading the text to 85%
+ * dropped it to 4.0:1. The token already carries the de-emphasis. */
 .vc-intent-hint {
   margin: 1rem 0 0;
   font-size: 0.8rem;
   color: var(--on-surface-variant);
-  opacity: 0.85;
 }
 
 .vc-intent-form {
@@ -280,7 +281,7 @@
 .vc-orbit-node__bead:focus-visible {
   transform: scale(1.35);
   outline: none;
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--secondary-container) 40%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 45%, transparent);
 }
 
 .vc-orbit-node--selected .vc-orbit-node__bead {
@@ -288,14 +289,22 @@
   border-color: var(--on-primary);
   transform: scale(1.35);
   box-shadow:
-    0 0 0 4px color-mix(in srgb, var(--secondary-container) 45%, transparent),
+    0 0 0 4px color-mix(in srgb, var(--tertiary-container) 55%, transparent),
     0 0 24px color-mix(in srgb, var(--primary) 50%, transparent);
 }
 
+/* Verified price — sanctioned accent use. Unlike the other prices this one sits
+ * directly on the ambient photo rather than on a glass panel, and at ~10px it
+ * is small text (4.5:1). The chip pins the backdrop to a known value instead of
+ * whatever the photo happens to be doing behind it. */
 .vc-orbit-node__price {
   font-size: 0.65rem;
   font-weight: 700;
-  color: var(--secondary);
+  color: var(--accent-sunset);
+  background: color-mix(in srgb, var(--glass-surface-active) 45%, white);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  padding: 0.1rem 0.35rem;
 }
 
 .vc-orbit-node__compare {
@@ -352,11 +361,12 @@
   color: var(--ocean-deep);
 }
 
+/* Verified price — sanctioned accent use. */
 .vc-selection-card__price {
   font-family: var(--font-display);
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--secondary);
+  color: var(--accent-sunset);
   margin: 0.5rem 0;
 }
 
@@ -411,8 +421,15 @@
 }
 
 .vc-route-port--active circle {
-  fill: var(--secondary-container);
-  stroke: var(--secondary);
+  fill: var(--tertiary-container);
+  stroke: var(--primary);
+}
+
+/* CaribbeanRouteMap declares this gradient stop with stopColor="var(--secondary-container)".
+ * `stop-color` is a presentation attribute, so CSS wins — this keeps the route
+ * glow in the blue range without editing the component. */
+.vc-route-map #routeGlow stop:last-of-type {
+  stop-color: var(--tertiary-container);
 }
 
 .vc-route-port text {
@@ -448,9 +465,10 @@
   outline: none;
 }
 
+/* Selection is structural state, not a price or a CTA — stays blue. */
 .vc-list-item--selected {
-  border-color: var(--secondary);
-  background: color-mix(in srgb, var(--sunset-glow) 50%, white);
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 10%, white);
 }
 
 .vc-budget {

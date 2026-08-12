@@ -1,4 +1,13 @@
-/* Adaptive Serenity — DESIGN.md tokens */
+/* Adaptive Serenity — DESIGN.md tokens
+ *
+ * Values are aligned to the `colors:` / `typography:` frontmatter in DESIGN.md
+ * (Voyage Canvas / Adaptive Serenity). The older "Aura Oceanic" values that
+ * previously lived here have been replaced.
+ *
+ * NAMES ARE A PUBLIC CONTRACT. 37 custom properties are referenced across the
+ * stylesheets and components — do not rename any of them. Change values only;
+ * additions go at the bottom of each block.
+ */
 :root {
   --surface: #f7f9fb;
   --surface-dim: #d8dadc;
@@ -8,40 +17,74 @@
   --surface-container: #eceef0;
   --surface-container-high: #e6e8ea;
   --surface-container-highest: #e0e3e5;
+  --surface-variant: #e0e3e5;
   --on-surface: #191c1e;
   --on-surface-variant: #424751;
   --inverse-surface: #2d3133;
   --inverse-on-surface: #eff1f3;
   --outline: #727783;
   --outline-variant: #c2c6d3;
-  --surface-tint: #006399;
-  --primary: #0077b6;
+  --surface-tint: #175ead;
+
+  /* Primary — Ocean Blue. Structure, navigation, verified-state icons. */
+  --primary: #003e7a;
   --on-primary: #ffffff;
-  --primary-container: #0077b6;
-  --on-primary-container: #f3f7ff;
-  --inverse-primary: #94ccff;
-  --secondary: #006875;
+  --primary-container: #0055a4;
+  --on-primary-container: #afccff;
+  --inverse-primary: #a8c8ff;
+
+  /* Secondary — Sunset Orange. THE accent. See "Accent discipline" below. */
+  --secondary: #9b4500;
   --on-secondary: #ffffff;
-  --secondary-container: #9cecfb;
-  --on-secondary-container: #016d7a;
+  --secondary-container: #fc8a40;
+  --on-secondary-container: #672c00;
+
+  /* Tertiary — Sky Blue. Interactive chips, non-critical accents. */
   --tertiary: #00435c;
   --on-tertiary: #ffffff;
   --tertiary-container: #005c7c;
   --on-tertiary-container: #83d4ff;
+
   --error: #ba1a1a;
   --on-error: #ffffff;
   --error-container: #ffdad6;
   --on-error-container: #93000a;
-  --background: #f4faff;
-  --on-background: #141d21;
-  --glass-surface: rgba(255, 255, 255, 0.72);
-  --glass-border: rgba(255, 255, 255, 0.85);
-  --glass-surface-active: rgba(255, 255, 255, 0.88);
+
+  --background: #f7f9fb;
+  --on-background: #191c1e;
+
+  --glass-surface: rgba(255, 255, 255, 0.4);
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --glass-surface-active: rgba(255, 255, 255, 0.62);
+
   --evidence-verified: #00c853;
   --ocean-deep: #002d54;
   --sunset-glow: #fff1e6;
-  --font-display: "Segoe UI", system-ui, sans-serif;
-  --font-body: "Segoe UI", system-ui, sans-serif;
+
+  /* --- Accent discipline -------------------------------------------------
+   * The sunset accent is reserved for exactly two things:
+   *   1. verified-price values
+   *   2. the primary CTA (filled `.vc-button`, `.vc-intent-send`)
+   * Everything else stays in the blue / neutral range. These aliases exist so
+   * that intent is readable at the call site — grep `--accent-sunset` to audit.
+   * --accent-sunset is the text-safe tone (#9b4500, 6.4:1 on white);
+   * --accent-sunset-bright (#fc8a40) is fill-only, never used for text.
+   */
+  --accent-sunset: #9b4500;
+  --accent-sunset-bright: #fc8a40;
+  --on-accent-sunset: #ffffff;
+
+  /* Ambient photo layer — see canvas.css .vc-ambient.
+   * White scrim laid directly over the hero photo. 0.55 is the floor that keeps
+   * the darkest region of the pre-blurred asset (luma 105) light enough for
+   * --on-surface-variant and --primary to clear 4.5:1 through a 0.4 glass panel.
+   * Lower it and the glass panels stop being readable. */
+  --ambient-scrim: rgba(255, 255, 255, 0.55);
+
+  /* Loaded by next/font in app/layout.tsx, which sets --font-geist /
+   * --font-inter on <html>. Segoe UI stays as the no-JS/offline fallback. */
+  --font-display: var(--font-geist), "Segoe UI", system-ui, sans-serif;
+  --font-body: var(--font-inter), "Segoe UI", system-ui, sans-serif;
   --radius-sm: 0.25rem;
   --radius-md: 0.75rem;
   --radius-lg: 1rem;

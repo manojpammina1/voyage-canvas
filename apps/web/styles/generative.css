@@ -1,15 +1,21 @@
 /* Generative materialization — progressive reveal without changing commerce authority */
 
-.vc-ambient--active {
+/* Breathes the gradient tint only — never the photo underneath.
+ * This used to be `filter: hue-rotate() brightness()` on .vc-ambient itself,
+ * which now would (a) recolour the hero photo and (b) re-rasterise the whole
+ * viewport every frame while the orbit is animating. Opacity on the tint
+ * pseudo-element is compositor-only. The range is kept narrow so the scrim
+ * (which lives in the same layer) never thins out enough to hurt contrast. */
+.vc-ambient--active::before {
   animation: vc-ambient-shift 8s ease-in-out infinite alternate;
 }
 
 @keyframes vc-ambient-shift {
   0% {
-    filter: hue-rotate(0deg) brightness(1);
+    opacity: 0.94;
   }
   100% {
-    filter: hue-rotate(8deg) brightness(1.05);
+    opacity: 1;
   }
 }
 
@@ -70,7 +76,7 @@
 .vc-materialize__ring:nth-child(2) {
   inset: -0.75rem;
   animation-delay: 0.4s;
-  border-color: color-mix(in srgb, var(--secondary-container) 45%, transparent);
+  border-color: color-mix(in srgb, var(--tertiary-container) 55%, transparent);
 }
 
 .vc-materialize__ring:nth-child(3) {
@@ -215,6 +221,26 @@
   padding: 4rem 1rem 5rem;
 }
 
+/* Readability scrim. The hero copy is the only text in the app that sits
+ * directly on the ambient photo with no glass panel under it, so it needs its
+ * own backdrop or --on-surface-variant drops to 3.7:1 over the darkest region
+ * of the hero image. Uniform alpha with a blurred edge (rather than a radial
+ * fade) so the guarantee is provable: the pseudo-element is inset -2.5rem and
+ * the blur is 28px, which means full 0.42 coverage is reached ~12px OUTSIDE the
+ * content box — every glyph sees the full scrim. Negative z-index keeps it
+ * behind the copy; .vc-shell (z-index 1) is the stacking context, so it still
+ * paints above .vc-ambient. */
+.vc-intent-hero--cinematic::before {
+  content: '';
+  position: absolute;
+  inset: -2.5rem;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: var(--radius-xl);
+  background: rgba(255, 255, 255, 0.42);
+  filter: blur(28px);
+}
+
 .vc-intent-glow {
   position: absolute;
   top: 20%;
@@ -299,15 +325,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(145deg, var(--primary-container), var(--primary));
-  color: white;
-  box-shadow: 0 4px 16px color-mix(in srgb, var(--primary) 35%, transparent);
+  /* Primary CTA of the intent stage — sanctioned accent use. */
+  background: linear-gradient(145deg, var(--accent-sunset-bright), var(--accent-sunset));
+  color: var(--on-accent-sunset);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--accent-sunset) 35%, transparent);
   transition: transform var(--motion-fast), box-shadow var(--motion-fast);
 }
 
 .vc-intent-send:hover:not(:disabled) {
   transform: scale(1.06);
-  box-shadow: 0 6px 24px color-mix(in srgb, var(--primary) 45%, transparent);
+  box-shadow: 0 6px 24px color-mix(in srgb, var(--accent-sunset) 45%, transparent);
+}
+
+.vc-intent-send:focus-visible {
+  outline: 3px solid var(--ocean-deep);
+  outline-offset: 2px;
 }
 
 .vc-intent-send:disabled {
@@ -369,17 +401,20 @@
   animation: vc-avatar-in 0.5s var(--ease-out) backwards;
 }
 
+/* Traveler avatars are neither a price nor a CTA, so they stay inside the
+ * blue range. (nth-child(3) used to be the sunset orange, and nth-child(1) was
+ * the retired #0077b6 primary.) */
 .vc-family-avatar:nth-child(1) {
   animation-delay: 0.05s;
-  background: linear-gradient(145deg, #0077b6, #004b74);
+  background: linear-gradient(145deg, #0055a4, #003e7a);
 }
 .vc-family-avatar:nth-child(2) {
   animation-delay: 0.12s;
-  background: linear-gradient(145deg, #006875, #004f59);
+  background: linear-gradient(145deg, #005c7c, #00435c);
 }
 .vc-family-avatar:nth-child(3) {
   animation-delay: 0.19s;
-  background: linear-gradient(145deg, #fc8a40, #9b4500);
+  background: linear-gradient(145deg, #4d8fc9, #2a6296);
 }
 .vc-family-avatar:nth-child(4) {
   animation-delay: 0.26s;
@@ -522,7 +557,7 @@
   width: 1.75rem;
   height: 1.75rem;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--secondary-container), var(--primary-container));
+  background: linear-gradient(135deg, var(--tertiary-container), var(--primary-container));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -576,7 +611,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .vc-ambient--active,
+  .vc-ambient--active::before,
   .vc-ambient__shimmer,
   .vc-materialize__ring,
   .vc-orbit-arc--animated path,

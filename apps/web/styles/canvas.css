@@ -14,15 +14,51 @@ html, body {
 
 .vc-root { min-height: 100vh; position: relative; overflow: hidden; }
 
+/* Level 1 — immersive photo backdrop.
+ *
+ * The image is pre-blurred at build time (scripts/generate-ambient-blur.py) and
+ * only ~400px wide. A `filter: blur()` here would make the compositor
+ * re-rasterise a full-viewport surface on every orbit frame; baking the blur in
+ * and letting `background-size: cover` upscale costs nothing at paint time. */
 .vc-ambient {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(ellipse 80% 60% at 15% 85%, rgba(0, 119, 182, 0.42), transparent 55%),
-    radial-gradient(ellipse 70% 50% at 85% 15%, rgba(156, 236, 251, 0.35), transparent 50%),
-    radial-gradient(ellipse 100% 80% at 50% 100%, rgba(160, 230, 255, 0.55), transparent 60%),
-    linear-gradient(165deg, #a0e6ff 0%, #f4faff 38%, #fff1e6 100%);
   z-index: 0;
+  background-color: var(--background);
+  background-image: url('/assets/hero-desktop-ambient.webp');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+/* Portrait viewports get the portrait crop so the horizon does not get
+ * shoulder-cropped by `cover`. */
+@media (orientation: portrait) {
+  .vc-ambient {
+    background-image: url('/assets/hero-mobile-ambient.webp');
+  }
+}
+
+/* Scrim + tint. In a `background` shorthand the FIRST layer paints on top, so
+ * the gradient tints are listed first and the white scrim last: the scrim sits
+ * directly over the photo (keeping the glass panels readable) and the original
+ * gradients ride on top of it as a tint. */
+.vc-ambient::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 60% at 15% 85%, rgba(0, 62, 122, 0.14), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 85% 15%, rgba(131, 212, 255, 0.16), transparent 50%),
+    radial-gradient(ellipse 100% 80% at 50% 100%, rgba(160, 230, 255, 0.2), transparent 60%),
+    linear-gradient(
+      165deg,
+      rgba(160, 230, 255, 0.2) 0%,
+      rgba(247, 249, 251, 0.12) 38%,
+      rgba(255, 241, 230, 0.2) 100%
+    ),
+    var(--ambient-scrim);
 }
 
 .vc-ambient::after {
@@ -33,7 +69,7 @@ html, body {
   pointer-events: none;
   background:
     radial-gradient(circle at 30% 70%, rgba(255, 255, 255, 0.5) 0%, transparent 45%),
-    radial-gradient(circle at 70% 40%, rgba(0, 85, 164, 0.15) 0%, transparent 40%);
+    radial-gradient(circle at 70% 40%, rgba(0, 62, 122, 0.15) 0%, transparent 40%);
 }
 
 .vc-shell {
@@ -64,6 +100,9 @@ html, body {
   border-color: #fff;
 }
 
+/* Primary CTA — one of the two sanctioned uses of the sunset accent (the other
+ * is verified-price values). Every non-committal action uses
+ * .vc-button--secondary below and stays blue. */
 .vc-button {
   font-family: var(--font-display);
   font-weight: 600;
@@ -71,12 +110,12 @@ html, body {
   border-radius: var(--radius-full);
   padding: 0.75rem 1.25rem;
   cursor: pointer;
-  background: var(--primary);
-  color: var(--on-primary);
+  background: var(--accent-sunset);
+  color: var(--on-accent-sunset);
 }
 
 .vc-button:focus-visible {
-  outline: 3px solid var(--secondary-container);
+  outline: 3px solid var(--ocean-deep);
   outline-offset: 2px;
 }
 

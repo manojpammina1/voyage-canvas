@@ -50,6 +50,7 @@ pnpm test
 pnpm eval:retrieval
 pnpm eval
 pnpm redteam
+pnpm e2e
 pnpm latest-trace
 curl -s http://localhost:3000/api/health
 ```
@@ -76,4 +77,5 @@ curl -s http://localhost:3000/api/health
 
 ## Scope note
 
-Playwright E2E specs are **not** included for this interview build; manual browser demo is the release gate. UI visual polish vs `UI-sample/` can follow after the interview.
+Playwright covers the hero checkout handoff and model-outage fallback paths. UI visual polish
+vs `UI-sample/` can follow after the interview.

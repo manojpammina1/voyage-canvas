@@ -7,12 +7,21 @@ import { useCanvas } from '../experience/context';
 
 const HOLD_CONFIRMATION = 'CONFIRM_HOLD';
 
+function createHoldIdempotencyKey(optionId: string, quoteId: string): string {
+  const random =
+    typeof crypto !== 'undefined' && 'randomUUID' in crypto
+      ? crypto.randomUUID()
+      : Math.random().toString(36).slice(2);
+  return `ui-hold-${optionId}-${quoteId}-${random}`;
+}
+
 export function CommitmentPanel() {
   const { selectedOption, authenticationState, hold, refreshAuth, criteria } = useCanvas();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string>();
   const [confirmHold, setConfirmHold] = useState(false);
   const [sessionHoldId, setSessionHoldId] = useState<string>();
+  const [holdKeys, setHoldKeys] = useState<Record<string, string>>({});
   const [bookingContext, setBookingContext] = useState<BookingContext>();
 
   const loadSession = useCallback(async () => {
@@ -51,11 +60,18 @@ export function CommitmentPanel() {
     setBusy(true);
     setMessage(undefined);
     try {
+      const keyScope = `${selectedOption.id}:${selectedOption.quoteId}`;
+      const idempotencyKey =
+        holdKeys[keyScope] ??
+        createHoldIdempotencyKey(selectedOption.id, selectedOption.quoteId);
+      if (!holdKeys[keyScope]) {
+        setHoldKeys((current) => ({ ...current, [keyScope]: idempotencyKey }));
+      }
       const res = await fetch('/api/hold', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Idempotency-Key': `ui-hold-${selectedOption.id}`,
+          'Idempotency-Key': idempotencyKey,
         },
         body: JSON.stringify({
           sailingId: selectedOption.sailing.id,
@@ -83,7 +99,7 @@ export function CommitmentPanel() {
     } finally {
       setBusy(false);
     }
-  }, [criteria.occupancy, loadSession, selectedOption]);
+  }, [criteria.occupancy, holdKeys, loadSession, selectedOption]);
 
   const continueCheckout = useCallback(async () => {
     setBusy(true);
@@ -113,10 +129,18 @@ export function CommitmentPanel() {
 
   if (!selectedOption) return null;
 
+  const hasActiveHold = Boolean(sessionHoldId || hold);
+
   return (
     <div style={{ marginTop: '1rem' }}>
-      <GlassPanel className="vc-commitment">
+      <GlassPanel
+        id="commitment-panel"
+        className="vc-commitment"
+        tabIndex={-1}
+        aria-labelledby="commitment-heading"
+      >
       <h2
+        id="commitment-heading"
         style={{
           fontFamily: 'var(--font-display)',
           fontSize: '0.875rem',
@@ -134,7 +158,13 @@ export function CommitmentPanel() {
       </p>
 
       {authenticationState === 'anonymous' ? (
-        <Button type="button" disabled={busy} onClick={() => void signIn()} style={{ marginTop: '0.75rem', width: '100%' }}>
+        <Button
+          type="button"
+          disabled={busy}
+          data-commitment-next="true"
+          onClick={() => void signIn()}
+          style={{ marginTop: '0.75rem', width: '100%' }}
+        >
           Simulate sign in
         </Button>
       ) : (
@@ -143,6 +173,7 @@ export function CommitmentPanel() {
             <input
               type="checkbox"
               checked={confirmHold}
+              data-commitment-next={!confirmHold && !hasActiveHold ? 'true' : undefined}
               onChange={(e) => setConfirmHold(e.target.checked)}
             />
             I confirm I want to hold this cabin (demo)
@@ -151,15 +182,17 @@ export function CommitmentPanel() {
             type="button"
             variant="secondary"
             disabled={busy || !confirmHold}
+            data-commitment-next={confirmHold && !hasActiveHold ? 'true' : undefined}
             onClick={() => void createHold()}
             style={{ marginTop: '0.5rem', width: '100%' }}
           >
             Create short-lived hold
           </Button>
-          {(sessionHoldId || hold) && (
+          {hasActiveHold && (
             <Button
               type="button"
               disabled={busy}
+              data-commitment-next="true"
               onClick={() => void continueCheckout()}
               style={{ marginTop: '0.5rem', width: '100%' }}
             >

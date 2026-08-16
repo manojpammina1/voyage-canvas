@@ -1,10 +1,15 @@
 'use client';
 
-import { Button } from './primitives';
+import { useState } from 'react';
 import { GenerativeProgress } from './GenerativeProgress';
 import { useCanvas } from '../experience/context';
 
-const POLICY_DEMO_QUESTION = 'What travel documents do children need?';
+const DEMO_PROMPTS = [
+  'Why does this fit my family?',
+  'What is included in the verified price?',
+  'Is balcony availability live?',
+  'What travel documents do children need?',
+] as const;
 
 function SparkleIcon() {
   return (
@@ -16,14 +21,8 @@ function SparkleIcon() {
 
 export function BottomIntentBar() {
   const {
-    viewMode,
-    setViewMode,
-    selectedOption,
     stage,
-    options,
-    selectOption,
-    askPolicyQuestion,
-    triggerFallbackDemo,
+    askVoyageQuestion,
     loading,
     policyNarrative,
     policyStreaming,
@@ -31,102 +30,103 @@ export function BottomIntentBar() {
     statusMessage,
     error,
   } = useCanvas();
+  const [questionDraft, setQuestionDraft] = useState('');
 
-  if (stage === 'intent') return null;
+  if (stage === 'intent' || stage === 'fallback') return null;
 
-  const total = selectedOption?.totalUsd;
   const showSteps = loading && materializePhase;
+  const canvasBusy = loading && !policyStreaming;
+  const questionInputDisabled = canvasBusy;
+  const questionSubmitDisabled =
+    questionInputDisabled || policyStreaming || !questionDraft.trim();
+  const actionDisabled = canvasBusy || policyStreaming;
+
+  const submitQuestion = (question: string) => {
+    const trimmed = question.trim();
+    if (!trimmed || questionInputDisabled || policyStreaming) return;
+    setQuestionDraft('');
+    void askVoyageQuestion(trimmed);
+  };
 
   return (
-    <>
-      <footer className="vc-bottom-bar vc-bottom-bar--tools" aria-label="Canvas controls">
-        <div className="vc-bottom-bar__inner">
-          <div className="vc-view-toggle" role="group" aria-label="View mode">
-            <button
-              type="button"
-              aria-pressed={viewMode === 'orbit'}
-              onClick={() => setViewMode('orbit')}
-            >
-              Orbit
-            </button>
-            <button
-              type="button"
-              aria-pressed={viewMode === 'list'}
-              onClick={() => setViewMode('list')}
-            >
-              List
-            </button>
-          </div>
-          <div className="vc-bottom-bar__actions">
-            <Button
-              type="button"
-              variant="secondary"
-              disabled={loading}
-              onClick={() => void askPolicyQuestion(POLICY_DEMO_QUESTION)}
-            >
-              Ask policy
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              disabled={loading}
-              onClick={() => void triggerFallbackDemo()}
-            >
-              AI outage demo
-            </Button>
-            {total !== undefined && (
-              <div className="vc-bottom-bar__total">
-                <span className="vc-bottom-bar__total-label">Verified total</span>
-                <span className="vc-bottom-bar__total-value">
-                  ${total.toLocaleString('en-US')}
-                </span>
-              </div>
-            )}
-            <Button
-              type="button"
-              disabled={!selectedOption}
-              onClick={() => {
-                if (options[0] && !selectedOption) selectOption(options[0]!.id);
-              }}
-            >
-              Continue
-            </Button>
-          </div>
-        </div>
-      </footer>
+    <div className="vc-question-dock" aria-label="Ask about this voyage">
+      <div className="vc-question-dock__prompts" role="group" aria-label="Demo prompts">
+        {DEMO_PROMPTS.map((prompt) => (
+          <button
+            key={prompt}
+            type="button"
+            disabled={actionDisabled}
+            onClick={() => submitQuestion(prompt)}
+          >
+            {prompt}
+          </button>
+        ))}
+      </div>
 
-      <div className="vc-gen-bar" role="status" aria-live="polite" aria-atomic="true">
+      <form
+        className="vc-gen-bar vc-question-bar"
+        onSubmit={(e) => {
+          e.preventDefault();
+          submitQuestion(questionDraft);
+        }}
+      >
         <span className="vc-gen-bar__sparkle" aria-hidden="true">
           <SparkleIcon />
         </span>
-        <div className="vc-gen-bar__status">
-          {showSteps ? (
-            <GenerativeProgress compact />
-          ) : (
-            <>
-              <span
-                className={
-                  loading || policyStreaming ? 'vc-gen-bar__status--streaming' : undefined
-                }
-              >
-                {error ? (
-                  <span style={{ color: 'var(--error)' }}>{error}</span>
-                ) : loading ? (
-                  'Working…'
-                ) : (
-                  statusMessage
-                )}
-              </span>
-              {policyNarrative && (
-                <span className="vc-gen-bar__stream-text">
-                  {policyNarrative.slice(0, 220)}
-                  {policyStreaming ? '▍' : policyNarrative.length > 220 ? '…' : ''}
-                </span>
-              )}
-            </>
-          )}
-        </div>
+        <label htmlFor="voyage-question" className="visually-hidden">
+          Ask anything about your voyage
+        </label>
+        <input
+          id="voyage-question"
+          type="text"
+          value={questionDraft}
+          disabled={questionInputDisabled}
+          onChange={(e) => setQuestionDraft(e.target.value)}
+          placeholder={
+            policyStreaming
+              ? 'Type your next question while this answer finishes...'
+              : 'Ask anything about this voyage...'
+          }
+        />
+        <button
+          type="submit"
+          className="vc-question-bar__send"
+          disabled={questionSubmitDisabled}
+          aria-label="Ask question"
+        >
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M5 12h14M13 6l6 6-6 6"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      </form>
+
+      <div
+        className="vc-question-status"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {showSteps ? (
+          <GenerativeProgress compact />
+        ) : error ? (
+          <span style={{ color: 'var(--error)' }}>{error}</span>
+        ) : loading || policyStreaming ? (
+          'Working from verified data and approved policy...'
+        ) : policyNarrative ? (
+          <>
+            {policyNarrative.slice(0, 180)}
+            {policyNarrative.length > 180 ? '...' : ''}
+          </>
+        ) : (
+          statusMessage
+        )}
       </div>
-    </>
+    </div>
   );
 }

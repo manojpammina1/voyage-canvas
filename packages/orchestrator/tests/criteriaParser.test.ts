@@ -26,4 +26,9 @@ describe('criteriaParser (T7)', () => {
     expect(parseCriteria('Caribbean suite for 2 adults').cabinType).toBe('suite');
     expect(parseCriteria('interior cabin Caribbean').cabinType).toBe('interior');
   });
+
+  it('ignores invalid budget fragments', () => {
+    expect(parseCriteria('Caribbean balcony under $').maxPriceUsd).toBeUndefined();
+    expect(parseCriteria('Caribbean balcony under $0').maxPriceUsd).toBeUndefined();
+  });
 });

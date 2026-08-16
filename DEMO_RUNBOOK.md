@@ -2,28 +2,25 @@
 
 > Companion to `HANDOFF.md`. Part A gets it running on a clean machine, Part B is the
 > pre-demo test sweep, Part C is the interview itself.
-> Everything here was verified against the repo on 2026-08-11 unless marked *unverified*.
+> Everything here was verified against the repo on 2026-08-13 unless marked *unverified*.
 
 ---
 
 # PART A — Run it on the other system
 
-## A0. BEFORE YOU LEAVE THIS MACHINE — commit the assets
+## A0. BEFORE YOU LEAVE THIS MACHINE — preflight the repo state
 
-**This is the highest-priority step.** Four WebP files and the UI pass are currently
-untracked/unstaged. A fresh clone gets a **404 background** and none of the design work.
+Make sure the demo code, assets, runbook, and lockfile are committed together. A fresh clone
+should include the four WebP hero assets, the Playwright E2E specs, and the current `pnpm-lock.yaml`.
 
 ```bash
-git add apps/web/public/assets/*.webp apps/web/styles apps/web/app/layout.tsx scripts/generate-ambient-blur.py HANDOFF.md DEMO_RUNBOOK.md && git status --short
+git status --short
+find apps/web/public/assets -maxdepth 1 -name '*.webp' -print
 ```
 
-Confirm all four are staged: `hero-desktop.webp`, `hero-mobile.webp`,
-`hero-desktop-ambient.webp`, `hero-mobile-ambient.webp`. Then commit and push.
-
-> `.gitignore` does **not** exclude them — they were simply never added.
-
-If you'd rather not rely on git, the `-ambient` files are regenerable on the target machine:
-`pip install Pillow && python scripts/generate-ambient-blur.py` (needs the two source heroes).
+Expected assets: `hero-desktop.webp`, `hero-mobile.webp`, `hero-desktop-ambient.webp`,
+`hero-mobile-ambient.webp`. If the background is flat white on the target machine, check this
+list before debugging CSS.
 
 ## A1. Prerequisites
 
@@ -68,9 +65,9 @@ Fallback if that still fails: `npm i -g pnpm@10.34.5`.
 holding the directory. Kill node processes matching `next`, delete `apps/web/.next`, rebuild.
 
 **3. `.env` is optional but do it anyway.** Code defaults cover `MONGO_URL`, `REDIS_URL`, and
-`LLM_PROVIDER=mock`, so it boots without `.env` — but `BOOKING_CONTEXT_SECRET` silently defaults
-to `'replace-me'` (`packages/inventory/src/bookingContext.ts:12`). Set a real value so a panelist
-inspecting the signed handoff doesn't find the placeholder.
+`LLM_PROVIDER=mock`, so it boots without `.env`. For the signed checkout handoff, keep
+`BOOKING_CONTEXT_SECRET` set to a non-placeholder value; production/strict mode rejects missing
+or `replace-me` secrets.
 
 **4. Without Docker you get the intent screen only.** `/api/experience` throws
 `MongoServerSelectionError` and the app never leaves the intent stage. Fine for CSS work,
@@ -86,8 +83,9 @@ a live model — and then have the mock as your fallback.
 pnpm typecheck && pnpm --filter @voyage/web build
 ```
 
-Then eyeball the intent screen: headline in **Geist**, body in **Inter**, deep-navy `#003e7a`,
-the blurred cruise-ship photo visible behind the glass, and the send arrow in **sunset orange**.
+Then eyeball the intent screen: headline/body using the configured local font stacks
+(Geist/Inter when installed, Segoe UI/system fallback otherwise), deep-navy `#003e7a`, the
+blurred cruise-ship photo visible behind the glass, and the send arrow in **sunset orange**.
 If the background is flat white, the assets didn't make it — see A0.
 
 > Note: `pnpm --filter @voyage/web test a11y` exits 0 but matches **zero test files**.
@@ -97,7 +95,8 @@ If the background is flat white, the assets didn't make it — see A0.
 
 # PART B — Test scenarios before the demo
 
-Run top to bottom. L0–L4 are terminal; L5–L7 are the browser and the failure paths.
+Run top to bottom. L0–L5 are terminal gates; L6–L8 are the browser, API ammunition, and
+failure paths.
 
 ## L0 — Infrastructure
 
@@ -111,7 +110,7 @@ curl -s http://localhost:3000/api/health
 pnpm typecheck && pnpm test
 ```
 
-Expect **42 tests passing** across 8 files. This is your Layer 1 gate: pricing, comparison math,
+Expect all workspace tests to pass. This is your Layer 1 gate: pricing, comparison math,
 atomic holds, idempotency, reconciliation, session rotation, and the reducer authority
 invariants. `packages/inventory` takes ~45s (in-memory Mongo replica set for transactions).
 
@@ -153,7 +152,17 @@ pnpm redteam
 **Gate: unauthorized tool calls = 0, invented commerce values = 0.** Have this output on screen
 in a spare terminal tab — it is the single most persuasive artifact you own.
 
-## L5 — Backend API scenarios (curl — the deep-dive ammunition)
+## L5 — Browser E2E gate *(needs Docker + seed)*
+
+```bash
+pnpm demo:reset
+pnpm e2e
+```
+
+This explicitly resets demo data, starts a fresh Next dev server on Playwright port 3100, and
+runs two specs: hero search through signed checkout handoff, and model-outage guided fallback.
+
+## L6 — Backend API scenarios (curl — the deep-dive ammunition)
 
 These prove trust-zone enforcement *at the API layer*, independent of the UI. Run them live if a
 panelist pushes on authorization.
@@ -161,13 +170,13 @@ panelist pushes on authorization.
 **B1 — Anonymous hold is rejected before any DB write** (expect `401 AUTH_REQUIRED`):
 
 ```bash
-curl -s -i -X POST http://localhost:3000/api/hold -H 'Content-Type: application/json' -d '{"sailingId":"SAIL-2027-03-07","quoteId":"fake","quotedTotalUsd":4280,"occupancy":{"adults":2,"children":2},"confirmationToken":"CONFIRM_HOLD"}'
+curl -s -i -X POST http://localhost:3000/api/hold -H 'Content-Type: application/json' -d '{"sailingId":"sail-serenade-2027-03-06","quoteId":"fake","quotedTotalUsd":4280,"occupancy":{"adults":2,"children":2},"confirmationToken":"CONFIRM_HOLD"}'
 ```
 
 **B2 — Missing confirmation token is rejected** (expect `400`, "Explicit guest confirmation required"):
 
 ```bash
-curl -s -X POST http://localhost:3000/api/hold -H 'Content-Type: application/json' -d '{"sailingId":"SAIL-2027-03-07","quoteId":"q1","quotedTotalUsd":4280,"confirmationToken":"NOPE"}'
+curl -s -X POST http://localhost:3000/api/hold -H 'Content-Type: application/json' -d '{"sailingId":"sail-serenade-2027-03-06","quoteId":"q1","quotedTotalUsd":4280,"confirmationToken":"NOPE"}'
 ```
 
 **B3 — Session rotates on sign-in** (compare `sessionId` before and after):
@@ -200,16 +209,16 @@ $4,400 drops the $4,620 and $4,740 options. **No model call on a slider** — `A
 **B6 — Idempotency replay.** Send the same authenticated hold twice with an identical
 `Idempotency-Key` header; you must get the **same `holdId`**, not two holds.
 
-## L6 — Browser hero path (the demo itself)
+## L7 — Browser hero path (the demo itself)
 
 The 9 steps in `README.md`. Rehearse until you can do it without reading. Time it — you have
 ~10 minutes for this inside a 45-minute slot.
 
-## L7 — Failure paths (rehearse these — they're where Principal candidates separate)
+## L8 — Failure paths (rehearse these — they're where Principal candidates separate)
 
 | Scenario | How to trigger | What to say |
 |---|---|---|
-| Model outage | **Simulate AI outage** button | "Criteria were captured by a deterministic parser *before* the model call, so the guided planner resumes with the same state. No criteria reconstructed from model memory." |
+| Model outage | **AI outage demo** button | "Criteria were captured by a deterministic parser *before* the model call, so the guided planner resumes with the same state. No criteria reconstructed from model memory." |
 | Infra down | `docker compose stop mongo` then reload | Health flips to 503. Shows the assistant degrades rather than corrupting state. **Restart and re-seed before the real demo.** |
 | Concurrency | `pnpm --filter @voyage/inventory test` | Sequential last-cabin contention is covered in-unit; 20-way concurrent stress is documented for Docker Mongo, not run in CI. Say it exactly that way. |
 
@@ -285,14 +294,21 @@ Never narrate the UI. Narrate the *claim each click proves*.
 | 2 | Orbit materializes — $4,280 / $4,620 / $4,740 | "Those numbers came from a pricing service with a `quoteId`, `asOf`, and `validUntil`. The model never saw them before they were computed." Point at the **verified price** chip. |
 | 3 | **Lock balcony** → drag budget to $4,400 | "No LLM on a slider. Locks survive every subsequent action, including model actions." Two options drop out. |
 | 4 | **Compare** two nodes | "The delta is server-side math. The model may *narrate* a computed delta; it may not compute one." |
-| 5 | **Ask policy** | Citation to approved synthetic content. "Retrieval covers policy and descriptive content only — price and availability are structurally excluded from the index, and ingestion fails if they appear." |
+| 5 | Use the second-screen question bar | Ask one commerce-data question and one policy question. "Trip-data answers come from current-turn evidence. Policy answers use approved retrieval and citation. Price and availability are structurally excluded from the vector index." |
 | 6 | Select → **Simulate sign in** | The identity boundary. "The anonymous session ID is expired and a new authenticated one is issued. State is copied, the ID is never upgraded in place." |
 | 7 | Check confirm → **Create short-lived hold** | "One Mongo transaction: idempotency check, conditional claim, durable insert. Redis is a TTL signal, never the authority. Hold creation revalidates **both** price and inventory — a displayed quote is not a reservation." |
 | 8 | **Continue to secure checkout** | "Signed, short-lived, guest-bound booking context. The assistant's authority ends at this link." Land on the page labelled *outside AI authority*. |
-| 9 | Back → **Simulate AI outage** → **Search again** | "Same deterministic services, no model. The feature degrades to guided search rather than taking the booking flow down with it." |
+| 9 | Back → **AI outage demo** → **Search again** | "Same deterministic services, no model. The feature degrades to guided search rather than taking the booking flow down with it." |
 
 **Have a backup video.** If Docker misbehaves in the room, you narrate over the recording and lose
 nothing. Record both the hero path and the failure path before you travel.
+
+Second-screen prompt examples to rehearse:
+
+- `Why does this fit my family?` — deterministic fit reasons from selected voyage data.
+- `What is included in the verified price?` — deterministic quote breakdown, `quoteId`, `asOf`, and `validUntil`.
+- `Is balcony availability live?` — deterministic availability count and source tool.
+- `What travel documents do children need?` — Gemini/mock narrative over approved policy retrieval with citation.
 
 ## C4. The honesty slide (21:30–23:00) — your strongest differentiator
 
@@ -301,29 +317,28 @@ confidence boundary**. All three of these are verified in the code — do not so
 
 | What the design specifies | What the code does today |
 |---|---|
-| Model proposes bounded typed actions | `proposedActions` is produced by the gateway (`modelGateway.ts:212`) but **never read** by the agent (`agent.ts:166–173`). Only `ASK_CLARIFICATION` is model-emitted. `BoundedAction` is a string union with `payload: unknown` — payload shape isn't validated. |
-| Provenance validation on all commerce claims | Grounding is a **price-only regex** against `totalUsd`, run **per streamed chunk** (`agent.ts:302`) — a `$4,` / `280` split across chunks can slip through. Availability and dates aren't covered. `validatePolicyCitations` exists but is never called in the runtime path. |
-| Holds expire and release inventory | `reconcileExpiredHolds` has **no caller outside tests** — no cron, interval, or route. Also: restore is a separate write after the CAS, and a non-transactional fallback path (`holds.ts:161`) triggers on string-matching a driver error. |
+| Model proposes bounded typed actions | Only `ASK_CLARIFICATION` is acted on in the UI. The other bounded actions remain design/API vocabulary until each payload shape is validated and mapped to deterministic UI behavior. |
+| Provenance validation on all commerce claims | Grounding now buffers streamed narrative at safe text boundaries and validates price claims against current-turn price evidence before display. It is still a **price-focused** guard; availability/date claims need explicit validators before calling this production-grade. |
+| Holds expire and release inventory | `reconcileExpiredHolds` is tested and now runs opportunistically before hold creation and checkout handoff. A production deployment should still run it from a scheduled worker; also, restore is a separate write after the CAS, and the non-transactional fallback path (`holds.ts:161`) triggers on string-matching a driver error. |
 
 How to frame it — one breath, no apology:
 
-> "Three places where the design is ahead of the implementation. The mixed-initiative loop is one
-> of six actions wired. Grounding is price-only and chunk-local, so it's a demo-grade control, not
-> a production one. And expired holds don't self-release — the reconciler is written and tested but
-> never scheduled, so inventory would leak under load. That's the first thing I'd fix; it's about
-> thirty minutes. I'd rather tell you where the edges are than have you find them."
+> "Three places where the design is still ahead of the implementation. The mixed-initiative loop
+> only handles clarification today. Grounding is buffered and evidence-backed for prices, but
+> availability/date claims need their own validators. And hold expiry is now called in the request
+> path, but production still wants a scheduled worker. I'd rather tell you where the edges are than
+> have you find them."
 
-Then give the order: **reconciler scheduling → post-turn grounding with buffering →
-wire `proposedActions` or narrow the claim.**
+Then give the order: **scheduled reconciler → broader commerce-claim validators →
+wire additional bounded actions or narrow the claim.**
 
-> **If you have 30 minutes before the interview, fix the reconciler instead of rehearsing.**
-> It converts your weakest row into a strength, and it's the one a Principal panel is most likely
-> to probe.
+> **If you have 30 minutes before the interview, rehearse the Playwright-backed hero and fallback
+> paths.** The biggest remaining risk is live demo timing, not core code correctness.
 
 Also disclose without prompting if inventory correctness comes up: `BOOKING_CONTEXT_SECRET`
-defaults to `'replace-me'` with no startup guard, signature comparison isn't constant-time, and
-RAG scoring has hardcoded per-fixture boosts. These are POC-appropriate; naming them first is
-what makes them POC-appropriate rather than oversights.
+is guarded in production/strict mode and signature comparison is constant-time, but RAG scoring
+still has hardcoded per-fixture boosts. These are POC-appropriate; naming them first is what makes
+them POC-appropriate rather than oversights.
 
 ## C5. Deep-dive Q&A prep (23:00–45:00)
 
@@ -431,13 +446,14 @@ names, no agent counts, no internal metrics.
 ## C7. Pre-flight, morning of
 
 ```bash
-docker compose up -d && pnpm demo:reset && pnpm seed && curl -s http://localhost:3000/api/health
-pnpm typecheck && pnpm test && pnpm redteam
+docker compose up -d && pnpm demo:reset && curl -s http://localhost:3000/api/health
+pnpm typecheck && pnpm test && pnpm redteam && pnpm e2e
 ```
 
 - [ ] Assets committed and present — background photo renders (A0)
 - [ ] Health returns `ok:true`
 - [ ] `LLM_PROVIDER=mock`
+- [ ] `BOOKING_CONTEXT_SECRET` is not `replace-me`
 - [ ] Hero path rehearsed end-to-end, under 10 minutes
 - [ ] Backup videos recorded: hero path **and** failure path
 - [ ] Red-team output open in a spare terminal tab

@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { cabinIdFor } from '@voyage/commerce';
-import { createHold } from '@voyage/inventory';
+import { createHold, reconcileExpiredHolds } from '@voyage/inventory';
 import { CabinTypeSchema, OccupancySchema } from '@voyage/shared';
 import { z } from 'zod';
 import { getDb } from '../../../lib/infra';
@@ -30,6 +30,7 @@ const HoldRequestSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     await getDb();
+    await reconcileExpiredHolds();
     const cookieSession = parseSessionIdFromCookie(request.headers.get('cookie'));
     const session = await getOrCreateSession(cookieSession);
 

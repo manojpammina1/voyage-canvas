@@ -1,0 +1,4 @@
+Source notes
+- Screenshots captured from local Voyage Canvas app at http://localhost:3000 on 2026-08-16.
+- Architecture language comes from repository docs: ARCHITECTURE.md, IMPLEMENTATION_PLAN.md, DEMO_RUNBOOK.md, README.md.
+- No external image or claim sources used.

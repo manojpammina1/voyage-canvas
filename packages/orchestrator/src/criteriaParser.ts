@@ -22,6 +22,11 @@ const CABIN_ALIASES: Array<{ pattern: RegExp; cabin: CabinType }> = [
   { pattern: /\binterior\b|\binside\b/i, cabin: 'interior' },
 ];
 
+function parsePositiveMoney(value: string): number | undefined {
+  const amount = Number(value.replace(/,/g, ''));
+  return Number.isFinite(amount) && amount > 0 ? amount : undefined;
+}
+
 /**
  * Deterministic hero criteria parser. No LLM — regex/heuristic only.
  * Supports the locked hero string and close variants.
@@ -73,7 +78,10 @@ export function parseCriteria(input: string): SearchCriteria {
     /\b(?:under|below|max(?:imum)?|upto|up\s*to)\s*\$?\s*([\d,]+(?:\.\d+)?)\b/i,
   ) ?? text.match(/\$\s*([\d,]+(?:\.\d+)?)\s*(?:or\s*less|max)?/i);
   if (budgetMatch) {
-    criteria.maxPriceUsd = Number(budgetMatch[1]!.replace(/,/g, ''));
+    const budget = parsePositiveMoney(budgetMatch[1]!);
+    if (budget !== undefined) {
+      criteria.maxPriceUsd = budget;
+    }
   }
 
   return criteria;

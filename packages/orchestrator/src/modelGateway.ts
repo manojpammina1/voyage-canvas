@@ -69,7 +69,22 @@ function geminiApiBase(): string {
 }
 
 function timeoutMs(): number {
-  return Number(process.env.LLM_TIMEOUT_MS ?? 8000);
+  return Number(process.env.LLM_TIMEOUT_MS ?? 20000);
+}
+
+function maxPromptChars(): number {
+  const configured = Number(process.env.LLM_MAX_PROMPT_CHARS ?? 12000);
+  return Number.isFinite(configured) && configured > 0 ? configured : 12000;
+}
+
+function maxOutputTokens(): number {
+  const configured = Number(process.env.LLM_MAX_OUTPUT_TOKENS ?? 512);
+  return Number.isFinite(configured) && configured > 0 ? configured : 512;
+}
+
+function capText(text: string, maxChars: number): string {
+  if (text.length <= maxChars) return text;
+  return `${text.slice(0, maxChars).trimEnd()}\n[TRUNCATED_TO_CONTEXT_CAP]`;
 }
 
 function extractGeminiText(json: GeminiGenerateResponse): string {
@@ -114,6 +129,7 @@ async function geminiGenerateText(
           generationConfig: {
             temperature: 0.1,
             responseMimeType: 'application/json',
+            maxOutputTokens: maxOutputTokens(),
           },
         }),
       },
@@ -128,7 +144,7 @@ async function geminiGenerateText(
 }
 
 function buildIntentPrompt(input: SanitizedIntentInput): string {
-  return [
+  return capText([
     'Resolve cruise-planning intent into a minimal JSON object.',
     'Return only JSON with fields: criteriaPatch, needsClarification, clarificationQuestion, proposedActions.',
     'Allowed criteriaPatch fields: destination, month, nights, occupancy, cabinType, maxPriceUsd, departurePort.',
@@ -139,13 +155,17 @@ function buildIntentPrompt(input: SanitizedIntentInput): string {
     `Deterministic criteria: ${JSON.stringify(input.deterministicCriteria)}`,
     `Locked preferences: ${JSON.stringify(input.lockedPreferences)}`,
     `Guest text: ${input.text}`,
-  ].join('\n');
+  ].join('\n'), maxPromptChars());
 }
 
 function normalizeMonth(value: unknown): string | undefined {
   if (typeof value !== 'string') return undefined;
   const trimmed = value.trim();
   if (/^\d{4}-\d{2}$/.test(trimmed)) return trimmed;
+  const namedWithYear = trimmed.match(
+    /^(january|february|march|april|may|june|july|august|september|october|november|december)\s+(20\d{2})$/i,
+  );
+  if (!namedWithYear) return undefined;
   const month = trimmed.toLowerCase().slice(0, 3);
   const byName: Record<string, string> = {
     jan: '01',
@@ -162,7 +182,7 @@ function normalizeMonth(value: unknown): string | undefined {
     dec: '12',
   };
   const monthNumber = byName[month];
-  return monthNumber ? `2027-${monthNumber}` : undefined;
+  return monthNumber ? `${namedWithYear[2]}-${monthNumber}` : undefined;
 }
 
 function normalizeCriteriaPatch(
@@ -173,7 +193,13 @@ function normalizeCriteriaPatch(
   const month = normalizeMonth(patch.month);
   if (month) next.month = month;
   if (typeof patch.nights === 'number') next.nights = patch.nights;
-  if (typeof patch.maxPriceUsd === 'number') next.maxPriceUsd = patch.maxPriceUsd;
+  if (
+    typeof patch.maxPriceUsd === 'number' &&
+    Number.isFinite(patch.maxPriceUsd) &&
+    patch.maxPriceUsd > 0
+  ) {
+    next.maxPriceUsd = patch.maxPriceUsd;
+  }
   if (typeof patch.departurePort === 'string') next.departurePort = patch.departurePort;
   if (typeof patch.cabinType === 'string') next.cabinType = patch.cabinType;
   if (
@@ -225,7 +251,7 @@ function buildNarrativePrompt(input: GroundedNarrativeInput): string {
   const policyContext = input.policyPassages?.length
     ? markUntrustedRetrievedContext(input.policyPassages.map((p) => p.text))
     : '';
-  return [
+  return capText([
     'Answer the guest using only the provided current-turn evidence and approved policy context.',
     'Do not create prices, availability, holds, booking context, or payment instructions.',
     'Cite approved policy source titles or source IDs when answering policy questions.',
@@ -234,7 +260,7 @@ function buildNarrativePrompt(input: GroundedNarrativeInput): string {
     `Evidence JSON: ${JSON.stringify(evidence)}`,
     policyContext ? `Approved policy context:\n${policyContext}` : '',
     NARRATIVE_INSTRUCTION,
-  ].filter(Boolean).join('\n\n');
+  ].filter(Boolean).join('\n\n'), maxPromptChars());
 }
 
 async function* streamGeminiText(
@@ -255,7 +281,10 @@ async function* streamGeminiText(
         },
         body: JSON.stringify({
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.2 },
+          generationConfig: {
+            temperature: 0.2,
+            maxOutputTokens: maxOutputTokens(),
+          },
         }),
       },
     );

@@ -230,6 +230,52 @@ describe('@voyage/inventory holds (T6)', () => {
     expect(booking.ok).toBe(true);
     expect(booking.data?.checkoutDeepLink).toContain('/existing-checkout');
     expect(verifyBookingContextSignature(booking.data!)).toBe(true);
+
+    const tampered = booking.data!.signature.endsWith('0')
+      ? `${booking.data!.signature.slice(0, -1)}1`
+      : `${booking.data!.signature.slice(0, -1)}0`;
+    expect(
+      verifyBookingContextSignature({
+        ...booking.data!,
+        signature: tampered,
+      }),
+    ).toBe(false);
+    expect(
+      verifyBookingContextSignature({
+        ...booking.data!,
+        signature: 'not-a-valid-signature',
+      }),
+    ).toBe(false);
+  });
+
+  it('rejects placeholder booking secrets when strict handoff mode is enabled', () => {
+    const previousSecret = process.env.BOOKING_CONTEXT_SECRET;
+    const previousStrict = process.env.VOYAGE_REQUIRE_BOOKING_SECRET;
+    process.env.BOOKING_CONTEXT_SECRET = 'replace-me';
+    process.env.VOYAGE_REQUIRE_BOOKING_SECRET = 'true';
+
+    try {
+      expect(() =>
+        verifyBookingContextSignature({
+          bookingContextId: 'bc-test',
+          holdId: 'hold-test',
+          guestId: 'guest-test',
+          expiresAt: '2027-03-01T00:00:00.000Z',
+          signature: '00',
+        }),
+      ).toThrow(/BOOKING_CONTEXT_SECRET/);
+    } finally {
+      if (previousSecret === undefined) {
+        delete process.env.BOOKING_CONTEXT_SECRET;
+      } else {
+        process.env.BOOKING_CONTEXT_SECRET = previousSecret;
+      }
+      if (previousStrict === undefined) {
+        delete process.env.VOYAGE_REQUIRE_BOOKING_SECRET;
+      } else {
+        process.env.VOYAGE_REQUIRE_BOOKING_SECRET = previousStrict;
+      }
+    }
   });
 
   it('sequential last-cabin contention: exactly one success (docker concurrent documented)', async () => {

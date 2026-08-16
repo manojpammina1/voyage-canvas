@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { startBooking } from '@voyage/inventory';
+import { reconcileExpiredHolds, startBooking } from '@voyage/inventory';
 import { getDb } from '../../../../lib/infra';
 import {
   getOrCreateSession,
@@ -13,6 +13,7 @@ export const runtime = 'nodejs';
 export async function POST(request: NextRequest) {
   try {
     await getDb();
+    await reconcileExpiredHolds();
     const cookieSession = parseSessionIdFromCookie(request.headers.get('cookie'));
     const session = await getOrCreateSession(cookieSession);
 

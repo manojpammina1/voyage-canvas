@@ -1,12 +1,35 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import type { Port } from '@voyage/shared';
+import type { CabinAvailability, Port, PriceQuote } from '@voyage/shared';
 import { GlassPanel, EvidenceBadge } from './primitives';
 import { TravelerCore } from './TravelerCore';
 import { VoyageNode } from './VoyageNode';
 import { CaribbeanRouteMap } from './CaribbeanRouteMap';
+import { NoResultsPanel } from './NoResultsPanel';
 import { useCanvas } from '../experience/context';
+
+function isPriceQuote(data: unknown): data is PriceQuote {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    'quoteId' in data &&
+    'totalUsd' in data
+  );
+}
+
+function isCabinAvailability(data: unknown): data is CabinAvailability {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    'availableCount' in data &&
+    'cabinType' in data
+  );
+}
+
+function formatCabin(cabinType?: string) {
+  return cabinType ? cabinType.replace('_', ' ') : 'Balcony';
+}
 
 export function JourneyOrbit({ routePorts }: { routePorts: Port[] }) {
   const {
@@ -18,6 +41,7 @@ export function JourneyOrbit({ routePorts }: { routePorts: Port[] }) {
     selectedOption,
     criteria,
     nodesReveal,
+    evidence,
   } = useCanvas();
 
   const [compareDraft, setCompareDraft] = useState<string[]>([]);
@@ -44,41 +68,48 @@ export function JourneyOrbit({ routePorts }: { routePorts: Port[] }) {
     compareOptionIds.length === 2 ? compareOptionIds : compareDraft;
 
   const regionLabel = criteria.destination ?? 'Caribbean';
+  const selectedPriceEvidence = selectedOption
+    ? evidence.find((ev) => ev.type === 'PRICE' && ev.id.endsWith(selectedOption.id))
+    : undefined;
+  const selectedAvailabilityEvidence = selectedOption
+    ? evidence.find((ev) => ev.type === 'AVAILABILITY' && ev.id.endsWith(selectedOption.id))
+    : undefined;
+  const selectedPrice = selectedPriceEvidence && isPriceQuote(selectedPriceEvidence.data)
+    ? selectedPriceEvidence.data
+    : undefined;
+  const selectedAvailability =
+    selectedAvailabilityEvidence && isCabinAvailability(selectedAvailabilityEvidence.data)
+      ? selectedAvailabilityEvidence.data
+      : undefined;
+  const routeLabel = routePorts.length
+    ? routePorts.map((port) => port.name).join(' -> ')
+    : selectedOption?.sailing.ports.join(' -> ');
+
+  if (options.length === 0) {
+    return (
+      <div className="vc-journey-stack">
+        <NoResultsPanel />
+      </div>
+    );
+  }
 
   return (
-    <div className="vc-orbit-stage" aria-label="Voyage decision orbit">
-      <span className="vc-orbit-region">{regionLabel} · verified sailings</span>
-
-      <svg
-        className="vc-orbit-arc vc-orbit-arc--animated"
-        viewBox="0 0 800 400"
-        preserveAspectRatio="xMidYMax meet"
-        aria-hidden="true"
-      >
-        <defs>
-          <linearGradient id="vc-arc-glow" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="rgba(0,119,182,0.2)" />
-            <stop offset="50%" stopColor="rgba(0,119,182,0.75)" />
-            <stop offset="100%" stopColor="rgba(0,119,182,0.2)" />
-          </linearGradient>
-        </defs>
-        <path d="M 50,400 A 350,350 0 0,1 750,400" stroke="url(#vc-arc-glow)" />
-      </svg>
-
+    <div className="vc-journey-stack">
       {selectedOption && nodesReveal && (
         <GlassPanel active className="vc-selection-card vc-selection-card--materialize">
-          <EvidenceBadge>Verified price</EvidenceBadge>
-          <div className="vc-selection-card__ship">{selectedOption.shipLabel}</div>
+          <div>
+            <EvidenceBadge>Verified price</EvidenceBadge>
+            <div className="vc-selection-card__ship">{selectedOption.shipLabel}</div>
+            <p className="vc-selection-card__detail">
+              {selectedOption.departureLabel} · {selectedOption.sailing.nights} nights · Balcony
+            </p>
+          </div>
           <div className="vc-selection-card__price">
             ${selectedOption.totalUsd.toLocaleString('en-US')}
           </div>
-          <p className="vc-selection-card__detail">
-            {selectedOption.departureLabel} · {selectedOption.sailing.nights} nights
-          </p>
           <div className="vc-selection-card__meta">
-            <span>Balcony</span>
             <span>
-              Valid until{' '}
+              Price valid until{' '}
               {new Date(selectedOption.validUntil).toLocaleTimeString('en-US', {
                 hour: '2-digit',
                 minute: '2-digit',
@@ -88,21 +119,79 @@ export function JourneyOrbit({ routePorts }: { routePorts: Port[] }) {
         </GlassPanel>
       )}
 
-      {options.map((opt, i) => (
-        <VoyageNode
-          key={opt.id}
-          option={opt}
-          index={i}
-          selected={opt.id === selectedOptionId}
-          compareSelected={activeCompare.includes(opt.id)}
-          onSelect={() => selectOption(opt.id)}
-          onCompareToggle={() => handleCompareToggle(opt.id)}
-        />
-      ))}
+      <div className="vc-orbit-stage" aria-label="Voyage decision orbit">
+        <div className="vc-orbit-stage__header">
+          <span className="vc-orbit-region">{regionLabel} · verified sailings</span>
+          <span className="vc-orbit-count">{options.length} verified options</span>
+        </div>
 
-      <div className="vc-orbit-core">
-        <TravelerCore />
+        <div className="vc-orbit-layout">
+          <div className="vc-orbit-rings" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </div>
+          <div className="vc-orbit-options" role="list" aria-label="Verified voyage options">
+            {options.map((opt, i) => (
+              <VoyageNode
+                key={opt.id}
+                option={opt}
+                index={i}
+                selected={opt.id === selectedOptionId}
+                compareSelected={activeCompare.includes(opt.id)}
+                onSelect={() => selectOption(opt.id)}
+                onCompareToggle={() => handleCompareToggle(opt.id)}
+              />
+            ))}
+          </div>
+
+          <div className="vc-orbit-core">
+            <TravelerCore />
+          </div>
+        </div>
       </div>
+
+      {selectedOption && nodesReveal && (
+        <GlassPanel active className="vc-voyage-details-card">
+          <div className="vc-voyage-details-card__header">
+            <div>
+              <span className="vc-voyage-details-card__eyebrow">Selected voyage details</span>
+              <h3>{selectedOption.shipLabel}</h3>
+            </div>
+            <EvidenceBadge>Live evidence</EvidenceBadge>
+          </div>
+          <dl className="vc-voyage-details-grid">
+            <div>
+              <dt>Departure</dt>
+              <dd>{selectedOption.departureLabel}</dd>
+            </div>
+            <div>
+              <dt>Duration</dt>
+              <dd>{selectedOption.sailing.nights} nights</dd>
+            </div>
+            <div>
+              <dt>Cabin</dt>
+              <dd>{formatCabin(selectedPrice?.cabinType ?? selectedOption.cabinType)}</dd>
+            </div>
+            <div>
+              <dt>Availability</dt>
+              <dd>
+                {selectedAvailability
+                  ? `${selectedAvailability.availableCount} cabins`
+                  : 'Checked'}
+              </dd>
+            </div>
+          </dl>
+          <p className="vc-voyage-details-card__route">{routeLabel}</p>
+          {selectedOption.fitReasons.length > 0 && (
+            <ul className="vc-voyage-details-card__reasons" aria-label="Why this voyage matches">
+              {selectedOption.fitReasons.map((reason) => (
+                <li key={reason}>{reason}</li>
+              ))}
+            </ul>
+          )}
+        </GlassPanel>
+      )}
 
       {selectedOption && routePorts.length > 0 && nodesReveal && (
         <div className="vc-orbit-route-wrap">

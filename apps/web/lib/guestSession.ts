@@ -72,7 +72,8 @@ export function parseSessionIdFromCookie(cookieHeader: string | null): string | 
 
 export function sessionSetCookie(sessionId: string): string {
   const maxAge = ttlSeconds();
-  return `${COOKIE_NAME}=${encodeURIComponent(sessionId)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}`;
+  const secure = process.env.NODE_ENV === 'production' ? '; Secure' : '';
+  return `${COOKIE_NAME}=${encodeURIComponent(sessionId)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${secure}`;
 }
 
 export async function getOrCreateSession(

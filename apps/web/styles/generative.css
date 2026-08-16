@@ -270,7 +270,7 @@
 
 .vc-intent-pill {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 0.5rem 0.5rem 1.25rem;
   border-radius: var(--radius-full);
@@ -317,6 +317,7 @@
 
 .vc-intent-send {
   flex-shrink: 0;
+  align-self: center;
   width: 3rem;
   height: 3rem;
   border-radius: 50%;
@@ -362,7 +363,7 @@
 .vc-traveler-core__pulse {
   position: absolute;
   inset: -0.5rem;
-  border-radius: var(--radius-xl);
+  border-radius: inherit;
   border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent);
   animation: vc-core-border 3s ease-in-out infinite;
   pointer-events: none;
@@ -379,6 +380,7 @@
 }
 
 .vc-family-grid {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0.35rem;
@@ -386,39 +388,174 @@
 }
 
 .vc-family-avatar {
+  --avatar-skin: #d9a071;
+  --avatar-hair: #3d2b25;
+  --avatar-shirt: #2f78ad;
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-display);
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: white;
+  display: block;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.94), transparent 40%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.78), rgba(215, 239, 255, 0.52));
   border: 2px solid rgba(255, 255, 255, 0.85);
-  box-shadow: 0 2px 8px rgba(0, 45, 84, 0.15);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    0 2px 8px rgba(0, 45, 84, 0.15);
   animation: vc-avatar-in 0.5s var(--ease-out) backwards;
 }
 
-/* Traveler avatars are neither a price nor a CTA, so they stay inside the
- * blue range. (nth-child(3) used to be the sunset orange, and nth-child(1) was
- * the retired #0077b6 primary.) */
+.vc-family-avatar::before {
+  content: '';
+  position: absolute;
+  inset: 0.16rem;
+  z-index: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 36% 28%, rgba(255, 255, 255, 0.78), transparent 17%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.68), rgba(131, 212, 255, 0.22));
+}
+
+.vc-family-avatar__face {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 50% 38%, var(--avatar-skin) 0 21%, transparent 22%),
+    radial-gradient(ellipse at 50% 92%, var(--avatar-shirt) 0 33%, transparent 34%);
+}
+
+.vc-family-avatar__face::before {
+  content: '';
+  position: absolute;
+  top: 17%;
+  left: 50%;
+  width: 39%;
+  height: 23%;
+  transform: translateX(-50%);
+  border-radius: 50% 50% 42% 42%;
+  background: var(--avatar-hair);
+  box-shadow: 0 0.12rem 0 -0.04rem color-mix(in srgb, var(--avatar-hair) 80%, black);
+}
+
+.vc-family-avatar__face::after {
+  content: '';
+  position: absolute;
+  top: 39%;
+  left: calc(50% - 0.32rem);
+  width: 0.14rem;
+  height: 0.14rem;
+  border-radius: 50%;
+  background: rgba(0, 45, 84, 0.88);
+  box-shadow:
+    0.64rem 0 0 rgba(0, 45, 84, 0.88),
+    0.32rem 0.36rem 0 -0.05rem rgba(0, 45, 84, 0.62);
+}
+
+.vc-family-avatar--adult-man {
+  --avatar-skin: #d49b73;
+  --avatar-hair: #3e2d28;
+  --avatar-shirt: #2e78a8;
+}
+
+.vc-family-avatar--adult-woman {
+  --avatar-skin: #e5ad88;
+  --avatar-hair: #915b42;
+  --avatar-shirt: #66aac4;
+}
+
+.vc-family-avatar--child-younger {
+  --avatar-skin: #edbb8f;
+  --avatar-hair: #8a5b37;
+  --avatar-shirt: #5b91c8;
+}
+
+.vc-family-avatar--child-older {
+  --avatar-skin: #e9b47f;
+  --avatar-hair: #b57943;
+  --avatar-shirt: #4f7fbd;
+}
+
 .vc-family-avatar:nth-child(1) {
   animation-delay: 0.05s;
-  background: linear-gradient(145deg, #0055a4, #003e7a);
 }
 .vc-family-avatar:nth-child(2) {
   animation-delay: 0.12s;
-  background: linear-gradient(145deg, #005c7c, #00435c);
 }
 .vc-family-avatar:nth-child(3) {
   animation-delay: 0.19s;
-  background: linear-gradient(145deg, #4d8fc9, #2a6296);
 }
 .vc-family-avatar:nth-child(4) {
   animation-delay: 0.26s;
-  background: linear-gradient(145deg, #646aba, #393e8c);
+}
+
+.vc-family-voyage-mark {
+  display: none;
+}
+
+.vc-voyage-glyph {
+  position: relative;
+  display: block;
+  width: 1.3rem;
+  height: 1.08rem;
+  color: currentColor;
+}
+
+.vc-voyage-glyph::before {
+  content: '';
+  position: absolute;
+  left: 0.08rem;
+  right: 0.08rem;
+  bottom: 0.06rem;
+  height: 0.42rem;
+  border-radius: 0.12rem 0.12rem 0.48rem 0.48rem;
+  background: currentColor;
+  clip-path: polygon(0 20%, 100% 20%, 82% 100%, 18% 100%);
+}
+
+.vc-voyage-glyph::after {
+  content: '';
+  position: absolute;
+  top: 0.06rem;
+  left: 0.48rem;
+  width: 0.52rem;
+  height: 0.58rem;
+  border-left: 0.13rem solid currentColor;
+  border-bottom: 0.13rem solid currentColor;
+  border-radius: 0.08rem;
+  transform: skewX(-12deg);
+}
+
+.vc-compare-glyph {
+  position: relative;
+  display: block;
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.vc-compare-glyph::before,
+.vc-compare-glyph::after {
+  content: '';
+  position: absolute;
+  width: 0.48rem;
+  height: 0.48rem;
+  border: 0.12rem solid currentColor;
+  border-radius: 50%;
+}
+
+.vc-compare-glyph::before {
+  top: 0.03rem;
+  left: 0.03rem;
+}
+
+.vc-compare-glyph::after {
+  right: 0.03rem;
+  bottom: 0.03rem;
 }
 
 @keyframes vc-avatar-in {
@@ -455,12 +592,12 @@
 @keyframes vc-node-in {
   from {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0.3);
+    transform: translateY(0.5rem) scale(0.96);
     filter: blur(4px);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
+    transform: translateY(0) scale(1);
     filter: blur(0);
   }
 }
@@ -482,22 +619,8 @@
   }
 }
 
-.vc-orbit-arc--animated path {
-  stroke-dasharray: 12 8;
-  animation: vc-arc-flow 3s linear infinite;
-}
-
-@keyframes vc-arc-flow {
-  to {
-    stroke-dashoffset: -40;
-  }
-}
-
 .vc-orbit-region {
-  position: absolute;
-  top: 0.5rem;
-  left: 50%;
-  transform: translateX(-50%);
+  position: static;
   font-family: var(--font-display);
   font-size: 0.7rem;
   font-weight: 600;
@@ -515,7 +638,7 @@
 @keyframes vc-region-in {
   from {
     opacity: 0;
-    transform: translateX(-50%) translateY(-8px);
+    transform: translateY(-8px);
   }
 }
 
@@ -526,7 +649,7 @@
 @keyframes vc-card-in {
   from {
     opacity: 0;
-    transform: translateX(-50%) translateY(-12px) scale(0.95);
+    transform: translateY(-0.5rem) scale(0.98);
   }
 }
 
@@ -550,6 +673,119 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+}
+
+.vc-question-dock {
+  position: sticky;
+  top: calc(5rem + env(safe-area-inset-top));
+  z-index: 44;
+  width: min(calc(100% - 2rem), 60rem);
+  margin: 0.65rem auto 1rem;
+  transform: none;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.55rem;
+}
+
+.vc-question-dock__prompts {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-bottom: 0.05rem;
+}
+
+.vc-question-dock__prompts button {
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: var(--radius-full);
+  padding: 0.45rem 0.75rem;
+  background: rgba(255, 255, 255, 0.68);
+  color: var(--primary);
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 0.35rem 1.2rem rgba(0, 45, 84, 0.08);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  white-space: nowrap;
+}
+
+.vc-question-dock__prompts button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.vc-question-bar {
+  position: relative;
+  inset: auto;
+  transform: none;
+  width: 100%;
+  margin: 0;
+  padding: 0.55rem 0.55rem 0.55rem 1rem;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.86), rgba(230, 247, 255, 0.66));
+}
+
+.vc-question-bar input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  color: var(--on-surface);
+  font: inherit;
+  outline: none;
+}
+
+.vc-question-bar input::placeholder {
+  color: color-mix(in srgb, var(--on-surface-variant) 72%, transparent);
+}
+
+.vc-question-bar__send {
+  width: 2.4rem;
+  height: 2.4rem;
+  border: none;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  background: linear-gradient(145deg, var(--accent-sunset), #8d3f00);
+  cursor: pointer;
+  box-shadow: 0 0.35rem 1.1rem rgba(155, 69, 0, 0.22);
+}
+
+.vc-question-bar__send:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.vc-question-bar__send svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.vc-question-status {
+  width: min(100%, 42rem);
+  margin: 0 auto;
+  padding: 0.42rem 0.9rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.64);
+  background: rgba(255, 255, 255, 0.58);
+  color: var(--on-surface-variant);
+  font-size: 0.78rem;
+  line-height: 1.35;
+  text-align: center;
+  white-space: normal;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .vc-gen-bar__sparkle {
@@ -614,7 +850,6 @@
   .vc-ambient--active::before,
   .vc-ambient__shimmer,
   .vc-materialize__ring,
-  .vc-orbit-arc--animated path,
   .vc-gen-bar__sparkle,
   .vc-intent-glow {
     animation: none !important;
@@ -625,5 +860,35 @@
   .vc-criteria-chip,
   .vc-selection-card--materialize {
     animation-duration: 0.01ms !important;
+  }
+}
+
+@media (min-width: 900px) {
+  .vc-gen-bar {
+    position: relative;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    transform: none;
+    margin: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .vc-question-dock {
+    top: calc(5.75rem + env(safe-area-inset-top));
+    width: min(calc(100% - 1rem), 60rem);
+    margin: 0.5rem auto 0.8rem;
+  }
+
+  .vc-question-dock__prompts {
+    justify-content: flex-start;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 0.1rem;
+  }
+
+  .vc-question-dock__prompts button {
+    white-space: nowrap;
   }
 }

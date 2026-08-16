@@ -7,7 +7,9 @@ export function MaterializationScene() {
   const { loading, materializePhase, stage } = useCanvas();
 
   const show =
-    loading && materializePhase && (stage === 'intent' || stage === 'exploring');
+    loading &&
+    materializePhase &&
+    (stage === 'intent' || stage === 'exploring' || stage === 'fallback');
 
   if (!show) return null;
 
@@ -28,7 +30,7 @@ export function MaterializationScene() {
         </div>
       </div>
       <h2 id="materialize-title" className="vc-materialize__title">
-        Materializing your voyage canvas
+        Materializing your Royal Caribbean options
       </h2>
       <GenerativeProgress />
     </div>

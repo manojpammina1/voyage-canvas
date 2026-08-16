@@ -75,10 +75,14 @@ export async function POST(req: NextRequest): Promise<Response> {
           controller.enqueue(encoder.encode(sseLine(event.type, event)));
         }
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'stream failed';
+        console.error('experience stream failed', err);
         controller.enqueue(
           encoder.encode(
-            sseLine('error', { type: 'error', code: 'STREAM_ERROR', recoverable: true, message }),
+            sseLine('error', {
+              type: 'error',
+              code: 'STREAM_ERROR',
+              recoverable: true,
+            }),
           ),
         );
       } finally {

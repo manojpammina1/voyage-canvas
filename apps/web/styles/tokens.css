@@ -81,10 +81,9 @@
    * Lower it and the glass panels stop being readable. */
   --ambient-scrim: rgba(255, 255, 255, 0.55);
 
-  /* Loaded by next/font in app/layout.tsx, which sets --font-geist /
-   * --font-inter on <html>. Segoe UI stays as the no-JS/offline fallback. */
-  --font-display: var(--font-geist), "Segoe UI", system-ui, sans-serif;
-  --font-body: var(--font-inter), "Segoe UI", system-ui, sans-serif;
+  /* Local/system stacks keep builds deterministic without fetching Google Fonts. */
+  --font-display: "Geist", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
   --radius-sm: 0.25rem;
   --radius-md: 0.75rem;
   --radius-lg: 1rem;

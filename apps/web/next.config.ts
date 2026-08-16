@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
     '@voyage/shared',
     '@voyage/commerce',
     '@voyage/content-adapter',
+    '@voyage/inventory',
     '@voyage/orchestrator',
   ],
   serverExternalPackages: ['mongodb', 'ioredis'],

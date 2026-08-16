@@ -6,13 +6,44 @@ import { BudgetControl } from './BudgetControl';
 import { CommitmentPanel } from './CommitmentPanel';
 import { useCanvas } from '../experience/context';
 
-const LOCKABLE: Array<{ key: LockableCriterion; label: string }> = [
-  { key: 'cabinType', label: 'Balcony cabin' },
-  { key: 'destination', label: 'Caribbean' },
-  { key: 'month', label: 'March 2027' },
-  { key: 'nights', label: '7 nights' },
-  { key: 'maxPriceUsd', label: 'Budget cap' },
+const LOCKABLE: LockableCriterion[] = [
+  'cabinType',
+  'destination',
+  'month',
+  'nights',
+  'maxPriceUsd',
 ];
+
+function monthLabel(month?: string) {
+  if (!month) return 'March 2027';
+  const date = new Date(`${month}-01T00:00:00.000Z`);
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(date);
+}
+
+function criterionLabel(key: LockableCriterion, criteria: ReturnType<typeof useCanvas>['criteria']) {
+  switch (key) {
+    case 'cabinType':
+      return criteria.cabinType
+        ? `${criteria.cabinType.replace('_', ' ')} cabin`
+        : 'Balcony cabin';
+    case 'destination':
+      return criteria.destination ?? 'Caribbean';
+    case 'month':
+      return monthLabel(criteria.month);
+    case 'nights':
+      return `${criteria.nights ?? 7} nights`;
+    case 'maxPriceUsd':
+      return criteria.maxPriceUsd
+        ? `≤ $${criteria.maxPriceUsd.toLocaleString('en-US')}`
+        : 'Budget cap';
+    default:
+      return key;
+  }
+}
 
 export function ConstraintPane() {
   const {
@@ -58,8 +89,9 @@ export function ConstraintPane() {
         Lock preferences to keep them while you adjust budget.
       </p>
       <div className="vc-chip-row" role="list" aria-label="Locked preferences">
-        {LOCKABLE.map(({ key, label }) => {
+        {LOCKABLE.map((key) => {
           const locked = isLocked(key);
+          const label = criterionLabel(key, criteria);
           return (
             <span
               key={key}

@@ -1,10 +1,21 @@
 'use client';
 
+import { AgentTrace } from './AgentTrace';
+import { GroundingValidator } from './GroundingValidator';
+import { PolicyCitations } from './PolicyCitations';
 import { EvidenceBadge, GlassPanel } from './primitives';
 import { useCanvas } from '../experience/context';
 
 export function EvidenceDrawer() {
-  const { evidence, selectedOptionId } = useCanvas();
+  const {
+    evidence,
+    selectedOptionId,
+    assistantQuestion,
+    assistantAnswerMode,
+    assistantCitationEvidenceIds,
+    policyNarrative,
+    policyStreaming,
+  } = useCanvas();
 
   const visible = selectedOptionId
     ? evidence.filter(
@@ -13,6 +24,10 @@ export function EvidenceDrawer() {
           e.type === 'COMPARISON',
       )
     : evidence.slice(0, 3);
+  const citationEvidence =
+    assistantAnswerMode === 'policy'
+      ? evidence.filter((ev) => assistantCitationEvidenceIds.includes(ev.id))
+      : [];
 
   return (
     <GlassPanel className="vc-evidence-drawer vc-pane--evidence">
@@ -29,6 +44,22 @@ export function EvidenceDrawer() {
       >
         Evidence
       </h2>
+      <AgentTrace />
+      {assistantQuestion && (
+        <section className="vc-answer-panel" aria-label="Assistant answer">
+          <div className="vc-answer-panel__label">Asked</div>
+          <p className="vc-answer-panel__question">{assistantQuestion}</p>
+          <div className="vc-answer-panel__label">Grounded answer</div>
+          <p className="vc-answer-panel__text">
+            {policyNarrative}
+            {policyStreaming ? '▍' : ''}
+          </p>
+        </section>
+      )}
+      {assistantQuestion && citationEvidence.length > 0 && (
+        <PolicyCitations evidence={citationEvidence} />
+      )}
+      <GroundingValidator citationEvidence={citationEvidence} />
       {visible.length === 0 ? (
         <p style={{ fontSize: '0.875rem', color: 'var(--on-surface-variant)' }}>
           Select a voyage to view verified price and availability evidence.

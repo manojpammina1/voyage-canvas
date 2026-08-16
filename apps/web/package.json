@@ -4,11 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000",
+    "dev:clean": "rm -rf .next && next dev -p 3000",
     "build": "next build",
     "start": "next start",
     "lint": "tsc --noEmit -p tsconfig.json",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --passWithNoTests",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@voyage/commerce": "workspace:*",
@@ -24,6 +26,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@types/node": "^22.10.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",

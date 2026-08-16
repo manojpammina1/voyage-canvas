@@ -4,7 +4,13 @@ import { LiveRegion } from './primitives';
 import { useCanvas } from '../experience/context';
 
 export function IntentPortal() {
-  const { intentDraft, setIntentDraft, submitIntent, loading } = useCanvas();
+  const {
+    intentDraft,
+    setIntentDraft,
+    submitIntent,
+    loading,
+    clarificationQuestion,
+  } = useCanvas();
 
   return (
     <section
@@ -13,12 +19,21 @@ export function IntentPortal() {
     >
       <div className="vc-intent-glow" aria-hidden="true" />
       <LiveRegion message={loading ? 'Materializing voyage possibilities' : ''} />
-      <p className="vc-intent-eyebrow">Generative voyage canvas</p>
+      <p className="vc-intent-eyebrow">Royal Caribbean planner</p>
       <h1 id="intent-heading">Describe the trip you&apos;re imagining</h1>
       <p className="vc-intent-sub">
         Destination, dates, travelers, cabin, budget — we materialize verified
         sailings around your traveler core as evidence arrives.
       </p>
+      {clarificationQuestion && (
+        <p
+          role="status"
+          aria-live="polite"
+          className="vc-intent-clarification"
+        >
+          {clarificationQuestion}
+        </p>
+      )}
       <form
         className="vc-intent-pill"
         onSubmit={(e) => {

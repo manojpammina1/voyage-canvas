@@ -1,4 +1,4 @@
-import { createHmac, randomUUID } from 'node:crypto';
+import { createHmac, randomUUID, timingSafeEqual } from 'node:crypto';
 import type { BookingContext, GuestAuthCtx, ToolResult } from '@voyage/shared';
 import { COLLECTIONS, getDb } from './db.js';
 import type { HoldDoc } from './holds.js';
@@ -9,7 +9,21 @@ export interface BookingContextDoc extends BookingContext {
 }
 
 function bookingSecret(): string {
-  return process.env.BOOKING_CONTEXT_SECRET ?? 'replace-me';
+  const secret = process.env.BOOKING_CONTEXT_SECRET?.trim();
+  const strict =
+    process.env.NODE_ENV === 'production' ||
+    process.env.VOYAGE_REQUIRE_BOOKING_SECRET === 'true';
+
+  if (!secret || secret === 'replace-me') {
+    if (strict) {
+      throw new Error(
+        'BOOKING_CONTEXT_SECRET must be configured before checkout handoff',
+      );
+    }
+    return 'local-dev-booking-context-secret';
+  }
+
+  return secret;
 }
 
 function signPayload(payload: string): string {
@@ -120,5 +134,10 @@ export function verifyBookingContextSignature(
     ctx.expiresAt,
   ].join('|');
   const expected = signPayload(payload);
-  return expected === ctx.signature;
+  const expectedBuffer = Buffer.from(expected, 'hex');
+  const actualBuffer = Buffer.from(ctx.signature, 'hex');
+  return (
+    expectedBuffer.length === actualBuffer.length &&
+    timingSafeEqual(expectedBuffer, actualBuffer)
+  );
 }

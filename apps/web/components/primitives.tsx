@@ -1,13 +1,17 @@
-import type { ButtonHTMLAttributes, PropsWithChildren } from 'react';
+import type { ButtonHTMLAttributes, HTMLAttributes, PropsWithChildren } from 'react';
 
 export function GlassPanel({
   children,
   active = false,
   className = '',
-}: PropsWithChildren<{ active?: boolean; className?: string }>) {
+  ...props
+}: PropsWithChildren<
+  { active?: boolean; className?: string } & HTMLAttributes<HTMLDivElement>
+>) {
   return (
     <div
       className={`glass-panel${active ? ' glass-panel--active' : ''} ${className}`.trim()}
+      {...props}
     >
       {children}
     </div>

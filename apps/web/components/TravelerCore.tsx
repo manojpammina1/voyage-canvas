@@ -12,14 +12,31 @@ function formatOccupancy(criteria: SearchCriteria): string {
   return parts.join(' · ');
 }
 
-function buildAvatars(criteria: SearchCriteria): string[] {
+type TravelerAvatarKind = 'adult-man' | 'adult-woman' | 'child-younger' | 'child-older';
+
+interface TravelerAvatar {
+  label: string;
+  kind: TravelerAvatarKind;
+}
+
+function buildAvatars(criteria: SearchCriteria): TravelerAvatar[] {
   const adults = criteria.occupancy?.adults ?? 2;
   const children = criteria.occupancy?.children ?? 0;
-  const avatars: string[] = [];
-  for (let i = 0; i < Math.min(adults, 2); i++) avatars.push('A');
-  for (let i = 0; i < Math.min(children, 2); i++) avatars.push('C');
+  const adultKinds: TravelerAvatarKind[] = ['adult-man', 'adult-woman'];
+  const childKinds: TravelerAvatarKind[] = ['child-younger', 'child-older'];
+  const avatars: TravelerAvatar[] = [];
+  for (let i = 0; i < Math.min(adults, 2); i++) {
+    avatars.push({ label: `Adult ${i + 1}`, kind: adultKinds[i % adultKinds.length]! });
+  }
+  for (let i = 0; i < Math.min(children, 2); i++) {
+    avatars.push({ label: `Child ${i + 1}`, kind: childKinds[i % childKinds.length]! });
+  }
   while (avatars.length < 4 && avatars.length < adults + children) {
-    avatars.push(avatars.length % 2 === 0 ? 'A' : 'C');
+    const index = avatars.length;
+    avatars.push({
+      label: `Traveler ${index + 1}`,
+      kind: index % 2 === 0 ? 'adult-man' : 'adult-woman',
+    });
   }
   return avatars.slice(0, 4);
 }
@@ -41,16 +58,20 @@ export function TravelerCore() {
     <GlassPanel className="vc-traveler-core vc-traveler-core--live">
       {nodesReveal && <span className="vc-traveler-core__pulse" aria-hidden="true" />}
       <div className="vc-family-grid" aria-label={`Travel party: ${formatOccupancy(c)}`}>
-        {avatars.map((label, i) => (
+        {avatars.map((avatar, i) => (
           <span
-            key={`${label}-${i}`}
-            className="vc-family-avatar"
+            key={`${avatar.kind}-${i}`}
+            className={`vc-family-avatar vc-family-avatar--${avatar.kind}`}
             style={nodesReveal ? { animationDelay: `${0.05 + i * 0.07}s` } : undefined}
+            title={avatar.label}
             aria-hidden="true"
           >
-            {label}
+            <span className="vc-family-avatar__face" aria-hidden="true" />
           </span>
         ))}
+        <span className="vc-family-voyage-mark" aria-hidden="true">
+          <span className="vc-voyage-glyph" />
+        </span>
       </div>
       <div className="vc-traveler-core__title">Your traveler core</div>
       <div className="vc-traveler-core__meta">{formatOccupancy(c)}</div>

@@ -7,6 +7,7 @@ export interface PolicyCitation {
   chunkId: string;
   excerpt: string;
   contentVersion: string;
+  score: number;
 }
 
 export function passagesToCitations(passages: PolicyPassage[]): PolicyCitation[] {
@@ -17,6 +18,7 @@ export function passagesToCitations(passages: PolicyPassage[]): PolicyCitation[]
     chunkId: p.chunkId,
     excerpt: p.text.slice(0, 240),
     contentVersion: p.metadata.contentVersion,
+    score: p.score,
   }));
 }
 

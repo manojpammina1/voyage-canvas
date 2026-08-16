@@ -35,6 +35,7 @@ export {
   validateCommerceClaimsInText,
   validatePolicyCitations,
   filterNarrativeByGrounding,
+  streamGroundedNarrativeText,
 } from './grounding.js';
 export {
   streamExperience,

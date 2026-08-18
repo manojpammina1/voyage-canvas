@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import '../styles/canvas.css';
 
 export const metadata: Metadata = {
-  title: 'Royal Caribbean',
-  description: 'Royal Caribbean cruise planning assistant',
+  title: 'Voyage Canvas',
+  description: 'Voyage Canvas cruise planning assistant',
 };
 
 export default function RootLayout({

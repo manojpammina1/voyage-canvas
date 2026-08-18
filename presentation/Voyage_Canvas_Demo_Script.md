@@ -25,6 +25,10 @@ Say:
 
 "The guest starts in the normal booking surface. The assistant is embedded in that experience, but it does not become the booking or payment system."
 
+"This is the title slide: Royal Caribbean Voyage Canvas, prepared by Manoj Pammina on August 17, 2026."
+
+"If a screenshot still shows an older brand pass, say once that the live demo uses Voyage Canvas and the mock provider; the architecture and commerce boundaries are unchanged."
+
 "The UI is intentionally evidence-forward. The guest can see constraints, verified prices, availability evidence, policy citations, and the checkout boundary."
 
 Transition:
@@ -37,7 +41,7 @@ Talk through left to right.
 
 Say:
 
-"On the left is the guest booking surface. In a real RCG environment, this would sit in a stable AEM page slot or custom element. The assistant runtime owns the interactive experience: natural-language entry, streaming status, orbit view, list view, evidence drawer, accessibility state, and checkout navigation."
+"In a real production environment, this would sit in a stable AEM page slot or custom element. The assistant runtime owns the interactive experience: natural-language entry, streaming status, orbit view, list view, evidence drawer, accessibility state, and checkout navigation."
 
 "The next layer is the Next.js BFF. This is the control boundary. It owns session context, schema validation, streaming events, PII redaction, and server-side ownership checks. The browser never directly owns booking authority."
 
@@ -313,19 +317,35 @@ Say:
 
 Transition:
 
-"The last slide is the submission checklist."
+"That covers the eval and safety posture. The next slide is the staged rollout plan."
 
-## Slide 17 - Final assets
+## Slide 17 - Close: launch the assistant safely
 
 Say:
 
-"For submission, I would include the deck, PDF export, GitHub repository, README, DEMO_RUNBOOK, and optionally a short backup recording."
+"I would not jump straight to broad guest exposure."
 
-"The repo is structured so the reviewers can inspect the architecture, contracts, evals, runbook, and code, not just the UI."
+"The launch path is deliberately staged: employee alpha, shadow mode, feature-flagged beta, then monitored rollout."
+
+"The safety path already proved model failure can fall back to deterministic planning without corrupting commerce state."
+
+"Next hardening includes real API adapters, a managed vector store, broader validators, and scheduled reconciliation."
+
+Transition:
+
+"Thank you — and I am happy to go deeper anywhere useful."
+
+## Slide 18 - Thank you
+
+Say:
+
+"Thank you for your time."
+
+"Happy to go deeper on architecture, commerce guardrails, eval gates, or rollout."
 
 Close:
 
-"The main idea is that AI improves discovery and explanation, but the architecture prevents it from becoming the source of commerce truth."
+"Questions welcome."
 
 ## Questions you are likely to get
 

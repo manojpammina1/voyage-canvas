@@ -1,4 +1,4 @@
-# HANDOFF — Voyage Canvas (RCG Principal Engineer take-home)
+# HANDOFF — Voyage Canvas (Principal Engineer take-home)
 
 > Context transfer for a fresh session. Everything below was verified against the repo unless
 > marked *reported*. Read `IMPLEMENTATION_PLAN.md` §2/§4 (in `C:\POC\RCG`) before changing contracts.
@@ -7,7 +7,7 @@
 
 ## 1. What this is
 
-Manoj is interviewing for **Principal Engineer (Full-Stack)** at Royal Caribbean Group. Two 45-min
+Manoj is interviewing for **Principal Engineer (Full-Stack)**. Two 45-min
 take-homes, deliberately built as **one connected narrative**:
 
 - **Part 1** — System design (20–25 min present + 20–25 min deep-dive Q&A). Chose **Option 5:

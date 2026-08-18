@@ -19,7 +19,7 @@ export function IntentPortal() {
     >
       <div className="vc-intent-glow" aria-hidden="true" />
       <LiveRegion message={loading ? 'Materializing voyage possibilities' : ''} />
-      <p className="vc-intent-eyebrow">Royal Caribbean planner</p>
+      <p className="vc-intent-eyebrow">Voyage Canvas planner</p>
       <h1 id="intent-heading">Describe the trip you&apos;re imagining</h1>
       <p className="vc-intent-sub">
         Destination, dates, travelers, cabin, budget — we materialize verified

@@ -1,6 +1,6 @@
 # Voyage Canvas
 
-RCG Part 1 **Agentic Cruise Planning Assistant** — anonymous NL intent → deterministic commerce → policy RAG → hold → signed checkout handoff. Payment stays in existing checkout; the LLM never owns price or inventory.
+**Voyage Canvas** — AI-integrated agentic cruise planning assistant. The LLM handles natural-language intent, clarification, and grounded policy answers; deterministic services own search, pricing, inventory, holds, and checkout handoff. Flow: anonymous NL intent → deterministic commerce → policy RAG → hold → signed checkout handoff. Payment stays in existing checkout; the LLM never owns price or inventory.
 
 ## Quick start (interview demo)
 

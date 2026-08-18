@@ -93,7 +93,7 @@ function WorkspaceHeader() {
 
   return (
     <header className="vc-header vc-header--glass">
-      <div className="vc-header__brand">Royal Caribbean</div>
+      <div className="vc-header__brand">Voyage Canvas</div>
       <div className="vc-header__right">
         {showCanvasControls && (
           <div className="vc-header-controls" aria-label="Canvas controls">

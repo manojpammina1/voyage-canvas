@@ -32,13 +32,14 @@ const route = [
 
 const slides = [
   {
-    title: 'Royal Caribbean assistant, with commerce guardrails',
-    eyebrow: 'RCG Part 1 demo',
+    title: 'Voyage Canvas',
+    eyebrow: 'Royal Caribbean',
+    byline: 'Manoj Pammina · August 17, 2026',
     screenshot: '01-intent-screen.png',
     active: ['Guest UI'],
-    prompt: 'Opening: guest describes the trip in natural language.',
+    prompt: 'Opening: end-to-end AI cruise planning demo.',
     proves:
-      'The assistant is embedded in the booking experience, but it does not own booking or payment authority.',
+      'A guest-facing assistant can be AI-forward while deterministic services keep commerce truth authoritative.',
     notes:
       'Open with the thesis: this is not a chatbot that happens to search cruises. It is a governed commerce orchestration layer embedded in booking.',
   },
@@ -202,20 +203,31 @@ const slides = [
     ],
   },
   {
-    title: 'Add these final assets before sending',
+    title: 'Close: launch the assistant safely',
+    eyebrow: 'Architecture route + product proof',
     active: ['Guest UI', 'Next.js BFF', 'Orchestrator', 'Gemini', 'RAG', 'Tools', 'Mongo/Redis', 'Checkout'],
-    prompt: 'Submission package: PPTX, PDF export, GitHub link, README, DEMO_RUNBOOK, optional backup recording.',
+    prompt:
+      'Closing: staged rollout and the next hardening steps before broad guest exposure.',
     proves:
-      'The deck is ready structurally; add the few candidate-specific links and any preferred screenshots before final submission.',
+      'The solution is a working vertical slice with a clear production path and explicit safety boundaries.',
     notes:
-      'Close by repeating the authority boundary and inviting deep-dive questions.',
+      'Cover P1-ROLL explicitly: employee alpha, shadow mode, feature-flagged beta, monitored rollout. Name scheduled reconciliation as a next hardening step.',
     bullets: [
-      'Add your GitHub repository URL on slide 17',
-      'Add your name, date, and role target on slide 1',
-      'Add one terminal screenshot if you want visual proof of eval/redteam output',
-      'Add any Figma or Google Stitch reference screenshot only as design inspiration, not as runtime architecture',
-      'Export a PDF copy so the recruiter can forward it safely',
+      'Demo path: natural language -> verified sailings -> policy RAG -> hold -> signed checkout handoff',
+      'Safety path: model failure falls back to deterministic guided planning',
+      'Authority boundary: Gemini explains; services decide price, availability, holds, and booking handoff',
+      'Launch path: employee alpha -> shadow mode -> feature-flagged beta -> monitored rollout',
+      'Next hardening: real API adapters, managed vector store, broader validators, scheduled reconciliation',
     ],
+  },
+  {
+    kind: 'closing',
+    title: 'Thank you',
+    eyebrow: 'Royal Caribbean · Voyage Canvas',
+    message: 'Questions welcome.',
+    footer: 'Manoj Pammina · August 17, 2026',
+    notes:
+      'Thank the panel and invite questions. Mention the GitHub repo only if asked.',
   },
 ];
 
@@ -388,7 +400,7 @@ function addFullArchitectureSlide(slide, index, spec) {
   });
 
   addArrow(slide, 'tools →', { left: 848, top: 422, width: 86, height: 24 }, { fontSize: 15, color: orange });
-  addArchNode(slide, 'Deterministic tools', 'search_sailings\ncheck_availability\nget_pricing\ncreate_hold\nstart_booking', { left: 946, top: 400, width: 214, height: 128 }, {
+  addArchNode(slide, 'Deterministic tools', 'search_sailings\ncheck_availability\nget_pricing\nget_policy_content\ncreate_hold\nstart_booking', { left: 946, top: 392, width: 214, height: 142 }, {
     fill: '#FFF8F1',
     stroke: '#E2A66D',
     color: orange,
@@ -414,7 +426,7 @@ function addFullArchitectureSlide(slide, index, spec) {
   });
   addArrow(slide, 'evidence →', { left: 548, top: 452, width: 104, height: 26 }, { fontSize: 14, color: royal });
 
-  addArchNode(slide, 'Existing checkout', 'Signed booking context\nPayment outside assistant', { left: 946, top: 546, width: 214, height: 92 }, {
+  addArchNode(slide, 'Existing checkout', 'Signed booking context\nPayment outside assistant', { left: 946, top: 552, width: 214, height: 92 }, {
     fill: navy,
     stroke: navy,
     color: '#FFFFFF',
@@ -422,7 +434,7 @@ function addFullArchitectureSlide(slide, index, spec) {
     bodySize: 10,
     titleSize: 16,
   });
-  addArrow(slide, 'handoff', { left: 1010, top: 526, width: 80, height: 24 }, { fontSize: 15, color: navy });
+  addArrow(slide, 'signed handoff →', { left: 868, top: 536, width: 118, height: 24 }, { fontSize: 14, color: navy });
 
   addArchNode(slide, 'Guardrails across every boundary', 'Prompt-injection defense • schema validation • auth ownership • grounding validator • redacted observability • eval/red-team gates', { left: 58, top: 558, width: 778, height: 78 }, {
     fill: '#FFFFFF',
@@ -444,6 +456,48 @@ function addFullArchitectureSlide(slide, index, spec) {
     '[Sources]',
     'Repository architecture and demo notes: ARCHITECTURE.md, IMPLEMENTATION_PLAN.md, DEMO_RUNBOOK.md, README.md.',
   ]);
+  slide.speakerNotes.setVisible(true);
+}
+
+function addThankYouSlide(slide, index, spec) {
+  slide.background.fill = pale;
+  slide.shapes.add({
+    geometry: 'rect',
+    position: { left: 0, top: 0, width: 1280, height: 720 },
+    fill: pale,
+    line: { style: 'solid', fill: 'none', width: 0 },
+  });
+  slide.shapes.add({
+    geometry: 'rect',
+    position: { left: 0, top: 0, width: 1280, height: 112 },
+    fill: '#EEF7FA',
+    line: { style: 'solid', fill: 'none', width: 0 },
+  });
+
+  addText(slide, spec.eyebrow, { left: 190, top: 130, width: 900, height: 40 }, {
+    fontSize: 22,
+    bold: true,
+    color: royal,
+    alignment: 'center',
+  });
+  addText(slide, spec.title, { left: 190, top: 260, width: 900, height: 120 }, {
+    fontSize: 56,
+    bold: true,
+    color: ink,
+    alignment: 'center',
+  });
+  addText(slide, spec.message, { left: 230, top: 400, width: 820, height: 60 }, {
+    fontSize: 30,
+    color: muted,
+    alignment: 'center',
+  });
+  addText(slide, spec.footer, { left: 190, top: 620, width: 900, height: 36 }, {
+    fontSize: 16,
+    color: '#65758B',
+    alignment: 'center',
+  });
+  addFooter(slide, index);
+  slide.speakerNotes.textFrame.setText([spec.notes]);
   slide.speakerNotes.setVisible(true);
 }
 
@@ -499,6 +553,10 @@ async function build() {
       addFullArchitectureSlide(slide, index, spec);
       continue;
     }
+    if (spec.kind === 'closing') {
+      addThankYouSlide(slide, index, spec);
+      continue;
+    }
     slide.background.fill = pale;
 
     slide.shapes.add({
@@ -527,6 +585,16 @@ async function build() {
       bold: true,
       color: ink,
     });
+    if (spec.byline) {
+      addPill(
+        slide,
+        spec.byline,
+        { left: 844, top: 30, width: 366, height: 42 },
+        '#FFFFFF',
+        navy,
+        '#CFE3F2',
+      );
+    }
     addRoute(slide, spec.active);
 
     slide.shapes.add({

@@ -30,7 +30,7 @@ export function MaterializationScene() {
         </div>
       </div>
       <h2 id="materialize-title" className="vc-materialize__title">
-        Materializing your Royal Caribbean options
+        Materializing your voyage options
       </h2>
       <GenerativeProgress />
     </div>

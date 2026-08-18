@@ -53,7 +53,7 @@ export default function GlobalError({
                 textTransform: 'uppercase',
               }}
             >
-              Royal Caribbean
+              Voyage Canvas
             </p>
             <h1 style={{ margin: '0 0 0.75rem', color: '#002d54' }}>
               The planner needs a clean retry.

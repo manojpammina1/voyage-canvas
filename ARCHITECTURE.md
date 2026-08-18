@@ -2,7 +2,7 @@
 
 Status: **APPROVED BOUNDARIES / SCOPE LOCKED**
 
-This document is the implementation-facing architecture derived from the approved RCG Part 1 system architecture pack and the final Voyage Canvas UX/RAG decisions.
+This document is the implementation-facing architecture derived from the approved system architecture pack and the final Voyage Canvas UX/RAG decisions.
 
 ## 1. Executive architecture statement
 
@@ -35,7 +35,7 @@ Payment remains in the existing checkout.
 ### Explicitly out of scope
 
 - autonomous payment or conversational checkout
-- live Royal Caribbean APIs
+- live external cruise commerce APIs
 - live AEM implementation or assumptions about unverified Content Fragment APIs
 - voice or multilingual support
 - weather, dining, excursions, broad loyalty workflows
@@ -522,7 +522,7 @@ Controls:
 
 ## 21. Initial engineering targets
 
-These are pilot targets, not current RCG baselines:
+These are pilot targets, not current production baselines:
 
 - first status/token <= 2.5s p95
 - first verified result <= 4s p95 for hero path

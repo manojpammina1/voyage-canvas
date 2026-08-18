@@ -1,4 +1,4 @@
-# DEMO RUNBOOK — Voyage Canvas (RCG Part 1, 45 min)
+# DEMO RUNBOOK — Voyage Canvas (45 min)
 
 > Companion to `HANDOFF.md`. Part A gets it running on a clean machine, Part B is the
 > pre-demo test sweep, Part C is the interview itself.
@@ -227,7 +227,7 @@ The 9 steps in `README.md`. Rehearse until you can do it without reading. Time i
 # PART C — The 45-minute round
 
 Format per `HANDOFF.md`: **20–25 min present, 20–25 min deep-dive Q&A.**
-Role: **Principal Engineer (Full-Stack), Royal Caribbean Group.**
+Role: **Principal Engineer (Full-Stack).**
 
 ## C0. The sentence everything hangs off
 
@@ -382,7 +382,7 @@ the runtime. Draw on your own platform experience here — concretely, briefly.
 
 **"Latency targets?"**
 First status ≤2.5s p95, first verified result ≤4s p95, full hero ≤8s p95, hold ≤1.2s p95.
-Explicitly labelled **pilot targets, not RCG baselines**. Then the line that matters:
+Explicitly labelled **pilot targets, not production baselines**. Then the line that matters:
 *"Never trade inventory correctness or truthful sold-out behavior for latency."*
 
 **"Cost control?"**

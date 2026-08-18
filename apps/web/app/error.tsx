@@ -16,7 +16,7 @@ export default function ErrorBoundary({
   return (
     <main className="vc-error-shell" role="alert">
       <section className="glass-panel vc-error-card">
-        <p className="vc-error-card__eyebrow">Royal Caribbean</p>
+        <p className="vc-error-card__eyebrow">Voyage Canvas</p>
         <h1>We hit a recoverable error.</h1>
         <p>
           Your deterministic search state is preserved. Refresh the planner or

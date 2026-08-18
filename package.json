@@ -2,7 +2,7 @@
   "name": "voyage-app",
   "version": "0.1.0",
   "private": true,
-  "description": "Voyage Canvas — RCG Part 1 Agentic Cruise Planning Assistant POC",
+  "description": "Voyage Canvas — AI-integrated agentic cruise planning assistant POC",
   "packageManager": "pnpm@10.34.5",
   "scripts": {
     "dev": "pnpm --filter @voyage/web dev",

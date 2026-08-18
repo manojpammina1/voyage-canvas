@@ -19,3 +19,7 @@ artifacts/
 .claude/update-backups/
 .claude/.session-cost.json
 harness/.render/
+.idea/
+__pycache__/
+presentation/build/.pydeps/
+~$*.pptx

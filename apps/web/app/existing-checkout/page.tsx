@@ -40,7 +40,7 @@ export default async function ExistingCheckoutPage({
       <main style={{ padding: '2rem', fontFamily: 'system-ui, sans-serif' }}>
         <h1>Existing checkout boundary</h1>
         <p>
-          Missing booking context. The Royal Caribbean planner stops here; payment is
+          Missing booking context. The Voyage Canvas planner stops here; payment is
           handled by existing checkout.
         </p>
       </main>
@@ -82,7 +82,7 @@ export default async function ExistingCheckoutPage({
       </p>
       <h1>Secure checkout handoff received</h1>
       <p style={{ lineHeight: 1.6, color: '#444' }}>
-        The Royal Caribbean planner verified a signed booking context and transferred
+        The Voyage Canvas planner verified a signed booking context and transferred
         you here.
         <strong> Payment is not processed inside the planning assistant.</strong>
       </p>

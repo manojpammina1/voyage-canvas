@@ -8,6 +8,13 @@ Full deck regeneration via `create-voyage-canvas-deck.mjs` requires the `@oai/ar
 package, which is not available on public npm, so the deck is maintained by patching the
 PPTX in place instead.
 
+The patch scripts need `python-pptx` and `Pillow`. They are not committed, so install them
+into the local `.pydeps` directory the commands below expect:
+
+```bash
+python3 -m pip install --target presentation/build/.pydeps python-pptx Pillow
+```
+
 Fix slide text and layout:
 
 ```bash
